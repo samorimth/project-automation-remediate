@@ -56,5 +56,6 @@ python -m src.main report
 - [docs/modelo_ia.md](docs/modelo_ia.md)
 - [docs/linha_do_tempo.md](docs/linha_do_tempo.md)
 - [docs/plano_reexecucao.md](docs/plano_reexecucao.md)
+- [docs/reexecucao_resultado.md](docs/reexecucao_resultado.md)
 
-A auditoria de 12 de novembro de 2026 preserva as evidências em `evidence_archive/historical-cve-2024-38428/` e separa tentativas de infraestrutura, chamadas à API e execuções. A reexecução em EC2 novas não foi iniciada. O plano e a estimativa de custo estão em `docs/plano_reexecucao.md`.
+A auditoria de 12 de novembro de 2026 preserva as evidências em `evidence_archive/historical-cve-2024-38428/` e separa tentativas de infraestrutura, chamadas à API e execuções. A reexecução de 12 de novembro de 2026 está em `docs/reexecucao_resultado.md`. As EC2 temporárias foram destruídas. A VPC, o NAT e a AMI privada continuam até `AUTORIZO_DESTRUIR_RECURSOS`.
