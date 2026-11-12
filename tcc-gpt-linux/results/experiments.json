@@ -1,0 +1,18 @@
+[
+  {
+    "cve_id": "CVE-2024-38428",
+    "repetition": 1,
+    "model": "gpt-4.1",
+    "generation_latency_ms": 3370,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "total_tokens": null,
+    "validation_passed": null,
+    "execution_authorized": false,
+    "execution_status": null,
+    "version_before": null,
+    "version_after": null,
+    "remediation_success": null,
+    "notes": "generate_error:RateLimitError: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+  }
+]

@@ -1,0 +1,2 @@
+cve_id,repetition,model,generation_latency_ms,prompt_tokens,completion_tokens,total_tokens,validation_passed,execution_authorized,execution_status,version_before,version_after,remediation_success,notes
+CVE-2024-38428,1,gpt-4.1,3370,,,,,False,,,,,"generate_error:RateLimitError: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"

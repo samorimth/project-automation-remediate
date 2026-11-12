@@ -5,13 +5,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from .aws_manager import AuthorizationError
 from .config import GENERATED_SCRIPTS_DIR, SCENARIOS_DIR, Settings, ConfigError
 from .cve_validator import check_package_version, remediation_succeeded
 from .metrics import ExperimentMetrics
 from .openai_client import GenerationResult, generate_for_cve
 from .prompt_builder import build_prompt, load_scenario
 from .report_generator import append_experiment
-from .script_validator import ValidationReport, validate_script
+from .script_validator import ValidationReport, is_execution_allowed, validate_script
 from .ssm_executor import (
     execute_script,
     require_execute_authorization,
@@ -100,6 +101,12 @@ def run_execute(
     scenario = load_scenario(cve_id)
     directory = generation_dir or latest_generation_dir(cve_id)
     script_path = directory / "remediation.sh"
+    if not is_execution_allowed(script_path):
+        raise AuthorizationError(
+            "A execução do script gerado por IA não foi realizada. "
+            "Não há remediation.sh com validação aprovada. "
+            "Nenhum comando foi enviado ao SSM."
+        )
     resolved = resolve_instance_id(
         instance_id or scenario.instance_id_hint,
         SCENARIOS_DIR / cve_id / "evidence" / "before.json",
