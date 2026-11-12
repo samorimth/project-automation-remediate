@@ -75,13 +75,12 @@ def test_authorized_apply_and_destroy_call_terraform(monkeypatch):
     assert calls == [APPLY_COMMAND, DESTROY_COMMAND]
 
 
-def test_deferred_commands_do_not_run_terraform(monkeypatch):
+def test_report_still_deferred_and_execute_needs_phrase(monkeypatch):
     calls = _record_terraform(monkeypatch)
-    assert main.main(["generate", "--cve", "CVE-EXEMPLO"]) == 2
-    assert main.main(["validate"]) == 2
-    assert main.main(["execute", "--cve", "CVE-EXEMPLO"]) == 2
-    assert main.main(["verify", "--cve", "CVE-EXEMPLO"]) == 2
     assert main.main(["report"]) == 2
+    # execute sem frase de autorização deve falhar sem Terraform
+    code = main.main(["execute", "--cve", "CVE-2024-38428"])
+    assert code == 1
     assert calls == []
 
 

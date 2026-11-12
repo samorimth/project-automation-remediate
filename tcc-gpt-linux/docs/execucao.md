@@ -11,11 +11,11 @@ terraform -chdir=terraform validate
 pytest
 ```
 
-`check` confirma o Python, a presença do Terraform, as chaves de `.env.example` e o fato de o exemplo do Terraform manter os recursos pagos desligados. Ele não consulta a AWS.
+`check` confirma o Python, a presença do Terraform e do `shellcheck`, as chaves de `.env.example` e o fato de o exemplo do Terraform manter os recursos pagos desligados. Ele não consulta a AWS.
 
 `terraform validate` confere a sintaxe e a consistência interna da pilha. Ele não cria VPC, NAT, instância ou role.
 
-`pytest` cobre o limite de instâncias e a recusa de `apply` e `destroy` quando a frase de autorização está ausente ou incorreta. Os testes substituem a chamada ao Terraform e não enviam comando à AWS.
+`pytest` cobre limites de instâncias, autorização de apply/destroy/execute e os validadores da Fase 3 (com mocks da OpenAI).
 
 ## Provisionamento
 
@@ -31,44 +31,47 @@ A criação só ocorre com a frase exata:
 python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS
 ```
 
-Antes disso, é preciso decidir ligar `enable_nat_gateway` e `enable_execution` em um arquivo `terraform/terraform.tfvars` local. Esse arquivo é ignorado pelo Git. Com os padrões atuais, um `apply` criaria a VPC e a role, sem NAT e sem instância. A EC2 continua condicionada aos dois interruptores e ao NAT, porque a instância privada precisa de saída para o Systems Manager e para os repositórios Ubuntu.
-
 ## Limpeza
 
 ```bash
 python -m src.main cleanup
-```
-
-Esse comando informa que o `destroy` não foi executado e, em seguida, mostra `terraform plan -destroy`.
-
-A destruição só ocorre com outra frase, diferente da usada no `apply`:
-
-```bash
 python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 ```
 
-Nenhum dos dois comandos foi usado com autorização nesta fase.
+## Fase 3 — geração, validação e execução controlada
+
+Pré-requisitos: `OPENAI_API_KEY` e `OPENAI_MODEL` no ambiente (ou `.env` local, não versionado); `shellcheck` no PATH; instância EC2 com SSM Online (Fase 2).
+
+```bash
+# 1) Gerar UM script para a CVE aprovada
+python -m src.main generate --cve CVE-2024-38428
+
+# 2) Validar (bash -n + shellcheck + checklist de segurança)
+python -m src.main validate --cve CVE-2024-38428
+
+# 3) Executar na EC2 SOMENTE com frase explícita
+python -m src.main execute --cve CVE-2024-38428 \
+  --instance-id i-04da3315297ec6c04 \
+  --authorize AUTORIZO_EXECUCAO_SCRIPT_IA
+
+# 4) Verificar versão do pacote de forma independente
+python -m src.main verify --cve CVE-2024-38428 \
+  --instance-id i-04da3315297ec6c04
+```
+
+Artefatos de cada repetição ficam em `generated_scripts/CVE-2024-38428/repXX/` (`prompt.txt`, `response.txt`, `remediation.sh`, `metadata.json`, `validation.log`, `validation.json`). Métricas reais (sem preenchimento fictício) em `results/experiments.csv` e `results/experiments.json`.
+
+**Regra:** scripts gerados por IA **não** são enviados ao SSM sem `--authorize AUTORIZO_EXECUCAO_SCRIPT_IA`. Scripts que falham a validação perdem o bit de execução e são rejeitados pelo comando `execute`.
 
 ## Preparação documentada da CVE aprovada
 
-A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Os scripts em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) destinam-se à EC2 privada via SSM.
+A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Scripts em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) destinam-se à EC2 privada via SSM.
 
-```bash
-bash scenarios/CVE-2024-38428/prepare.sh --check
-# somente com EC2 privada provisionada:
-# sudo bash scenarios/CVE-2024-38428/prepare.sh --apply
-# bash scenarios/CVE-2024-38428/verify_before.sh
-```
+Versões oficiais (USN-6852-1): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`.
 
-Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`.
+## Estado da infraestrutura (Fase 2)
 
-## Tentativa de execução autorizada
-
-Em 2026-11-12 o usuário autorizou recursos pagos (`Sim, autorizo` → `enable_nat_gateway`, `enable_execution`, `AUTORIZO_RECURSOS_PAGOS`).
-
-- Tentativas 1–2: **BLOQUEADO** por ausência de credenciais AWS no run.
-- Tentativas 3–4: credenciais presentes; STS OK (`cursor_agent`); SCP `p-xikt6vmn` negou EC2 em `AWS_DEFAULT_REGION` (lab anterior) e `sa-east-1` → **BLOQUEADO** (sem apply na tentativa 4).
-- Tentativa 5 (pedido: região `us-east-2`): probe EC2 **OK**; `provision --authorize AUTORIZO_RECURSOS_PAGOS` **OK** (18 recursos); instância `i-04da3315297ec6c04`; SSM `prepare.sh --apply` + `verify_before.sh` **OK**; `wget=1.21.4-1ubuntu4` (**vulnerável_por_versão**). Evidência: `scenarios/CVE-2024-38428/evidence/`.
+Tentativa 5 em `us-east-2`: instância `i-04da3315297ec6c04`, SSM Online, `wget=1.21.4-1ubuntu4` (**vulnerável_por_versão**). Evidência: `scenarios/CVE-2024-38428/evidence/`.
 
 **Custo ativo:** NAT + EIP + `t3.small` em `us-east-2` até:
 
@@ -76,6 +79,6 @@ Em 2026-11-12 o usuário autorizou recursos pagos (`Sim, autorizo` → `enable_n
 python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 ```
 
-## Comandos das fases seguintes
+## Relatórios
 
-`generate`, `validate`, `execute`, `verify` e `report` respondem que a fase ainda não está ativa e terminam com código 2. A CVE já foi escolhida para documentação/preparação, mas nenhum script de remediação foi gerado por GPT e nenhuma execução experimental ocorreu.
+`report` permanece reservado à Fase 6 e encerra com código 2.

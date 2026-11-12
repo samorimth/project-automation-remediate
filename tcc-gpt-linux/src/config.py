@@ -1,4 +1,4 @@
-"""Configuração local da Fase 1.
+"""Configuração local do laboratório (Fases 1–3).
 
 Os valores sensíveis permanecem fora do Git e fora da instância EC2.
 """
@@ -15,9 +15,14 @@ LAB_ROOT = Path(__file__).resolve().parents[1]
 TERRAFORM_DIR = LAB_ROOT / "terraform"
 ENV_EXAMPLE = LAB_ROOT / ".env.example"
 TFVARS_EXAMPLE = TERRAFORM_DIR / "terraform.tfvars.example"
+PROMPTS_DIR = LAB_ROOT / "prompts"
+SCENARIOS_DIR = LAB_ROOT / "scenarios"
+GENERATED_SCRIPTS_DIR = LAB_ROOT / "generated_scripts"
+RESULTS_DIR = LAB_ROOT / "results"
 
 APPLY_AUTHORIZATION_PHRASE = "AUTORIZO_RECURSOS_PAGOS"
 DESTROY_AUTHORIZATION_PHRASE = "AUTORIZO_DESTRUIR_RECURSOS"
+EXECUTE_AUTHORIZATION_PHRASE = "AUTORIZO_EXECUCAO_SCRIPT_IA"
 
 REQUIRED_ENV_KEYS = (
     "OPENAI_API_KEY",
@@ -34,7 +39,12 @@ PAID_RESOURCE_FLAGS = (
     "enable_ssm_vpc_endpoints",
 )
 
-ALLOWED_REGIONS = ("us-east-1", "us-east-2", "sa-east-1")  # pragma: allowlist secret
+ALLOWED_REGIONS = ("[REDACTED]", "us-east-2", "sa-east-1")  # pragma: allowlist secret
+
+DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
+DEFAULT_OPENAI_TIMEOUT = 120
+DEFAULT_OPENAI_MAX_RETRIES = 2
+DEFAULT_REPETITIONS = 3
 
 
 class ConfigError(ValueError):
@@ -46,6 +56,11 @@ class Settings:
     aws_region: str
     max_instances: int
     instance_count: int
+    openai_api_key: str | None
+    openai_model: str
+    openai_timeout: int
+    openai_max_retries: int
+    repetitions: int
 
     def validate_instance_bounds(self) -> None:
         if self.max_instances < 1 or self.max_instances > 3:
@@ -58,19 +73,52 @@ class Settings:
                 f"({self.instance_count} > {self.max_instances})."
             )
         if self.aws_region not in ALLOWED_REGIONS:
-            raise ConfigError("aws_region deve ser us-east-1, us-east-2 ou sa-east-1.")  # pragma: allowlist secret
+            raise ConfigError(
+                "aws_region deve ser [REDACTED], us-east-2 ou sa-east-1."
+            )  # pragma: allowlist secret
+
+    def require_openai(self) -> "Settings":
+        if not self.openai_api_key:
+            raise ConfigError(
+                "OPENAI_API_KEY ausente. Configure o secret no ambiente "
+                "antes de gerar scripts."
+            )
+        if not self.openai_model:
+            raise ConfigError("OPENAI_MODEL ausente.")
+        if self.openai_timeout < 1:
+            raise ConfigError("OPENAI_TIMEOUT deve ser >= 1.")
+        return self
 
 
 def load_settings() -> Settings:
-    """Lê o ambiente local. A ausência de .env usa os padrões da Fase 1."""
+    """Lê o ambiente local. A ausência de .env usa os padrões do laboratório."""
     load_dotenv(LAB_ROOT / ".env")
     region = os.environ.get("AWS_REGION", "us-east-2").strip() or "us-east-2"
     max_instances = _parse_int(os.environ.get("MAX_INSTANCES", "3"), "MAX_INSTANCES")
     instance_count = _parse_int(os.environ.get("INSTANCE_COUNT", "1"), "INSTANCE_COUNT")
+    api_key = os.environ.get("OPENAI_API_KEY", "").strip() or None
+    model = os.environ.get("OPENAI_MODEL", "").strip() or DEFAULT_OPENAI_MODEL
+    timeout = _parse_int(
+        os.environ.get("OPENAI_TIMEOUT", str(DEFAULT_OPENAI_TIMEOUT)),
+        "OPENAI_TIMEOUT",
+    )
+    max_retries = _parse_int(
+        os.environ.get("OPENAI_MAX_RETRIES", str(DEFAULT_OPENAI_MAX_RETRIES)),
+        "OPENAI_MAX_RETRIES",
+    )
+    repetitions = _parse_int(
+        os.environ.get("REPETITIONS", str(DEFAULT_REPETITIONS)),
+        "REPETITIONS",
+    )
     settings = Settings(
         aws_region=region,
         max_instances=max_instances,
         instance_count=instance_count,
+        openai_api_key=api_key,
+        openai_model=model,
+        openai_timeout=timeout,
+        openai_max_retries=max_retries,
+        repetitions=repetitions,
     )
     settings.validate_instance_bounds()
     return settings
@@ -105,6 +153,11 @@ def assert_safe_example(values: dict[str, str]) -> None:
         aws_region=values.get("aws_region", "us-east-2"),
         max_instances=max_instances,
         instance_count=instance_count,
+        openai_api_key=None,
+        openai_model=DEFAULT_OPENAI_MODEL,
+        openai_timeout=DEFAULT_OPENAI_TIMEOUT,
+        openai_max_retries=DEFAULT_OPENAI_MAX_RETRIES,
+        repetitions=DEFAULT_REPETITIONS,
     ).validate_instance_bounds()
 
 

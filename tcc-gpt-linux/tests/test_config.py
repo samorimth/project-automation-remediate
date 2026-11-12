@@ -11,8 +11,23 @@ from src.config import (
 )
 
 
+def _base(**kwargs):
+    data = dict(
+        aws_region="[REDACTED]",  # pragma: allowlist secret
+        max_instances=3,
+        instance_count=1,
+        openai_api_key=None,
+        openai_model="gpt-4o-mini",
+        openai_timeout=120,
+        openai_max_retries=2,
+        repetitions=3,
+    )
+    data.update(kwargs)
+    return Settings(**data)
+
+
 def test_instance_count_cannot_exceed_max_instances():
-    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=4)  # pragma: allowlist secret
+    settings = _base(instance_count=4)
     try:
         settings.validate_instance_bounds()
     except ConfigError as exc:
@@ -22,17 +37,26 @@ def test_instance_count_cannot_exceed_max_instances():
 
 
 def test_instance_count_equal_to_max_instances_is_valid():
-    Settings(aws_region="us-east-1", max_instances=3, instance_count=3).validate_instance_bounds()  # pragma: allowlist secret
+    _base(instance_count=3).validate_instance_bounds()
 
 
 def test_negative_instance_count_is_refused():
-    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=-1)  # pragma: allowlist secret
+    settings = _base(instance_count=-1)
     try:
         settings.validate_instance_bounds()
     except ConfigError as exc:
         assert "negativo" in str(exc)
     else:
         raise AssertionError("instance_count negativo deveria ter sido recusado")
+
+
+def test_require_openai_without_key():
+    try:
+        _base(openai_api_key=None).require_openai()
+    except ConfigError as exc:
+        assert "OPENAI_API_KEY" in str(exc)
+    else:
+        raise AssertionError("require_openai deveria falhar sem chave")
 
 
 def test_example_tfvars_keep_paid_resources_disabled():
