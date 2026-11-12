@@ -2,7 +2,7 @@
 
 Não há resultado experimental nesta fase.
 
-Nenhuma CVE foi selecionada. Nenhum script foi gerado. Nenhuma instância foi criada ou corrigida. Não existem `before.json`, `after.json`, registro de validação, registro de execução ou classificação de remediação.
+Três CVEs foram **propostas** em `scenarios/` e permanecem com aprovação **pendente**. Nenhuma CVE foi aprovada nem selecionada para execução. Nenhum script foi gerado. Nenhuma instância foi criada ou corrigida. Não existem `before.json`, `after.json`, registro de validação, registro de execução ou classificação de remediação.
 
 Os arquivos previstos para os resultados quantitativos ainda não podem ser preenchidos:
 

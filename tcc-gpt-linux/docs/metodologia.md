@@ -6,11 +6,11 @@ O trabalho analisa o uso de um único modelo GPT, acessado pela API da OpenAI, p
 
 Não há comparação entre modelos. Não há comparação experimental entre remediação manual e remediação assistida por IA. A possível redução de esforço manual será discutida apenas como benefício potencial. Ela não foi medida e nenhum percentual de redução será apresentado.
 
-## Situação da Fase 1
+## Situação da Fase 1 e início da Fase 2
 
 A Fase 1 constrói o ambiente controlado em que essa avaliação poderá ocorrer. O ambiente é uma VPC exclusiva, com instância Ubuntu descartável, sem IP público e acessível pelo Systems Manager. A definição está em Terraform e foi validada localmente.
 
-Nesta fase não foi selecionada nenhuma CVE. Não foi preparado um estado vulnerável, não foi chamado um modelo generativo e não foi produzido script de remediação. Também não há resultado de execução. Qualquer classificação de sucesso, falha, bloqueio ou caso inconclusivo depende de comprovação independente, que ainda não ocorreu.
+A abertura da Fase 2 documenta três candidatos reais de CVE em `scenarios/`, ainda **sem aprovação**. Não foi preparado um estado vulnerável, não foi chamado um modelo generativo e não foi produzido script de remediação. Também não há resultado de execução. Qualquer classificação de sucesso, falha, bloqueio ou caso inconclusivo depende de comprovação independente, que ainda não ocorreu. A preparação de ambiente vulnerável só ocorre depois da aprovação explícita de uma CVE.
 
 ## Critérios que permanecem para as fases seguintes
 

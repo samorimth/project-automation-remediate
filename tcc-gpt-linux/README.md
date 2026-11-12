@@ -2,7 +2,7 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém a Fase 1 do laboratório: a definição reproduzível da infraestrutura isolada, a checagem local e o diagrama da arquitetura. A Fase 1 não seleciona CVE, não chama a API da OpenAI, não gera script e não cria recurso na AWS.
+Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. A Fase 2, neste ponto, **apenas documenta três propostas de CVE** em [`scenarios/`](scenarios/README.md), ainda **pendentes de aprovação**. Continua sem chamar a API da OpenAI, sem gerar script, sem criar recurso na AWS e sem preparar AMI/instância vulnerável.
 
 ## O que esta fase entrega
 
@@ -60,3 +60,4 @@ A região padrão é `us-east-1`, escolhida pelo custo menor de NAT, EC2 e EBS. 
 - [docs/limitacoes.md](docs/limitacoes.md)
 - [docs/resultados_tcc.md](docs/resultados_tcc.md)
 - [docs/arquitetura/descricao_arquitetura.md](docs/arquitetura/descricao_arquitetura.md)
+- [scenarios/README.md](scenarios/README.md) — propostas CVE da Fase 2 (aprovação pendente)
