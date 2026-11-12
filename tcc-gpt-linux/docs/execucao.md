@@ -49,6 +49,29 @@ python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 
 Nenhum dos dois comandos foi usado com autorização nesta fase.
 
+## Preparação documentada da CVE aprovada
+
+A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Os scripts em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) destinam-se à EC2 privada via SSM.
+
+```bash
+bash scenarios/CVE-2024-38428/prepare.sh --check
+# somente com EC2 privada provisionada:
+# sudo bash scenarios/CVE-2024-38428/prepare.sh --apply
+# bash scenarios/CVE-2024-38428/verify_before.sh
+```
+
+Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`.
+
+## Tentativa de execução autorizada (BLOQUEADO)
+
+Em 2026-11-12 o usuário autorizou recursos pagos (`Sim, autorizo` → `enable_nat_gateway`, `enable_execution`, `AUTORIZO_RECURSOS_PAGOS`).
+
+- Tentativas 1–2: **BLOQUEADO** por ausência de `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` no run.
+- Tentativa 3: credenciais presentes; `aws sts get-caller-identity` OK (usuário IAM `cursor_agent`); `terraform.tfvars` local com NAT + execução; `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS` executado. O apply **falhou** com **deny explícito de SCP** (`p-xikt6vmn`) em APIs EC2 (`DescribeAvailabilityZones`, `DescribeImages`, etc.) em `regiao-padrao-lab` e `sa-east-1`. **Nenhum recurso criado** (sem estado Terraform). Classificação: **BLOQUEADO**.
+- Tentativa 4 (retry “Tente novamente”): STS OK; probe `aws ec2 describe-availability-zones --region "$AWS_DEFAULT_REGION"` ainda **403** por SCP `p-xikt6vmn`; **apply não executado**. Políticas IAM (`AmazonEC2FullAccess`, etc.) não removem deny de SCP. Evidência: `scenarios/CVE-2024-38428/evidence/`.
+
+Próximo passo: administrador da Organizations deve remover/estreitar o deny da SCP `p-xikt6vmn` para EC2/VPC; validar o probe na região do Environment (`AWS_DEFAULT_REGION`); só então repetir o provisionamento. Quando o apply for bem-sucedido, a limpeza exigirá `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
+
 ## Comandos das fases seguintes
 
-`generate`, `validate`, `execute`, `verify` e `report` respondem que a fase ainda não está ativa e terminam com código 2. Um identificador de CVE passado a esses comandos é ignorado. Nenhuma CVE foi escolhida e nenhum script foi gerado.
+`generate`, `validate`, `execute`, `verify` e `report` respondem que a fase ainda não está ativa e terminam com código 2. A CVE já foi escolhida para documentação/preparação, mas nenhum script de remediação foi gerado por GPT e nenhuma execução experimental ocorreu.

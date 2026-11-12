@@ -2,7 +2,7 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém a Fase 1 do laboratório: a definição reproduzível da infraestrutura isolada, a checagem local e o diagrama da arquitetura. A Fase 1 não seleciona CVE, não chama a API da OpenAI, não gera script e não cria recurso na AWS.
+Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** e a autorização de recursos pagos foi recebida; o `apply` permanece **BLOQUEADO** — na tentativa 4 o STS continua OK, mas o SCP `p-xikt6vmn` ainda nega EC2 na região do Environment (`AWS_DEFAULT_REGION`) ao IAM `cursor_agent` (ver `scenarios/CVE-2024-38428/evidence/`). Sem AMI/EC2 provisionada, sem OpenAI e sem script GPT.
 
 ## O que esta fase entrega
 
@@ -13,7 +13,7 @@ Este diretório contém a Fase 1 do laboratório: a definição reproduzível da
 
 ## O que esta fase não faz
 
-- Não executa `terraform apply` nem `terraform destroy`.
+- Não conclui `terraform apply` enquanto o SCP/IAM negar EC2 ao usuário do agente (credenciais e autorização humana já ok; ver evidência BLOQUEADO). Não executa `destroy` sem frase própria e sem recursos.
 - Não altera a VPC default nem qualquer instância já existente na conta, como a instância Windows do CopySpider.
 - Não mede redução de esforço manual. Essa redução permanece um benefício potencial, sem comprovação quantitativa.
 
@@ -46,7 +46,7 @@ python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 
 `provision` sem a frase executa `init`, `validate` e `plan`. `cleanup` sem a frase executa `plan -destroy`. Nenhum dos dois cria ou apaga recurso.
 
-A região padrão é `us-east-1`, escolhida pelo custo menor de NAT, EC2 e EBS. A variável `aws_region` aceita também `sa-east-1`. Os custos estimados estão em [docs/ambiente.md](docs/ambiente.md).
+A região padrão é `AWS_DEFAULT_REGION` (Environment), escolhida pelo custo menor de NAT, EC2 e EBS. A variável `aws_region` aceita também `sa-east-1`. Os custos estimados estão em [docs/ambiente.md](docs/ambiente.md).
 
 ## Comandos ainda inativos
 
@@ -60,3 +60,4 @@ A região padrão é `us-east-1`, escolhida pelo custo menor de NAT, EC2 e EBS. 
 - [docs/limitacoes.md](docs/limitacoes.md)
 - [docs/resultados_tcc.md](docs/resultados_tcc.md)
 - [docs/arquitetura/descricao_arquitetura.md](docs/arquitetura/descricao_arquitetura.md)
+- [scenarios/README.md](scenarios/README.md) — CVE-2024-38428 aprovada; demais alternativas

@@ -6,11 +6,11 @@ O trabalho analisa o uso de um único modelo GPT, acessado pela API da OpenAI, p
 
 Não há comparação entre modelos. Não há comparação experimental entre remediação manual e remediação assistida por IA. A possível redução de esforço manual será discutida apenas como benefício potencial. Ela não foi medida e nenhum percentual de redução será apresentado.
 
-## Situação da Fase 1
+## Situação da Fase 1 e da Fase 2 (aprovação CVE)
 
 A Fase 1 constrói o ambiente controlado em que essa avaliação poderá ocorrer. O ambiente é uma VPC exclusiva, com instância Ubuntu descartável, sem IP público e acessível pelo Systems Manager. A definição está em Terraform e foi validada localmente.
 
-Nesta fase não foi selecionada nenhuma CVE. Não foi preparado um estado vulnerável, não foi chamado um modelo generativo e não foi produzido script de remediação. Também não há resultado de execução. Qualquer classificação de sucesso, falha, bloqueio ou caso inconclusivo depende de comprovação independente, que ainda não ocorreu.
+Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e scripts Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) para SSM. A autorização de recursos pagos foi recebida e, até a tentativa 4, as credenciais AWS já estavam no run (STS OK). O provisionamento permanece **BLOQUEADO** por SCP `p-xikt6vmn` que nega EC2 ao IAM `cursor_agent` (probe em `AWS_DEFAULT_REGION` (Environment)): **não** houve EC2 criada, **não** houve chamada a modelo generativo e **não** há prova experimental do estado vulnerável. Ver `scenarios/CVE-2024-38428/evidence/`.
 
 ## Critérios que permanecem para as fases seguintes
 
