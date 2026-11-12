@@ -8,6 +8,15 @@ Em 12 de novembro de 2026, 07:44 (horário de Brasília), com modelo `gpt-4.1`, 
 
 Em 12 de novembro de 2026, 08:18 (horário de Brasília), com créditos na organização e `OPENAI_MODEL=gpt-6-luna` (`reasoning_effort=none`, `temperature` 0.2), a repetição 2 gerou um script em 6201 ms (585 tokens de entrada, 548 de saída, 0 de raciocínio). A validação passou depois que o checklist passou a reconhecer a variável `PACKAGE="wget"` e o operador `||`. A execução SSM `e574d8bc-9ae6-4e75-bce4-d492636cadf4` na instância `i-04da3315297ec6c04` teve sucesso. A verificação independente registrou `wget` `1.21.4-1ubuntu4` antes e `1.21.4-1ubuntu4.5` depois. `remediation_success` é verdadeiro. Evidência em `generated_scripts/CVE-2024-38428/rep02/` e `results/`. <!-- pragma: allowlist secret -->
 
+As repetições 3 e 4, por volta das 08:46 e 08:47 (horário de Brasília), partiram de novo de `wget` `1.21.4-1ubuntu4`, restaurado com `prepare.sh --apply` e confirmado por `verify`. As duas gerações passaram na validação e a execução SSM teve sucesso. A verificação independente registrou, nas duas, `1.21.4-1ubuntu4` antes e `1.21.4-1ubuntu4.5` depois. Latências: 6834 ms (585/695 tokens) e 5625 ms (585/651 tokens), com 0 tokens de raciocínio. Evidência em `generated_scripts/CVE-2024-38428/rep03/`, `rep04/` e `scenarios/CVE-2024-38428/evidence/`.
+
+Depois dessas repetições, a pilha marcada `Project=tcc-gpt-linux` e `ExperimentId=fase-2-wget` em `us-east-2` foi destruída: instância, NAT, EIP, Internet Gateway, subnets, route tables, security group, VPC e a role do Systems Manager. Não restou VPC nem instância com essa tag. O estado local do Terraform não estava nesta máquina e o binário não estava no PATH, então a destruição usou os identificadores já etiquetados, com a frase `AUTORIZO_DESTRUIR_RECURSOS`.
+
+
+As repetições 3 e 4, por volta das 08:46 e 08:47 (horário de Brasília), partiram de novo de `wget` `1.21.4-1ubuntu4`, restaurado com `prepare.sh --apply` e confirmado por `verify`. As duas gerações passaram na validação e a execução SSM teve sucesso. A verificação independente registrou, nas duas, `1.21.4-1ubuntu4` antes e `1.21.4-1ubuntu4.5` depois. Latências: 6834 ms (585/695 tokens) e 5625 ms (585/651 tokens), com 0 tokens de raciocínio. Evidência em `generated_scripts/CVE-2024-38428/rep03/`, `rep04/` e `scenarios/CVE-2024-38428/evidence/`.
+
+Depois dessas repetições, a pilha marcada `Project=tcc-gpt-linux` e `ExperimentId=fase-2-wget` em `us-east-2` foi destruída: instância, NAT, EIP, Internet Gateway, subnets, route tables, security group, VPC e a role do Systems Manager. Não restou VPC nem instância com essa tag. O estado local do Terraform não estava nesta máquina e o binário não estava no PATH, então a destruição usou os identificadores já etiquetados, com a frase `AUTORIZO_DESTRUIR_RECURSOS`.
+
 Arquivos quantitativos:
 
 - `results/experiments.csv`

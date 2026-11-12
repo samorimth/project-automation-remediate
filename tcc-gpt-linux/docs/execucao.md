@@ -95,15 +95,22 @@ A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Scrip
 
 Versões oficiais (USN-6852-1): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`.
 
-## Estado da infraestrutura (Fase 2)
+## Repetições 3 e 4 — 12 de novembro de 2026, 08:46 (horário de Brasília)
 
-Tentativa 5 em `us-east-2`: instância `i-04da3315297ec6c04`, SSM Online, `wget=1.21.4-1ubuntu4` (**vulnerável_por_versão**). Evidência: `scenarios/CVE-2024-38428/evidence/`. Depois da repetição 2, a verificação independente registrou `wget=1.21.4-1ubuntu4.5`.
+Antes de cada geração, `prepare.sh --apply` reinstalou `wget` `1.21.4-1ubuntu4` e `verify` confirmou `vulneravel_por_versao`.
 
-**Custo ativo:** NAT + EIP + `t3.small` em `us-east-2` até:
+| Repetição | Geração | Validação | Execução | Antes | Depois |
+| --- | --- | --- | --- | --- | --- |
+| 3 | 6834 ms, 585/695 tokens | aprovada | SSM Success | `1.21.4-1ubuntu4` | `1.21.4-1ubuntu4.5` |
+| 4 | 5625 ms, 585/651 tokens | aprovada | SSM Success | `1.21.4-1ubuntu4` | `1.21.4-1ubuntu4.5` |
 
-```bash
-python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
-```
+As duas tiveram 0 tokens de raciocínio. `remediation_success` é verdadeiro nas duas.
+
+## Estado da infraestrutura
+
+A pilha `fase-2-wget` em `us-east-2` foi destruída em 12 de novembro de 2026, por volta das 08:49 (horário de Brasília), depois da frase `AUTORIZO_DESTRUIR_RECURSOS`. Saíram a instância `i-04da3315297ec6c04`, o NAT `nat-055a7c92e17eb05b8`, o EIP, o Internet Gateway, as subnets, as route tables, o security group, a VPC `vpc-0d85cf02d23b63442` e a role `tcc-lab-ssm-*`. A consulta posterior não encontrou VPC nem instância com a tag `Project=tcc-gpt-linux`.
+
+O binário do Terraform não estava no PATH desta máquina e o `terraform.tfstate` local, que não é versionado, também não estava. Por isso o `cleanup` da CLI não enxergava a pilha. A destruição usou os recursos já etiquetados `ExperimentId=fase-2-wget`. Registro: `scenarios/CVE-2024-38428/evidence/cleanup-fase3.json`.
 
 ## Relatórios
 
