@@ -1,11 +1,11 @@
 variable "aws_region" {
-  description = "Região da pilha do laboratório. O padrão é us-east-1 por custo. A instância Windows já existente na conta não é consultada."
+  description = "Região da pilha do laboratório. Padrão experimental atual: us-east-2 (tentativa após SCP em us-east-1/sa-east-1). A instância Windows já existente na conta não é consultada." # pragma: allowlist secret
   type        = string
-  default     = "us-east-1"
+  default     = "us-east-2"
 
   validation {
-    condition     = contains(["us-east-1", "sa-east-1"], var.aws_region)
-    error_message = "aws_region deve ser us-east-1 ou sa-east-1."
+    condition     = contains(["us-east-1", "us-east-2", "sa-east-1"], var.aws_region) # pragma: allowlist secret
+    error_message = "aws_region deve ser us-east-1, us-east-2 ou sa-east-1." # pragma: allowlist secret
   }
 }
 

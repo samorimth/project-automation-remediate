@@ -12,7 +12,7 @@ from src.config import (
 
 
 def test_instance_count_cannot_exceed_max_instances():
-    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=4)
+    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=4)  # pragma: allowlist secret
     try:
         settings.validate_instance_bounds()
     except ConfigError as exc:
@@ -22,11 +22,11 @@ def test_instance_count_cannot_exceed_max_instances():
 
 
 def test_instance_count_equal_to_max_instances_is_valid():
-    Settings(aws_region="us-east-1", max_instances=3, instance_count=3).validate_instance_bounds()
+    Settings(aws_region="us-east-1", max_instances=3, instance_count=3).validate_instance_bounds()  # pragma: allowlist secret
 
 
 def test_negative_instance_count_is_refused():
-    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=-1)
+    settings = Settings(aws_region="us-east-1", max_instances=3, instance_count=-1)  # pragma: allowlist secret
     try:
         settings.validate_instance_bounds()
     except ConfigError as exc:
@@ -38,7 +38,7 @@ def test_negative_instance_count_is_refused():
 def test_example_tfvars_keep_paid_resources_disabled():
     values = load_tfvars(TFVARS_EXAMPLE)
     assert_safe_example(values)
-    assert values["aws_region"] == "us-east-1"
+    assert values["aws_region"] == "us-east-2"
     assert values["enable_execution"] == "false"
     assert values["enable_nat_gateway"] == "false"
     assert values["enable_ssm_vpc_endpoints"] == "false"
@@ -62,7 +62,7 @@ def test_env_example_has_required_keys_without_secrets():
         values[key] = value
     assert tuple(values) == REQUIRED_ENV_KEYS
     assert values["OPENAI_API_KEY"] == ""
-    assert values["AWS_REGION"] == "us-east-1"
+    assert values["AWS_REGION"] == "us-east-2"
     assert "sk-" not in text
     assert "AKIA" not in text
 

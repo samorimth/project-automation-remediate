@@ -2,15 +2,15 @@
 
 ## Limitações desta fase
 
-A infraestrutura foi validada como código. Ela não foi aplicada na conta AWS. Por isso, ainda não há evidência de que o Systems Manager registrou uma instância, de que a AMI Ubuntu foi resolvida na conta ou de que o user data iniciou o agente. Essas confirmações dependem de um `apply` autorizado e de uma verificação posterior.
+A infraestrutura foi validada como código e, na tentativa 5 (`us-east-2`), **aplicada** com autorização: VPC/NAT/EC2 criados, SSM Online e AMI Ubuntu resolvida. Continua válido que medições de eficácia (tokens, tempo, remediação por modelo) ainda não foram feitas.
 
-A CVE-2024-38428 foi aprovada e a autorização de recursos pagos foi recebida, mas a execução permanece **BLOQUEADA**: após as chaves AWS entrarem no Environment, o usuário IAM `cursor_agent` ainda sofre deny explícito de SCP (`p-xikt6vmn`) em APIs EC2 — inclusive com managed policies EC2/VPC/SSM/IAM anexadas (Allow IAM não supera Deny SCP). O estado vulnerável **ainda não** foi materializado em EC2, nenhum script de remediação foi gerado por GPT e não há resultado experimental positivo. `prompts` e `generated_scripts` continuam sem dados de modelo. Gráficos de eficácia não foram produzidos.
+A CVE-2024-38428 foi aprovada e a autorização de recursos pagos foi recebida. Tentativas 3–4 em `AWS_DEFAULT_REGION` (lab anterior)/`sa-east-1` ficaram **BLOQUEADAS** pela SCP `p-xikt6vmn` (deny EC2). Na tentativa 5 (`us-east-2`), o probe EC2 passou, o apply criou a instância e o estado vulnerável de `wget` (`1.21.4-1ubuntu4`) foi **provado** via SSM (`prepare.sh` + `verify_before.sh`). Ainda **não** houve script de remediação gerado por GPT/OpenAI; `prompts` e `generated_scripts` continuam sem dados de modelo; gráficos de eficácia não foram produzidos. Recursos pagos em `us-east-2` permanecem ativos até cleanup autorizado.
 
 ## Limitações do desenho
 
 A instância de laboratório depende de um NAT Gateway para o Systems Manager e para a atualização de pacotes. Esse é o principal custo horário. Os VPC endpoints do Systems Manager não substituem essa saída, porque não alcançam os repositórios Ubuntu.
 
-A pilha usa uma zona de disponibilidade e, no padrão, uma instância. O limite de três instâncias acompanha a meta de três gerações por CVE, ainda não executadas. A região padrão é a configurada em `AWS_DEFAULT_REGION` no Environment por custo. A distância entre o operador e a Virgínia do Norte não altera o procedimento, que será uma execução remota pelo Systems Manager, mas a escolha da região precisa permanecer registrada.
+A pilha usa uma zona de disponibilidade e, no padrão, uma instância. O limite de três instâncias acompanha a meta de três gerações por CVE, ainda não executadas. A região experimental atual é `us-east-2` (após SCP negar EC2 em `AWS_DEFAULT_REGION` (lab anterior)/`sa-east-1`). A operação continua remota pelo Systems Manager; a região escolhida precisa permanecer registrada.
 
 O security group não oferece SSH. A operação da instância fica restrita ao Systems Manager. Isso é intencional e impede o uso da instância se o agente ou a role não funcionarem.
 

@@ -10,7 +10,7 @@ Não há comparação entre modelos. Não há comparação experimental entre re
 
 A Fase 1 constrói o ambiente controlado em que essa avaliação poderá ocorrer. O ambiente é uma VPC exclusiva, com instância Ubuntu descartável, sem IP público e acessível pelo Systems Manager. A definição está em Terraform e foi validada localmente.
 
-Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e scripts Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) para SSM. A autorização de recursos pagos foi recebida e, até a tentativa 4, as credenciais AWS já estavam no run (STS OK). O provisionamento permanece **BLOQUEADO** por SCP `p-xikt6vmn` que nega EC2 ao IAM `cursor_agent` (probe em `AWS_DEFAULT_REGION` (Environment)): **não** houve EC2 criada, **não** houve chamada a modelo generativo e **não** há prova experimental do estado vulnerável. Ver `scenarios/CVE-2024-38428/evidence/`.
+Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e scripts Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) para SSM. Após bloqueios por SCP em `AWS_DEFAULT_REGION` (lab anterior)/`sa-east-1`, a tentativa 5 em `us-east-2` provisionou EC2 e **provou** o estado vulnerável (`wget=1.21.4-1ubuntu4`) via SSM. **Não** houve chamada a modelo generativo nem script de remediação GPT. Ver `scenarios/CVE-2024-38428/evidence/`.
 
 ## Critérios que permanecem para as fases seguintes
 
