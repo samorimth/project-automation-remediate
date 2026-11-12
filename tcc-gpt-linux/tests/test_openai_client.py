@@ -2,7 +2,12 @@ from types import SimpleNamespace
 
 import src.openai_client as openai_client
 from src.config import Settings
-from src.openai_client import OpenAIClient, extract_bash_script, sha256_text
+from src.openai_client import (
+    OpenAIClient,
+    completion_params,
+    extract_bash_script,
+    sha256_text,
+)
 
 
 def _settings() -> Settings:
@@ -34,6 +39,17 @@ class _FakeCompletions:
 class _FakeClient:
     def __init__(self, content: str):
         self.chat = SimpleNamespace(completions=_FakeCompletions(content))
+
+
+def test_gpt6_luna_keeps_temperature_and_disables_reasoning():
+    assert completion_params("gpt-6-luna") == {  # pragma: allowlist secret
+        "temperature": 0.2,
+        "reasoning_effort": "none",
+    }
+
+
+def test_other_models_keep_temperature_only():
+    assert completion_params("gpt-4.1") == {"temperature": 0.2}
 
 
 def test_extract_bash_from_fenced_block():

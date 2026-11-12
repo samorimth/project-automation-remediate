@@ -29,6 +29,37 @@ def test_good_script_passes_and_becomes_executable(tmp_path: Path):
     assert is_execution_allowed(script)
 
 
+def test_package_variable_and_shell_operator_stay_in_scope(tmp_path: Path):
+    script = _write(
+        tmp_path,
+        "remediation.sh",
+        """#!/usr/bin/env bash
+set -euo pipefail
+readonly PACKAGE="wget"
+apt-get update
+DEBIAN_FRONTEND=noninteractive apt-get install -y --only-upgrade "$PACKAGE" ||
+  DEBIAN_FRONTEND=noninteractive apt-get install -y "$PACKAGE"
+""",
+    )
+    report = validate_script(script, package_name="wget")
+    assert report.level3.passed, report.findings
+    assert report.passed
+
+
+def test_variable_pointing_at_another_package_is_out_of_scope(tmp_path: Path):
+    script = _write(
+        tmp_path,
+        "remediation.sh",
+        """#!/usr/bin/env bash
+PACKAGE="curl"
+apt-get install -y "$PACKAGE"
+apt-get install -y wget
+""",
+    )
+    report = validate_script(script, package_name="wget")
+    assert any(f["rule"] == "out_of_scope_packages" for f in report.findings)
+
+
 def test_syntax_error_fails_level1(tmp_path: Path):
     script = _write(
         tmp_path,

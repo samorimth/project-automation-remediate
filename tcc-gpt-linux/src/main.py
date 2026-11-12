@@ -203,6 +203,8 @@ def command_generate(cve: str) -> int:
                 "prompt_hash_sha256": result.prompt_hash_sha256,
                 "script_hash_sha256": result.script_hash_sha256,
                 "total_tokens": result.total_tokens,
+                "reasoning_tokens": result.reasoning_tokens,
+                "reasoning_effort": result.reasoning_effort,
             },
             ensure_ascii=False,
             indent=2,

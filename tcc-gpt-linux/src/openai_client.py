@@ -32,6 +32,8 @@ class GenerationResult:
     total_tokens: int | None
     script_text: str
     raw_response_text: str
+    reasoning_tokens: int | None = None
+    reasoning_effort: str | None = None
     error: str | None = None
     output_dir: str | None = None
     metadata_path: str | None = None
@@ -50,6 +52,19 @@ class GenerationResult:
 
 def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def completion_params(model: str) -> dict[str, Any]:
+    """Amostragem da geração.
+
+    gpt-6-luna raciocina por padrão. O laboratório usa reasoning_effort=none  # pragma: allowlist secret
+    para que temperature 0.2 valha e os tokens registrados sejam os do script.
+    """
+    params: dict[str, Any] = {"temperature": 0.2}
+    normalized = model.strip().split("/")[-1]
+    if normalized == "gpt-6-luna" or normalized.startswith("gpt-6-luna-"):  # pragma: allowlist secret
+        params["reasoning_effort"] = "none"
+    return params
 
 
 def extract_bash_script(raw: str) -> str:
@@ -110,7 +125,9 @@ class OpenAIClient:
             "prompt_tokens": None,
             "completion_tokens": None,
             "total_tokens": None,
+            "reasoning_tokens": None,
         }
+        sampling = completion_params(self.settings.openai_model)
         model_used = self.settings.openai_model
 
         try:
@@ -126,16 +143,18 @@ class OpenAIClient:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.2,
+                **sampling,
             )
             model_used = getattr(response, "model", None) or model_used
             choice = response.choices[0].message.content or ""
             raw_text = choice
             if response.usage is not None:
+                details = getattr(response.usage, "completion_tokens_details", None)
                 usage = {
                     "prompt_tokens": getattr(response.usage, "prompt_tokens", None),
                     "completion_tokens": getattr(response.usage, "completion_tokens", None),
                     "total_tokens": getattr(response.usage, "total_tokens", None),
+                    "reasoning_tokens": getattr(details, "reasoning_tokens", None),
                 }
         except Exception as exc:  # noqa: BLE001 — registrar qualquer falha da API
             # Não incluir headers/corpo que possam carregar a chave.
@@ -156,6 +175,8 @@ class OpenAIClient:
             prompt_tokens=usage["prompt_tokens"],
             completion_tokens=usage["completion_tokens"],
             total_tokens=usage["total_tokens"],
+            reasoning_tokens=usage["reasoning_tokens"],
+            reasoning_effort=sampling.get("reasoning_effort"),
             script_text=script_text,
             raw_response_text=raw_text,
             error=error,
