@@ -64,6 +64,10 @@ class InstanceLedger:
             )
         self._open[instance_id] = repetition
 
+    def remember_closed(self, instance_id: str) -> None:
+        if instance_id:
+            self._closed.add(instance_id)
+
     def close_instance(self, instance_id: str) -> None:
         if instance_id not in self._open:
             raise MethodologyError(f"A instância {instance_id} não está aberta nesta repetição.")
