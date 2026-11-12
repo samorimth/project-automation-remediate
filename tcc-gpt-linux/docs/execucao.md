@@ -118,4 +118,8 @@ O binário do Terraform não estava no PATH desta máquina e o `terraform.tfstat
 python -m src.main report
 ```
 
-O comando lê `results/experiments.json`, os `validation.json` preservados e as evidências SSM. Grava `results/summary.csv`, os PNG em `results/charts/` e o laudo novo em `results/fase6/revalidation/`. Não chama a AWS, não chama a OpenAI e não reescreve o ledger nem os scripts gerados. Código 0 quando os números conferem; código 1 quando há divergência de versão, token, hash ou status.
+O comando lê `results/experiments.json`, os `validation.json` preservados e as evidências SSM. Grava `results/summary.csv`, `results/experiments.csv`, os PNG em `results/charts/` (incluindo `syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`), as tabelas `infrastructure_attempts.csv`, `api_calls.csv` e `experimental_runs.csv`, e o laudo em `results/revalidation.json` e `results/fase6/revalidation/`. Não chama a AWS, não chama a OpenAI e não reescreve o ledger nem os scripts gerados. Código 0 quando os números conferem; código 1 quando há divergência de versão, token, hash ou status.
+
+## Próxima execução, ainda não autorizada
+
+O fluxo histórico acima reutilizou uma EC2 e, nas repetições 3 e 4, `prepare.sh --apply`. O fluxo seguinte cria uma EC2 nova por script a partir da mesma AMI privada e destrói só essa instância. O plano está em `docs/plano_reexecucao.md`. Sem as frases de autorização, nenhum recurso é criado e nenhum script é executado.

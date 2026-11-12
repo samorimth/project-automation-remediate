@@ -9,7 +9,7 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 | Status de aprovação | **CVE-2024-38428 aprovada** e executada; demais fichas **alternativas, sem experimento** |
 | Provisionamento | tentativa 5 em `us-east-2` criou a pilha; tentativas anteriores na região default e em `sa-east-1` foram negadas pelo SCP `p-xikt6vmn` |
 | Estado vulnerável | provado: `wget 1.21.4-1ubuntu4` na instância `i-04da3315297ec6c04` |
-| Chamadas à API e execuções | quatro chamadas, três scripts, três remediações comprovadas; ver `docs/resultados_tcc.md` |
+| Chamadas à API e execuções | quatro chamadas, três scripts, três remediações comprovadas por versão; a classificação do protocolo novo é INCONCLUSIVO porque a mesma EC2 foi reutilizada; ver `docs/resultados_tcc.md` |
 | Recursos AWS | **destruídos** depois das repetições (`evidence/cleanup-fase3.json`) |
 | Resultado inventado | **não** |
 

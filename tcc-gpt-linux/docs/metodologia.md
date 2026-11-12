@@ -35,4 +35,22 @@ Mesmo template, mesmo cenário e estado vulnerável inicial conhecido. Todas as 
 
 ## Fase 6 — consolidação
 
-`python -m src.main report` calcula taxas, latência e tokens a partir do ledger e das evidências já gravadas. O denominador de cada taxa fica explícito: script gerado, evento de validação, execução ou chamada à API. A releitura dos scripts com o validador atual vai para `results/fase6/revalidation/` e não substitui o `validation.json` da época da execução.
+`python -m src.main report` calcula taxas, latência e tokens a partir do ledger e das evidências já gravadas. O denominador de cada taxa fica explícito: script gerado, evento de validação, execução ou chamada à API. A releitura dos scripts com o validador atual vai para `results/fase6/revalidation/` e para `results/revalidation.json`. Esses arquivos não substituem o `validation.json` da época da execução.
+
+## Por que a próxima execução pede uma EC2 nova
+
+As repetições 2, 3 e 4 rodaram na instância `i-04da3315297ec6c04`. As repetições 3 e 4 só voltaram ao pacote vulnerável porque `prepare.sh --apply` reinstalou o `.deb` na mesma máquina. Esse procedimento não entra no desenho daqui em diante.
+
+Cada script passa a ser executado em uma EC2 criada na hora, a partir de uma AMI privada de referência, e destruída ao fim daquela repetição. A infraestrutura compartilhada (VPC, NAT, papéis) permanece. O limite padrão de instâncias simultâneas é 1. Se a versão inicial não for a esperada, o script não roda e a classificação é INCONCLUSIVO.
+
+As três repetições de uma mesma CVE devem usar o mesmo AMI ID, o mesmo tipo de instância, a mesma versão do Ubuntu, a mesma versão inicial do pacote, o mesmo modelo, o mesmo template, os mesmos parâmetros de geração, a mesma versão do validador e os mesmos critérios de verificação. Isso não autoriza dizer que as instâncias são idênticas sem a evidência de cada uma.
+
+## Classificação
+
+SUCESSO exige vulnerabilidade inicial comprovada, correção confirmada pela referência oficial e pela verificação técnica, e ausência de regressão nos testes definidos, inclusive um teste funcional do programa. FALHA: a vulnerabilidade permanece ou há regressão. BLOQUEADO: o validador recusou o script. INCONCLUSIVO: a evidência não basta. NAO_EXECUTADO: o script não chegou a rodar.
+
+No conjunto histórico, as três execuções continuam com remediação comprovada por versão. A coluna nova de classificação as marca como INCONCLUSIVO, porque a instância foi reutilizada e não há teste funcional nem saída de scanner. A repetição 1 é NAO_EXECUTADO. Essa coluna não altera `experiments.json`.
+
+## O que a seleção da CVE e o registro já cobrem
+
+A escolha das fichas está em `scenarios/README.md`: documentação da Canonical, versão vulnerável e corrigida no Ubuntu 24.04, remediação por `apt`, verificação por `dpkg` e ausência de exploração. O preparo vulnerável, a geração, a validação, a execução e o registro das três repetições históricas estão em `docs/resultados_tcc.md` e em `docs/linha_do_tempo.md`. A redução de esforço manual não foi medida.

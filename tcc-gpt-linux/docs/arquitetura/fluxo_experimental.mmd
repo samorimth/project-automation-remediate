@@ -1,11 +1,15 @@
 flowchart TD
-  cenario[Cenario e prompt] --> api[Chamada OpenAI]
-  api --> script[remediation.sh]
-  api -->|HTTP 429| semScript[Sem script]
-  script --> validacao[Validacao em tres niveis]
-  validacao -->|reprovado| semSsm[Nenhum comando SSM]
-  validacao -->|aprovado e autorizado| ssm[SSM Run Command]
-  ssm --> ec2[EC2 privada Ubuntu 24.04]
-  ec2 --> verify[verify por dpkg]
-  verify --> ledger[experiments.json]
-  prepare[prepare.sh restaura a versao vulneravel] --> cenario
+  subgraph historico [Historico ja executado]
+    mesmaEc2[Uma EC2 Ubuntu 24.04]
+    prepare[prepare.sh --apply entre as repeticoes 3 e 4]
+    mesmaEc2 --> prepare --> mesmaEc2
+  end
+  subgraph planejado [Fluxo exigido daqui em diante]
+    ami[AMI privada de referencia]
+    nova[EC2 nova para um unico script]
+    antes[Verificacao before.json]
+    script[remediation.sh original]
+    depois[Verificacao after.json]
+    fim[Destruir somente essa EC2]
+    ami --> nova --> antes --> script --> depois --> fim
+  end

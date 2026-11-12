@@ -94,3 +94,9 @@ Depois das repetições, a pilha com tag `Project=tcc-gpt-linux` e `ExperimentId
 - A taxa de 3/3 no `validation.json` final não é a taxa da primeira passagem. A primeira passagem da repetição 2 está no ledger como reprovação, sem o JSON daquele laudo.
 - `results/CVE-2024-38428/rep02.json`, `rep03.json` e `rep04.json` guardam só o último evento de cada repetição. A série completa está em `experiments.json` e `experiments.csv`.
 - O preço público citado em `docs/limitacoes.md` (US$ 0,10 por milhão de tokens de entrada e US$ 0,50 por milhão de saída) coloca as três gerações com resposta em cerca de US$ 0,001. Isso não é fatura.
+
+## Classificação pelo protocolo novo
+
+`results/experimental_runs.csv` separa o booleano histórico `recorded_remediation_success` da classificação deste protocolo. As repetições 2, 3 e 4 continuam com remediação 1, porque a versão subiu de `1.21.4-1ubuntu4` para `1.21.4-1ubuntu4.5`. A classificação é INCONCLUSIVO: a mesma EC2 executou os três scripts e não há teste funcional do `wget` nem saída de scanner. A repetição 1 é NAO_EXECUTADO. Essas três taxas de 3/3 descrevem este conjunto, não outras CVEs.
+
+As tabelas separadas são `results/infrastructure_attempts.csv`, `results/api_calls.csv` e `results/experimental_runs.csv`. A chamada HTTP 429 está só na tabela de API. Os gráficos com os nomes em inglês pedidos para o TCC estão ao lado dos gráficos em português: `syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`. O gráfico de custo usa a tabela pública e omite a chamada sem tokens.

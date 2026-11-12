@@ -1,0 +1,6 @@
+attempt_id,attempt_number,timestamp_utc,aws_region,result,failure_reason,resources_created,cleanup_status,source,notes
+INF-01,1,,,falha,segredos ausentes,,,scenarios/CVE-2024-38428/evidence/STATUS.md,Somente a narrativa do STATUS.md. Não há JSON próprio nem horário.
+INF-02,2,,,falha,segredos ausentes,,,scenarios/CVE-2024-38428/evidence/STATUS.md,Somente a narrativa do STATUS.md. Não há JSON próprio nem horário.
+INF-03,3,,,falha,SCP negou EC2,0,não se aplica,scenarios/CVE-2024-38428/evidence/STATUS.md,A narrativa agrupa as tentativas 3 e 4. Região e horário não estão em JSON.
+INF-04,4,2026-11-12T09:14:05Z,,falha,Organizations SCP explicit deny on EC2 for IAM user cursor_agent (policy p-xikt6vmn) still present in Environment AWS_DEFAULT_REGION; IAM managed policies do not override SCP Deny,0,não se aplica,results/CVE-2024-38428/execucao_bloqueada.json,apply não executado; sonda EC2 negada. A região no JSON é o placeholder da variável de ambiente.
+INF-05,5,2026-11-12T09:52:16Z,us-east-2,sucesso,,18,14/14 itens com ok=true,scenarios/CVE-2024-38428/evidence/before.json,"instance_id=i-04da3315297ec6c04; ami_id=ami-096d6538c463eb1db; AMI pública da Canonical, não uma AMI privada de referência."
