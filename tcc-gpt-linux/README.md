@@ -2,9 +2,7 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém o laboratório do TCC. A CVE-2024-38428 foi executada em `us-east-2` e a pilha AWS foi destruída. A Fase 6 consolida as evidências já gravadas.
-
-**Nenhum recurso pago desta pilha permanece ligado.**
+Este diretório contém o laboratório do TCC. A CVE-2024-38428 foi executada em `us-east-2`. A pilha histórica foi destruída. A reexecução deixou ligados a VPC, o NAT e a AMI privada até `AUTORIZO_DESTRUIR_RECURSOS`.
 
 ## O que a Fase 3 entrega
 
@@ -56,6 +54,8 @@ python -m src.main report
 - [docs/modelo_ia.md](docs/modelo_ia.md)
 - [docs/linha_do_tempo.md](docs/linha_do_tempo.md)
 - [docs/plano_reexecucao.md](docs/plano_reexecucao.md)
+- [docs/levantamento_inicial_tcc.md](docs/levantamento_inicial_tcc.md)
+- [docs/plano_13_15.md](docs/plano_13_15.md)
 - [docs/reexecucao_resultado.md](docs/reexecucao_resultado.md)
 
 A auditoria de 12 de novembro de 2026 preserva as evidências em `evidence_archive/historical-cve-2024-38428/` e separa tentativas de infraestrutura, chamadas à API e execuções. A reexecução de 12 de novembro de 2026 está em `docs/reexecucao_resultado.md`. As EC2 temporárias foram destruídas. A VPC, o NAT e a AMI privada continuam até `AUTORIZO_DESTRUIR_RECURSOS`.

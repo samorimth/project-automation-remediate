@@ -21,14 +21,13 @@ flowchart TB
     ec2Unica --> verifyHist --> fimPilha
   end
 
-  subgraph planejado [Arquitetura planejada ainda nao executada]
-    vpc[VPC compartilhada e Systems Manager]
-    amiPrivada[AMI privada de referencia]
+  subgraph planejado [Padrao usado na reexecucao do wget]
+    ami[AMI privada de referencia]
     ec2Nova[EC2 nova para um unico script]
     antes[before.json]
     depois[after.json e teste funcional]
     fimEc2[Destruir somente essa EC2]
-    vpc --> amiPrivada --> ec2Nova --> antes --> depois --> fimEc2
+    vpc[VPC compartilhada e Systems Manager] --> ami --> ec2Nova --> antes --> depois --> fimEc2
   end
 
   revisao --> historico

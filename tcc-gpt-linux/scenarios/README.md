@@ -6,11 +6,11 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 
 | Item | Situação |
 | --- | --- |
-| Status de aprovação | **CVE-2024-38428 aprovada** e executada; demais fichas **alternativas, sem experimento** |
+| Status de aprovação | **CVE-2024-38428 aprovada** e executada. Proposta da segunda CVE: **CVE-2024-32487 (`less`)**, ainda sem aprovação e sem experimento. As outras fichas continuam alternativas |
+| Recursos AWS | a pilha histórica foi destruída (`evidence/cleanup-fase3.json`). A reexecução do wget deixou ligados a VPC `vpc-07ed5b7db90bfd3a6`, o NAT `nat-07030ea6ff070f9d0` e a AMI `ami-03629c5c47c71759b` |
 | Provisionamento | tentativa 5 em `us-east-2` criou a pilha; tentativas anteriores na região default e em `sa-east-1` foram negadas pelo SCP `p-xikt6vmn` |
 | Estado vulnerável | provado: `wget 1.21.4-1ubuntu4` na instância `i-04da3315297ec6c04` |
 | Chamadas à API e execuções | quatro chamadas, três scripts, três remediações comprovadas por versão; a classificação do protocolo novo é INCONCLUSIVO porque a mesma EC2 foi reutilizada; ver `docs/resultados_tcc.md` |
-| Recursos AWS | **destruídos** depois das repetições (`evidence/cleanup-fase3.json`) |
 | Resultado inventado | **não** |
 
 O SCP `p-xikt6vmn` bloqueou EC2 na região default e em `sa-east-1` (tentativa 4 em `results/CVE-2024-38428/execucao_bloqueada.json`). Em `us-east-2` a sonda passou. Na tentativa 5, `enable_nat_gateway` e `enable_execution` estavam ligados e o `apply` concluiu. Esse bloqueio não é o estado atual: a pilha da tentativa 5 já foi criada e, depois do experimento, destruída.
