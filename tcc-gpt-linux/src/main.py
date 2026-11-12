@@ -174,7 +174,11 @@ def command_check() -> int:
             print("OPENAI_API_KEY presente no ambiente (valor não exibido).")
             print(f"OPENAI_MODEL={settings.openai_model}")
         else:
-            print("OPENAI_API_KEY ausente — generate ficará bloqueado até configurar o secret.")
+            print(
+                "OPENAI_API_KEY ausente — `generate` bloqueado. "
+                "Cadastre a chave em Environment secrets no dashboard "
+                "do Cursor (não cole no chat) e reinicie o agente."
+            )
     except ConfigError as exc:
         print(str(exc), file=sys.stderr)
         ok = False
