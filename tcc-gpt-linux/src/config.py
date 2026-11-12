@@ -80,8 +80,9 @@ class Settings:
     def require_openai(self) -> "Settings":
         if not self.openai_api_key:
             raise ConfigError(
-                "OPENAI_API_KEY ausente. Configure o secret no ambiente "
-                "antes de gerar scripts."
+                "OPENAI_API_KEY ausente. Adicione a chave em Environment "
+                "secrets no dashboard do Cursor (não cole no chat), "
+                "reinicie o agente e só então rode `generate`."
             )
         if not self.openai_model:
             raise ConfigError("OPENAI_MODEL ausente.")

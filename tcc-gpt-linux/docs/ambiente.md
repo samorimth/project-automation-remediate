@@ -52,4 +52,4 @@ As fontes usadas para estas estimativas foram a página de preço do Amazon VPC,
 
 ## Pré-requisitos
 
-No computador de orquestração: Python 3.11 ou superior, Terraform 1.6 ou superior e, apenas antes de um plano contra a conta, AWS CLI com credencial de operador. A chave da OpenAI, quando existir nas fases seguintes, fica no `.env` local. Esse arquivo está no `.gitignore` e não é enviado à EC2.
+No computador de orquestração: Python 3.11 ou superior, Terraform 1.6 ou superior e, apenas antes de um plano contra a conta, AWS CLI com credencial de operador. A chave da OpenAI para `generate` (Fase 3+) fica no `.env` local ou em Environment secrets do Cloud Agent — nunca no Git nem no chat. O `.env` está no `.gitignore` e não é enviado à EC2. Sem a chave, `generate` fica bloqueado; o restante do laboratório continua utilizável.

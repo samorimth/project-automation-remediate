@@ -42,6 +42,8 @@ python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 
 Pré-requisitos: `OPENAI_API_KEY` e `OPENAI_MODEL` no ambiente (ou `.env` local, não versionado); `shellcheck` no PATH; instância EC2 com SSM Online (Fase 2).
 
+**Sem chave OpenAI:** `generate` encerra com erro amigável e não inventa script. No Cloud Agent, adicione `OPENAI_API_KEY` (e opcionalmente `OPENAI_MODEL`) em Environment secrets no dashboard do Cursor — nunca cole o valor no chat — e inicie um novo agente. `check`, `validate`, `verify` e `pytest` não dependem da chave.
+
 ```bash
 # 1) Gerar UM script para a CVE aprovada
 python -m src.main generate --cve CVE-2024-38428
