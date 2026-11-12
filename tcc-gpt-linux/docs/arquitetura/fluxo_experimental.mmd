@@ -1,0 +1,11 @@
+flowchart TD
+  cenario[Cenario e prompt] --> api[Chamada OpenAI]
+  api --> script[remediation.sh]
+  api -->|HTTP 429| semScript[Sem script]
+  script --> validacao[Validacao em tres niveis]
+  validacao -->|reprovado| semSsm[Nenhum comando SSM]
+  validacao -->|aprovado e autorizado| ssm[SSM Run Command]
+  ssm --> ec2[EC2 privada Ubuntu 24.04]
+  ec2 --> verify[verify por dpkg]
+  verify --> ledger[experiments.json]
+  prepare[prepare.sh restaura a versao vulneravel] --> cenario

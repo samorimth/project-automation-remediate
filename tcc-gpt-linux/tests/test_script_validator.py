@@ -21,6 +21,20 @@ dpkg --compare-versions "$INSTALLED" ge "1.21.4-1ubuntu4.1"
 """
 
 
+def test_persist_dir_keeps_the_original_script_and_log(tmp_path: Path):
+    script = _write(tmp_path, "remediation.sh", GOOD_SCRIPT)
+    original = script.read_bytes()
+    mode = script.stat().st_mode
+    review = tmp_path / "review"
+    report = validate_script(script, package_name="wget", persist_dir=review)
+    assert report.passed
+    assert script.read_bytes() == original
+    assert script.stat().st_mode == mode
+    assert not (tmp_path / "validation.json").exists()
+    assert (review / "validation.json").is_file()
+    assert (review / "validation.log").is_file()
+
+
 def test_good_script_passes_and_becomes_executable(tmp_path: Path):
     script = _write(tmp_path, "remediation.sh", GOOD_SCRIPT)
     report = validate_script(script, package_name="wget")

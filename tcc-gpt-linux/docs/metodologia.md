@@ -32,3 +32,7 @@ Um script só é considerado eficaz se a versão instalada do pacote passar de v
 ## Reprodutibilidade
 
 Mesmo template, mesmo cenário e estado vulnerável inicial conhecido. Todas as gerações (incluindo falhas) são persistidas. Resultados quantitativos em CSV/JSON só contêm dados reais coletados.
+
+## Fase 6 — consolidação
+
+`python -m src.main report` calcula taxas, latência e tokens a partir do ledger e das evidências já gravadas. O denominador de cada taxa fica explícito: script gerado, evento de validação, execução ou chamada à API. A releitura dos scripts com o validador atual vai para `results/fase6/revalidation/` e não substitui o `validation.json` da época da execução.

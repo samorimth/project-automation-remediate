@@ -1,0 +1,59 @@
+{
+  "cve_id": "CVE-2024-38428",
+  "ledger_rows": 11,
+  "openai_calls": 4,
+  "scripts_generated": 3,
+  "validation_events": 4,
+  "validation_events_passed": 3,
+  "validation_events_failed": 1,
+  "executions": 3,
+  "remediations_proved": 3,
+  "observations": [
+    "experiments.json contém chaves fora do esquema (_allowlist). O leitor JSON mantém a última ocorrência quando a chave está duplicada. Os indicadores usam somente os campos do esquema.",
+    "As tentativas de provisionamento 1 a 3 aparecem só na narrativa de scenarios/CVE-2024-38428/evidence/STATUS.md. Não há JSON próprio delas. A tentativa 4 tem JSON de sonda SCP, com apply não executado. A tentativa 5 tem apply bem-sucedido em before.json.",
+    "A repetição 1 tem validate e execute recusados em fase3_generate_status.json. O ledger só guarda a linha generate_error. Nenhum comando SSM foi enviado nessa repetição.",
+    "A repetição 2 partiu do estado vulnerável já provado na Fase 2. prepare.sh --apply restaurou wget 1.21.4-1ubuntu4 antes das repetições 3 e 4, depois que a execução anterior tinha instalado 1.21.4-1ubuntu4.5."
+  ],
+  "revalidation": [
+    {
+      "repetition": 2,
+      "script": "generated_scripts/CVE-2024-38428/rep02/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep02",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 1,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    },
+    {
+      "repetition": 3,
+      "script": "generated_scripts/CVE-2024-38428/rep03/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep03",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 1,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    },
+    {
+      "repetition": 4,
+      "script": "generated_scripts/CVE-2024-38428/rep04/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep04",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 3,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    }
+  ],
+  "hard_inconsistencies": []
+}

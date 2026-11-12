@@ -2,23 +2,18 @@
 
 Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas permanecem alternativas / pendentes.
 
-## Estado desta entrega
+## Estado em 12 de novembro de 2026
 
 | Item | Situação |
 | --- | --- |
-| Status de aprovação | **CVE-2024-38428 aprovada** (1º experimento); demais **alternativas/pendentes** |
-| Autorização recursos pagos | **recebida** (`Sim, autorizo`) |
-| AMI / EC2 vulnerável preparada | **não** |
-| Recurso pago AWS criado | **não** |
-| `terraform apply` / `destroy` | apply **tentado** e **falhou** (BLOQUEADO: SCP nega EC2); destroy não necessário |
-| Chamada à API OpenAI | **não** |
-| Script gerado por GPT | **não** |
-| Resultado experimental inventado | **não** |
-| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** (tentativa 4) |
+| Status de aprovação | **CVE-2024-38428 aprovada** e executada; demais fichas **alternativas, sem experimento** |
+| Provisionamento | tentativa 5 em `us-east-2` criou a pilha; tentativas anteriores na região default e em `sa-east-1` foram negadas pelo SCP `p-xikt6vmn` |
+| Estado vulnerável | provado: `wget 1.21.4-1ubuntu4` na instância `i-04da3315297ec6c04` |
+| Chamadas à API e execuções | quatro chamadas, três scripts, três remediações comprovadas; ver `docs/resultados_tcc.md` |
+| Recursos AWS | **destruídos** depois das repetições (`evidence/cleanup-fase3.json`) |
+| Resultado inventado | **não** |
 
-### Bloqueio atual: SCP / permissões EC2
-
-Credenciais AWS já estão no Environment (`sts get-caller-identity` OK, usuário `cursor_agent`). Managed policies IAM (ex.: `AmazonEC2FullAccess`) **não** bastam: o Organizations SCP `p-xikt6vmn` ainda nega explicitamente APIs EC2 (probe em `AWS_DEFAULT_REGION` (Environment) na tentativa 4). Um admin da Organizations precisa remover/estreitar esse deny; depois repetir o provisionamento e só então rodar `prepare.sh` / `verify_before.sh` via SSM.
+O SCP `p-xikt6vmn` bloqueou EC2 na região default e em `sa-east-1` (tentativa 4 em `results/CVE-2024-38428/execucao_bloqueada.json`). Em `us-east-2` a sonda passou. Na tentativa 5, `enable_nat_gateway` e `enable_execution` estavam ligados e o `apply` concluiu. Esse bloqueio não é o estado atual: a pilha da tentativa 5 já foi criada e, depois do experimento, destruída.
 
 ## Critérios usados na seleção
 
@@ -47,7 +42,7 @@ Fontes: [Ubuntu CVE Tracker](https://ubuntu.com/security/), [Ubuntu Security Not
 | [CVE-2025-45582](CVE-2025-45582/scenario.md) | alternativa | `tar` | medium | 4.1 | `1.35+dfsg-3ubuntu0.1` | `1.35+dfsg-3ubuntu0.2` | [USN-8510-1](https://ubuntu.com/security/notices/USN-8510-1) | média | Travessia/overwrite via symlink em extrações sequenciais de TAR. |
 | [CVE-2024-12084](CVE-2024-12084/scenario.md) | alternativa | `rsync` | high | 9.8 | `3.2.7-1ubuntu1` | `3.2.7-1ubuntu1.1` | [USN-7206-1](https://ubuntu.com/security/notices/USN-7206-1) | média | Overflow em heap no protocolo rsync; lab usa só versão, sem daemon. |
 
-Detalhes, links oficiais e procedimentos previstos estão em `scenarios/<CVE>/scenario.md`. Para a CVE aprovada, há também rascunhos Bash em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) destinados a execução futura via SSM — **não** executados nesta entrega contra EC2.
+Detalhes, links oficiais e procedimentos previstos estão em `scenarios/<CVE>/scenario.md`. Para a CVE aprovada, `prepare.sh`, `verify_before.sh` e `verify_after.sh` foram executados via SSM. `prepare.sh --apply` restaurou `wget 1.21.4-1ubuntu4` antes das repetições 3 e 4.
 
 ## Artefatos de preparação (CVE-2024-38428)
 
@@ -60,11 +55,7 @@ Detalhes, links oficiais e procedimentos previstos estão em `scenarios/<CVE>/sc
 
 ## Próximo passo
 
-1. **Ajustar SCP/IAM** do usuário `cursor_agent` para permitir EC2/VPC/NAT/IAM/SSM (remover o deny de `p-xikt6vmn` no escopo do laboratório).
-2. **Repetir provisionamento** com `terraform.tfvars` local (`enable_nat_gateway`/`enable_execution`) e `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS`.
-3. **Preparar/verificar** via SSM; limpeza futura com `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
-
-Geração de script por GPT (Fase 3) **não** faz parte desta entrega.
+A Fase 6 desta CVE está consolidada em `docs/resultados_tcc.md` e `results/summary.csv`. As outras nove fichas continuam alternativas: não têm `prepare.sh` nem execução. Abrir uma delas exige nova aprovação e novo provisionamento, com a frase `AUTORIZO_RECURSOS_PAGOS`.
 
 ## Aviso sobre backports e pacotes históricos
 
