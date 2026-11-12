@@ -4,7 +4,7 @@
 
 A infraestrutura foi validada como código. Ela não foi aplicada na conta AWS. Por isso, ainda não há evidência de que o Systems Manager registrou uma instância, de que a AMI Ubuntu foi resolvida na conta ou de que o user data iniciou o agente. Essas confirmações dependem de um `apply` autorizado e de uma verificação posterior.
 
-Não existe CVE selecionada, estado vulnerável, script gerado ou resultado experimental. As pastas `scenarios`, `prompts`, `generated_scripts` e `results` estão reservadas e vazias. Gráficos de eficácia não foram produzidos, porque não há dados reais para preenchê-los.
+A CVE-2024-38428 foi aprovada e documentada, mas o estado vulnerável **ainda não** foi materializado em EC2, nenhum script de remediação foi gerado por GPT e não há resultado experimental. `prompts`, `generated_scripts` e `results` continuam sem dados reais. Gráficos de eficácia não foram produzidos.
 
 ## Limitações do desenho
 

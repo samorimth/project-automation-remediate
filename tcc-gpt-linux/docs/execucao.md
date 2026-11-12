@@ -49,6 +49,19 @@ python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 
 Nenhum dos dois comandos foi usado com autorização nesta fase.
 
+## Preparação documentada da CVE aprovada (ainda offline)
+
+A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Os rascunhos em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) são para uso futuro na EC2 privada via SSM. Em uma máquina Ubuntu 24.04 de laboratório:
+
+```bash
+bash scenarios/CVE-2024-38428/prepare.sh --check
+# somente após autorização de recursos pagos e EC2 privada:
+# sudo bash scenarios/CVE-2024-38428/prepare.sh --apply
+# bash scenarios/CVE-2024-38428/verify_before.sh
+```
+
+Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`. Nenhum desses scripts foi executado contra EC2 nesta entrega. Provar a vulnerabilidade em AWS ainda exige ligar NAT/execução e a frase `AUTORIZO_RECURSOS_PAGOS`.
+
 ## Comandos das fases seguintes
 
-`generate`, `validate`, `execute`, `verify` e `report` respondem que a fase ainda não está ativa e terminam com código 2. Um identificador de CVE passado a esses comandos é ignorado. Nenhuma CVE foi escolhida e nenhum script foi gerado.
+`generate`, `validate`, `execute`, `verify` e `report` respondem que a fase ainda não está ativa e terminam com código 2. A CVE já foi escolhida para documentação/preparação, mas nenhum script de remediação foi gerado por GPT e nenhuma execução experimental ocorreu.

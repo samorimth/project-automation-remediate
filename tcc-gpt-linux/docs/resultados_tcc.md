@@ -2,7 +2,7 @@
 
 Não há resultado experimental nesta fase.
 
-Três CVEs foram **propostas** em `scenarios/` e permanecem com aprovação **pendente**. Nenhuma CVE foi aprovada nem selecionada para execução. Nenhum script foi gerado. Nenhuma instância foi criada ou corrigida. Não existem `before.json`, `after.json`, registro de validação, registro de execução ou classificação de remediação.
+A **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento e documentada em `scenarios/CVE-2024-38428/`, com scripts de preparação/verificação versionados. As demais CVEs da lista permanecem alternativas. Nenhum script de remediação foi gerado por GPT. Nenhuma instância foi criada ou corrigida. Não existem `before.json`, `after.json`, registro de validação, registro de execução ou classificação de remediação — e nenhum valor fabricado é introduzido aqui.
 
 Os arquivos previstos para os resultados quantitativos ainda não podem ser preenchidos:
 

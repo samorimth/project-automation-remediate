@@ -2,7 +2,7 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. A Fase 2, neste ponto, **apenas documenta três propostas de CVE** em [`scenarios/`](scenarios/README.md), ainda **pendentes de aprovação**. Continua sem chamar a API da OpenAI, sem gerar script, sem criar recurso na AWS e sem preparar AMI/instância vulnerável.
+Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento; ver [`scenarios/`](scenarios/README.md). Há ficha e scripts locais de preparação/verificação, mas **sem** AMI/EC2 vulnerável provisionada, **sem** chamada à API da OpenAI, **sem** script GPT e **sem** `terraform apply`. Provar em EC2 real ainda exige `enable_nat_gateway` + `enable_execution` + `AUTORIZO_RECURSOS_PAGOS`.
 
 ## O que esta fase entrega
 
@@ -60,4 +60,4 @@ A região padrão é `us-east-1`, escolhida pelo custo menor de NAT, EC2 e EBS. 
 - [docs/limitacoes.md](docs/limitacoes.md)
 - [docs/resultados_tcc.md](docs/resultados_tcc.md)
 - [docs/arquitetura/descricao_arquitetura.md](docs/arquitetura/descricao_arquitetura.md)
-- [scenarios/README.md](scenarios/README.md) — propostas CVE da Fase 2 (aprovação pendente)
+- [scenarios/README.md](scenarios/README.md) — CVE-2024-38428 aprovada; demais alternativas
