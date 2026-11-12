@@ -10,7 +10,7 @@ Não há comparação entre modelos. Não há comparação experimental entre re
 
 A Fase 1 constrói o ambiente controlado em que essa avaliação poderá ocorrer. O ambiente é uma VPC exclusiva, com instância Ubuntu descartável, sem IP público e acessível pelo Systems Manager. A definição está em Terraform e foi validada localmente.
 
-Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e rascunhos Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) orientados a execução futura via SSM. **Não** foi aplicado Terraform, **não** foi criada EC2, **não** foi chamado um modelo generativo e **não** há resultado experimental. A prova em instância real ainda depende de autorização explícita de recursos pagos (`enable_nat_gateway`, `enable_execution` e `AUTORIZO_RECURSOS_PAGOS`).
+Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e scripts Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) para SSM. A autorização de recursos pagos foi recebida, mas o `terraform apply` ficou **BLOQUEADO** por ausência de credenciais AWS no Cloud Agent: **não** houve EC2, **não** houve chamada a modelo generativo e **não** há prova experimental do estado vulnerável. Ver `scenarios/CVE-2024-38428/evidence/`.
 
 ## Critérios que permanecem para as fases seguintes
 

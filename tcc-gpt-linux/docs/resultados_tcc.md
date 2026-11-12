@@ -1,8 +1,8 @@
 # Resultados
 
-Não há resultado experimental nesta fase.
+Não há resultado experimental positivo nesta fase.
 
-A **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento e documentada em `scenarios/CVE-2024-38428/`, com scripts de preparação/verificação versionados. As demais CVEs da lista permanecem alternativas. Nenhum script de remediação foi gerado por GPT. Nenhuma instância foi criada ou corrigida. Não existem `before.json`, `after.json`, registro de validação, registro de execução ou classificação de remediação — e nenhum valor fabricado é introduzido aqui.
+A **CVE-2024-38428 (`wget`)** foi **aprovada** e, em seguida, houve autorização humana para recursos pagos. A tentativa de provisionamento foi classificada como **BLOQUEADO**: o Cloud Agent não dispunha de credenciais AWS. Evidência honesta em `scenarios/CVE-2024-38428/evidence/` (`STATUS.md`, `before.json` com `classification=BLOQUEADO`). Nenhum script de remediação foi gerado por GPT. Nenhuma instância foi criada. Nenhum Instance ID, AMI ou versão `wget` observada foi inventado.
 
 Os arquivos previstos para os resultados quantitativos ainda não podem ser preenchidos:
 

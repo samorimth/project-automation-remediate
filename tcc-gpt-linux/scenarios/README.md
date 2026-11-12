@@ -7,22 +7,18 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 | Item | Situação |
 | --- | --- |
 | Status de aprovação | **CVE-2024-38428 aprovada** (1º experimento); demais **alternativas/pendentes** |
-| AMI / EC2 vulnerável preparada | **não** (só documentação + scripts locais de preparação) |
+| Autorização recursos pagos | **recebida** (`Sim, autorizo`) |
+| AMI / EC2 vulnerável preparada | **não** |
 | Recurso pago AWS criado | **não** |
-| `terraform apply` / `destroy` | **não executados** |
+| `terraform apply` / `destroy` | **não executados** (BLOQUEADO: credenciais AWS ausentes) |
 | Chamada à API OpenAI | **não** |
 | Script gerado por GPT | **não** |
 | Resultado experimental inventado | **não** |
+| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** |
 
-### Autorização ainda necessária para prova em EC2 real
+### Bloqueio atual: credenciais AWS
 
-Documentar e versionar os mecanismos de preparação **não** autoriza provisionamento. Provar a vulnerabilidade em EC2 real ainda exige autorização **separada e explícita** para:
-
-1. Ligar `enable_nat_gateway` e `enable_execution` em `terraform.tfvars` local (não versionado).
-2. Executar `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS`.
-3. Só então rodar os scripts de `scenarios/CVE-2024-38428/` via SSM na instância privada.
-
-Sem esses passos, o trabalho permanece offline / docs-only.
+A autorização humana para NAT/execução/`AUTORIZO_RECURSOS_PAGOS` já existe. Falta disponibilizar no Environment do Cloud Agent: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (e `AWS_SESSION_TOKEN` se temporário). Depois disso, repetir o provisionamento e só então rodar `prepare.sh` / `verify_before.sh` via SSM.
 
 ## Critérios usados na seleção
 
@@ -62,12 +58,13 @@ Detalhes, links oficiais e procedimentos previstos estão em `scenarios/<CVE>/sc
 | [`CVE-2024-38428/verify_before.sh`](CVE-2024-38428/verify_before.sh) | Evidência `before` por versão do pacote |
 | [`CVE-2024-38428/verify_after.sh`](CVE-2024-38428/verify_after.sh) | Evidência `after` pós-remediação |
 
-## Próximo passo (decisão do autor)
+## Próximo passo
 
-1. **Manter offline / docs-only** — nenhuma ação AWS; scripts ficam versionados para uso posterior.
-2. **Autorizar recursos pagos** — ligar NAT + execução, frase `AUTORIZO_RECURSOS_PAGOS`, provisionar EC2 privada e só então aplicar `prepare.sh` via SSM.
+1. **Ligar credenciais AWS** no Environment do Cloud Agent (sem colar no chat).
+2. **Repetir provisionamento** com `terraform.tfvars` local (`enable_nat_gateway`/`enable_execution`) e `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS`.
+3. **Preparar/verificar** via SSM; limpeza futura com `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
 
-Geração de script por GPT, execução automatizada e medição **não** fazem parte desta entrega.
+Geração de script por GPT (Fase 3) **não** faz parte desta entrega.
 
 ## Aviso sobre backports e pacotes históricos
 

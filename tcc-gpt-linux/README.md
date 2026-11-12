@@ -2,7 +2,7 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento; ver [`scenarios/`](scenarios/README.md). Há ficha e scripts locais de preparação/verificação, mas **sem** AMI/EC2 vulnerável provisionada, **sem** chamada à API da OpenAI, **sem** script GPT e **sem** `terraform apply`. Provar em EC2 real ainda exige `enable_nat_gateway` + `enable_execution` + `AUTORIZO_RECURSOS_PAGOS`.
+Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada, checagem local e diagrama) está concluída em código. Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** e a autorização de recursos pagos foi recebida; a tentativa de `apply` ficou **BLOQUEADA** por falta de credenciais AWS no Cloud Agent (ver `scenarios/CVE-2024-38428/evidence/`). Sem AMI/EC2 provisionada, sem OpenAI e sem script GPT.
 
 ## O que esta fase entrega
 
@@ -13,7 +13,7 @@ Este diretório contém o laboratório do TCC. A Fase 1 (infraestrutura isolada,
 
 ## O que esta fase não faz
 
-- Não executa `terraform apply` nem `terraform destroy`.
+- Não executa `terraform apply` nem `terraform destroy` enquanto as credenciais AWS do agente estiverem ausentes (autorização humana já registrada; ver evidência BLOQUEADO).
 - Não altera a VPC default nem qualquer instância já existente na conta, como a instância Windows do CopySpider.
 - Não mede redução de esforço manual. Essa redução permanece um benefício potencial, sem comprovação quantitativa.
 

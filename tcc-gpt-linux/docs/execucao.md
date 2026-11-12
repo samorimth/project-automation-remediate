@@ -49,18 +49,22 @@ python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 
 Nenhum dos dois comandos foi usado com autorização nesta fase.
 
-## Preparação documentada da CVE aprovada (ainda offline)
+## Preparação documentada da CVE aprovada
 
-A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Os rascunhos em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) são para uso futuro na EC2 privada via SSM. Em uma máquina Ubuntu 24.04 de laboratório:
+A CVE aprovada para o primeiro experimento é **CVE-2024-38428 (`wget`)**. Os scripts em `scenarios/CVE-2024-38428/` (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) destinam-se à EC2 privada via SSM.
 
 ```bash
 bash scenarios/CVE-2024-38428/prepare.sh --check
-# somente após autorização de recursos pagos e EC2 privada:
+# somente com EC2 privada provisionada:
 # sudo bash scenarios/CVE-2024-38428/prepare.sh --apply
 # bash scenarios/CVE-2024-38428/verify_before.sh
 ```
 
-Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`. Nenhum desses scripts foi executado contra EC2 nesta entrega. Provar a vulnerabilidade em AWS ainda exige ligar NAT/execução e a frase `AUTORIZO_RECURSOS_PAGOS`.
+Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4-1ubuntu4.1`.
+
+## Tentativa de execução autorizada (BLOQUEADO)
+
+Em 2026-11-12 o usuário autorizou recursos pagos (`Sim, autorizo` → `enable_nat_gateway`, `enable_execution`, `AUTORIZO_RECURSOS_PAGOS`). O `terraform apply` **não** foi executado: o ambiente do Cloud Agent não tinha credenciais AWS (`aws` CLI ausente; sem `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`; sem `~/.aws`; sem role IMDS). Classificação: **BLOQUEADO**. Evidência: `scenarios/CVE-2024-38428/evidence/`. Nenhum custo AWS foi iniciado. Quando houver credenciais e apply bem-sucedido, a limpeza exigirá `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
 
 ## Comandos das fases seguintes
 
