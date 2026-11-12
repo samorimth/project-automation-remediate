@@ -34,7 +34,7 @@ PAID_RESOURCE_FLAGS = (
     "enable_ssm_vpc_endpoints",
 )
 
-ALLOWED_REGIONS = ("us-east-1", "sa-east-1")
+ALLOWED_REGIONS = ("us-east-1", "us-east-2", "sa-east-1")  # pragma: allowlist secret
 
 
 class ConfigError(ValueError):
@@ -58,13 +58,13 @@ class Settings:
                 f"({self.instance_count} > {self.max_instances})."
             )
         if self.aws_region not in ALLOWED_REGIONS:
-            raise ConfigError("aws_region deve ser us-east-1 ou sa-east-1.")
+            raise ConfigError("aws_region deve ser us-east-1, us-east-2 ou sa-east-1.")  # pragma: allowlist secret
 
 
 def load_settings() -> Settings:
     """Lê o ambiente local. A ausência de .env usa os padrões da Fase 1."""
     load_dotenv(LAB_ROOT / ".env")
-    region = os.environ.get("AWS_REGION", "us-east-1").strip() or "us-east-1"
+    region = os.environ.get("AWS_REGION", "us-east-2").strip() or "us-east-2"
     max_instances = _parse_int(os.environ.get("MAX_INSTANCES", "3"), "MAX_INSTANCES")
     instance_count = _parse_int(os.environ.get("INSTANCE_COUNT", "1"), "INSTANCE_COUNT")
     settings = Settings(
@@ -102,7 +102,7 @@ def assert_safe_example(values: dict[str, str]) -> None:
     instance_count = _parse_int(values.get("instance_count", "1"), "instance_count")
     max_instances = _parse_int(values.get("max_instances", "3"), "max_instances")
     Settings(
-        aws_region=values.get("aws_region", "us-east-1"),
+        aws_region=values.get("aws_region", "us-east-2"),
         max_instances=max_instances,
         instance_count=instance_count,
     ).validate_instance_bounds()

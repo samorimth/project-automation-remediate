@@ -103,7 +103,7 @@ def command_check() -> int:
             settings = load_settings()
         else:
             settings = Settings(
-                aws_region=example_tfvars.get("aws_region", "us-east-1"),
+                aws_region=example_tfvars.get("aws_region", "us-east-2"),
                 max_instances=int(example_tfvars["max_instances"]),
                 instance_count=int(example_tfvars["instance_count"]),
             )

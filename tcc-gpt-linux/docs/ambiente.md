@@ -8,7 +8,7 @@ A Fase 1 define o ambiente em que os experimentos futuros poderão ocorrer. O c�
 
 O laboratório usa a mesma conta AWS em que já existe uma instância Windows do CopySpider. Essa instância permanece na rede e na região em que já está. O Terraform não consulta a VPC default, não altera security groups existentes e não recebe o identificador dessa instância. O estado é local e cobre somente os recursos declarados neste diretório.
 
-A região padrão é `us-east-1`. O enunciado sugeria `sa-east-1`. A troca foi uma decisão de custo: NAT Gateway, EC2 e EBS têm preço horário menor em `us-east-1`. O experimento futuro depende da versão do Ubuntu e do pacote da AMI oficial da Canonical, que é publicada nessa região. A variável `aws_region` também aceita `sa-east-1`.
+A região padrão experimental atual é `us-east-2`. Antes, o padrão de custo era `AWS_DEFAULT_REGION` (lab anterior) (o enunciado sugeria `sa-east-1`). A troca para `us-east-2` nesta tentativa (Fase 2 / CVE-2024-38428) visa contornar o deny explícito da SCP `p-xikt6vmn` observado em `AWS_DEFAULT_REGION` (lab anterior) e `sa-east-1`; se a SCP negar EC2 em todas as regiões, o provisionamento permanece BLOQUEADO. A variável `aws_region` aceita `AWS_DEFAULT_REGION` (lab anterior), `us-east-2` e `sa-east-1`. O experimento depende da AMI Ubuntu 24.04 LTS oficial da Canonical na região escolhida.
 
 ## Topologia
 
@@ -35,7 +35,7 @@ Para a instância privada alcançar o Systems Manager e os repositórios Ubuntu,
 
 ## Custos potenciais
 
-Os valores abaixo são preços públicos de `us-east-1` consultados em 11 de novembro de 2026. Não são uma fatura. Impostos e o volume de dados podem alterar o total.
+Os valores abaixo são preços públicos de `AWS_DEFAULT_REGION` (lab anterior) consultados em 11 de novembro de 2026. Não são uma fatura. Impostos e o volume de dados podem alterar o total.
 
 - EC2 `t3.small` sob demanda: US$ 0,0208 por hora. Em 24 horas, cerca de US$ 0,50, fora a transferência.
 - EBS gp3: US$ 0,08 por GiB-mês, conforme a página de volumes General Purpose da AWS. Vinte GiB ficam em torno de US$ 1,60 se o volume permanecer o mês inteiro.
@@ -48,7 +48,7 @@ O NAT é o componente que mais pesa se permanecer ligado fora da janela do exper
 
 Snapshots e buckets S3 não fazem parte desta pilha. VPC endpoints de interface permanecem desligados. Cada endpoint é cobrado por hora e por zona de disponibilidade; três endpoints tendem a custar mais do que um NAT mantido por poucas horas e, ainda assim, não substituem o NAT na atualização de pacotes.
 
-As fontes usadas para estas estimativas foram a página de preço do Amazon VPC, a página de volumes General Purpose do Amazon EBS e o preço sob demanda publicado para a instância `t3.small` em `us-east-1`.
+As fontes usadas para estas estimativas foram a página de preço do Amazon VPC, a página de volumes General Purpose do Amazon EBS e o preço sob demanda publicado para a instância `t3.small` em `AWS_DEFAULT_REGION` (lab anterior).
 
 ## Pré-requisitos
 
