@@ -1,0 +1,27 @@
+flowchart TB
+  subgraph localEnv [Ambiente local]
+    direction LR
+    Cursor[Cursor]
+    PythonCli[CLI Python]
+    TerraformCli[Terraform]
+    Cursor --> PythonCli --> TerraformCli
+  end
+
+  subgraph awsEnv [AWS us-east-1 isolada]
+    direction TB
+    Vpc[VPC exclusiva]
+    PublicSubnet[Subnet pública do NAT]
+    PrivateSubnet[Subnet privada]
+    Iam[IAM role e instance profile]
+    Ec2[EC2 Ubuntu sem IP publico]
+    Ebs[EBS gp3]
+    Ssm[Systems Manager]
+    Vpc --> PublicSubnet
+    Vpc --> PrivateSubnet
+    PrivateSubnet --> Ec2
+    Iam --> Ec2
+    Ec2 --> Ebs
+    Ec2 --> Ssm
+  end
+
+  TerraformCli --> Vpc
