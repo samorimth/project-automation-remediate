@@ -4,7 +4,7 @@
 
 A infraestrutura está aplicada em `us-east-2` (NAT + EC2) e o estado vulnerável de `wget` foi provado. A Fase 3 adiciona integração OpenAI e validação, mas:
 
-- Sem `OPENAI_API_KEY` no ambiente do agente, a geração ao vivo fica bloqueada.
+- Sem `OPENAI_API_KEY` no ambiente do agente, a geração ao vivo fica bloqueada. Para desbloquear: cadastre a chave em Environment secrets no dashboard do Cursor (sem colar no chat) e reinicie o agente. Skip da solicitação de secrets mantém `generate` indisponível até ação manual.
 - A execução do script gerado por IA na EC2 exige autorização explícita (`AUTORIZO_EXECUCAO_SCRIPT_IA`) e não ocorre automaticamente.
 - Recursos pagos (NAT + EIP + `t3.small`) permanecem faturando até cleanup autorizado.
 

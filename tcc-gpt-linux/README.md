@@ -20,7 +20,7 @@ Este diretório contém o laboratório do TCC. Fases 1–2 concluídas (infra + 
 - Python 3.11 ou superior.
 - Terraform 1.6 ou superior.
 - `shellcheck` no PATH (validação Nível 2).
-- `OPENAI_API_KEY` / `OPENAI_MODEL` para `generate`.
+- `OPENAI_API_KEY` / `OPENAI_MODEL` para `generate`. Sem a chave, o pipeline local (check/validate/pytest) segue; só a geração ao vivo fica bloqueada. No Cloud Agent, cadastre os secrets em **Environment secrets** no dashboard (não cole a chave no chat) e reinicie o agente.
 
 ```bash
 python3 -m venv .venv

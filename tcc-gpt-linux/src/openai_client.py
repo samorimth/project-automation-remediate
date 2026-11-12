@@ -186,7 +186,9 @@ def _persist(output_dir: Path, prompt: str, result: GenerationResult) -> None:
 def generate_for_cve(settings: Settings, cve_id: str, prompt: str) -> GenerationResult:
     if not settings.openai_api_key:
         raise ConfigError(
-            "OPENAI_API_KEY ausente. Configure o secret antes de generate."
+            "OPENAI_API_KEY ausente. Adicione a chave em Environment "
+            "secrets no dashboard do Cursor (não cole no chat), "
+            "reinicie o agente e só então rode `generate`."
         )
     client = OpenAIClient(settings)
     return client.generate_remediation_script(cve_id=cve_id, prompt=prompt)
