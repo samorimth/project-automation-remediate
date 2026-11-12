@@ -1,5 +1,7 @@
 # Plano de 13, 14 e 15 de novembro de 2026
 
+Atualização da noite de 12 de novembro: a CVE-2024-32487 já foi executada. Três scripts foram gerados e os três falharam no SSM com código 141. As pilhas do `wget` e do `less` foram destruídas. O texto abaixo era o plano anterior a essa execução. O uso imediato desses dias é incorporar o resultado em `docs/resultado_cve_2024_32487.md` no material da pré-banca, sem tratar a falha como sucesso.
+
 A pré-banca é em 16 de novembro. Nada desta lista cria recurso nem chama a API sem uma frase nova de autorização.
 
 ## 13 de novembro

@@ -111,3 +111,7 @@ As tabelas separadas são `results/infrastructure_attempts.csv`, `results/api_ca
 | HTTP em `127.0.0.1` | `i-0fcb8ab88a727b409`, `i-0ab458c87a79d078b`, `i-0a086264652dd0b86` | `1.21.4-1ubuntu4.5` | SUCESSO nas três |
 
 O `file://` também falhou no estado vulnerável da passagem HTTP. Essa falha não é permanência da versão vulnerável. Os dois conjuntos não entram nas taxas de `results/summary.csv`, que continuam sendo as do ledger histórico.
+
+## CVE-2024-32487, conjunto separado
+
+Em 12 de novembro de 2026, três scripts novos do pacote `less` foram gerados, validados e executados em instâncias distintas da AMI `ami-0c49cb4a0e4553411`. Os três passaram na validação estática. Os três terminaram no SSM com código 141 e a versão permaneceu `590-2ubuntu2`. A classificação gravada é FALHA. O detalhe está em `docs/resultado_cve_2024_32487.md`. Essas execuções não entram em `results/summary.csv`.

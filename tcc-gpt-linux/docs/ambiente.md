@@ -1,6 +1,6 @@
 # Ambiente experimental
 
-Atualização de 12 de novembro de 2026, à tarde: a pilha histórica da tentativa 5 foi destruída depois das primeiras repetições. Na reexecução do `wget`, uma pilha nova ficou em `us-east-2`: VPC `vpc-07ed5b7db90bfd3a6`, NAT `nat-07030ea6ff070f9d0` e AMI privada `ami-03629c5c47c71759b`. As EC2 dessa reexecução já foram destruídas. A VPC, o NAT e a AMI continuam ligados até a frase `AUTORIZO_DESTRUIR_RECURSOS`. O parágrafo seguinte descreve o desenho original da Fase 1.
+Atualização de 12 de novembro de 2026, à noite: a pilha do `wget` (VPC `vpc-07ed5b7db90bfd3a6`, NAT `nat-07030ea6ff070f9d0` e AMI `ami-03629c5c47c71759b`) foi destruída. A pilha do `less` (VPC `vpc-020c46e60ddbaf0df`, NAT `nat-0efd3e841d92248d6` e AMI `ami-0c49cb4a0e4553411`) também foi destruída depois da coleta. Não permanece NAT nem VPC deste laboratório. O parágrafo seguinte descreve o desenho original da Fase 1.
 
 ## Escopo desta fase
 

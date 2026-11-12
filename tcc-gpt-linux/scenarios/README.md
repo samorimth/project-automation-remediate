@@ -6,8 +6,8 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 
 | Item | Situação |
 | --- | --- |
-| Status de aprovação | **CVE-2024-38428 aprovada** e executada. Proposta da segunda CVE: **CVE-2024-32487 (`less`)**, ainda sem aprovação e sem experimento. As outras fichas continuam alternativas |
-| Recursos AWS | a pilha histórica foi destruída (`evidence/cleanup-fase3.json`). A reexecução do wget deixou ligados a VPC `vpc-07ed5b7db90bfd3a6`, o NAT `nat-07030ea6ff070f9d0` e a AMI `ami-03629c5c47c71759b` |
+| Status de aprovação | **CVE-2024-38428 aprovada** e executada. **CVE-2024-32487 (`less`) aprovada** e executada em 12/11/2026. As outras fichas continuam alternativas |
+| Recursos AWS | a pilha do wget e a pilha do less foram destruídas depois da coleta. Não há NAT nem VPC do laboratório ligados. A instância CopySpider, parada e fora deste experimento, não foi alterada |
 | Provisionamento | tentativa 5 em `us-east-2` criou a pilha; tentativas anteriores na região default e em `sa-east-1` foram negadas pelo SCP `p-xikt6vmn` |
 | Estado vulnerável | provado: `wget 1.21.4-1ubuntu4` na instância `i-04da3315297ec6c04` |
 | Chamadas à API e execuções | quatro chamadas, três scripts, três remediações comprovadas por versão; a classificação do protocolo novo é INCONCLUSIVO porque a mesma EC2 foi reutilizada; ver `docs/resultados_tcc.md` |
