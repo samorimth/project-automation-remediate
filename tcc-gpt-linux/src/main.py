@@ -1,14 +1,16 @@
-"""Interface de linha de comando da Fase 1 do laboratório."""
+"""Interface de linha de comando do laboratório (Fases 1–3)."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 
 from .aws_manager import AuthorizationError, cleanup, provision
 from .config import (
     ENV_EXAMPLE,
+    EXECUTE_AUTHORIZATION_PHRASE,
     LAB_ROOT,
     REQUIRED_ENV_KEYS,
     TFVARS_EXAMPLE,
@@ -18,22 +20,21 @@ from .config import (
     load_settings,
     load_tfvars,
 )
-
-DEFERRED_PHASE = {
-    "generate": "Fase 3",
-    "validate": "Fase 3",
-    "execute": "Fase 3",
-    "verify": "Fase 2",
-    "report": "Fase 6",
-}
+from .experiment_runner import (
+    run_execute,
+    run_generate,
+    run_validate,
+    run_verify,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m src.main",
         description=(
-            "Laboratório do TCC. Na Fase 1, check, provision e cleanup "
-            "preparam a infraestrutura. O apply e o destroy exigem autorização."
+            "Laboratório do TCC. check/provision/cleanup (Fase 1); "
+            "generate/validate/execute/verify (Fase 3). "
+            "Execute de script IA exige autorização explícita."
         ),
     )
     commands = parser.add_subparsers(dest="command", required=True)
@@ -52,13 +53,47 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cleanup_command.add_argument("--authorize", default=None)
 
-    for name in DEFERRED_PHASE:
-        command = commands.add_parser(
-            name,
-            help=f"Inativo nesta fase. Reservado para a {DEFERRED_PHASE[name]}.",
-        )
-        if name in {"generate", "execute", "verify"}:
-            command.add_argument("--cve", default=None)
+    generate_command = commands.add_parser(
+        "generate",
+        help="Gera um script Bash de remediação via OpenAI para a CVE indicada.",
+    )
+    generate_command.add_argument("--cve", required=True)
+
+    validate_command = commands.add_parser(
+        "validate",
+        help="Valida o último script gerado (bash -n, shellcheck, checklist).",
+    )
+    validate_command.add_argument("--cve", required=True)
+    validate_command.add_argument(
+        "--dir",
+        default=None,
+        help="Pasta repXX específica (padrão: última geração da CVE).",
+    )
+
+    execute_command = commands.add_parser(
+        "execute",
+        help=(
+            "Executa o script validado via SSM. "
+            f"Exige --authorize {EXECUTE_AUTHORIZATION_PHRASE}."
+        ),
+    )
+    execute_command.add_argument("--cve", required=True)
+    execute_command.add_argument("--authorize", default=None)
+    execute_command.add_argument("--instance-id", default=None)
+    execute_command.add_argument("--dir", default=None)
+
+    verify_command = commands.add_parser(
+        "verify",
+        help="Verifica independentemente a versão do pacote na EC2 via SSM.",
+    )
+    verify_command.add_argument("--cve", required=True)
+    verify_command.add_argument("--instance-id", default=None)
+    verify_command.add_argument("--dir", default=None)
+
+    commands.add_parser(
+        "report",
+        help="Inativo nesta fase. Reservado para a Fase 6.",
+    )
     return parser
 
 
@@ -85,18 +120,33 @@ def command_check() -> int:
     else:
         print(f"AWS CLI encontrada em {aws_path}.")
 
+    shellcheck_path = shutil.which("shellcheck")
+    if shellcheck_path is None:
+        print(
+            "shellcheck não encontrado no PATH (necessário para validate Nível 2).",
+            file=sys.stderr,
+        )
+        ok = False
+    else:
+        print(f"shellcheck encontrado em {shellcheck_path}.")
+
     try:
         example = _read_env_example()
-        missing = [key for key in REQUIRED_ENV_KEYS if key not in example]
-        if missing:
-            print(f".env.example sem as chaves: {', '.join(missing)}.", file=sys.stderr)
-            ok = False
-        elif example.get("OPENAI_API_KEY", None) != "":
-            print(".env.example não pode conter valor em OPENAI_API_KEY.", file=sys.stderr)
-            ok = False
-        else:
-            print(".env.example contém as chaves previstas, sem segredo.")
+    except ConfigError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
 
+    missing = [key for key in REQUIRED_ENV_KEYS if key not in example]
+    if missing:
+        print(f".env.example sem as chaves: {', '.join(missing)}.", file=sys.stderr)
+        ok = False
+    elif example.get("OPENAI_API_KEY", None) != "":
+        print(".env.example não pode conter valor em OPENAI_API_KEY.", file=sys.stderr)
+        ok = False
+    else:
+        print(".env.example contém as chaves previstas, sem segredo.")
+
+    try:
         example_tfvars = load_tfvars(TFVARS_EXAMPLE)
         assert_safe_example(example_tfvars)
         if (LAB_ROOT / ".env").is_file():
@@ -106,6 +156,11 @@ def command_check() -> int:
                 aws_region=example_tfvars.get("aws_region", "us-east-2"),
                 max_instances=int(example_tfvars["max_instances"]),
                 instance_count=int(example_tfvars["instance_count"]),
+                openai_api_key=None,
+                openai_model=example.get("OPENAI_MODEL") or "gpt-4o-mini",
+                openai_timeout=int(example.get("OPENAI_TIMEOUT") or "120"),
+                openai_max_retries=2,
+                repetitions=int(example.get("REPETITIONS") or "3"),
             )
             settings.validate_instance_bounds()
         print(
@@ -115,21 +170,101 @@ def command_check() -> int:
             f"max_instances {settings.max_instances}."
         )
         print("O exemplo do Terraform mantém NAT, endpoints e EC2 desligados.")
+        if settings.openai_api_key:
+            print("OPENAI_API_KEY presente no ambiente (valor não exibido).")
+            print(f"OPENAI_MODEL={settings.openai_model}")
+        else:
+            print("OPENAI_API_KEY ausente — generate ficará bloqueado até configurar o secret.")
     except ConfigError as exc:
         print(str(exc), file=sys.stderr)
         ok = False
 
-    print("Nenhum apply ou destroy foi executado.")
+    print("Nenhum apply, destroy ou execute de script IA foi realizado.")
     return 0 if ok else 1
 
 
-def command_deferred(command: str) -> int:
-    phase = DEFERRED_PHASE[command]
+def command_generate(cve: str) -> int:
+    settings = load_settings()
+    result = run_generate(settings, cve)
     print(
-        f"O comando {command} pertence à {phase} e ainda não está ativo. "
-        "Nenhuma chamada de API, nenhum script e nenhum recurso AWS foram produzidos."
+        json.dumps(
+            {
+                "cve": result.cve_id,
+                "repetition": result.repetition,
+                "model": result.model,
+                "latency_ms": result.latency_ms,
+                "ok": result.ok,
+                "error": result.error,
+                "output_dir": result.output_dir,
+                "prompt_hash_sha256": result.prompt_hash_sha256,
+                "script_hash_sha256": result.script_hash_sha256,
+                "total_tokens": result.total_tokens,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
     )
-    return 2
+    return 0 if result.ok else 1
+
+
+def command_validate(cve: str, directory: str | None) -> int:
+    from pathlib import Path
+
+    gen_dir = Path(directory) if directory else None
+    report = run_validate(cve, generation_dir=gen_dir)
+    print(
+        json.dumps(
+            {
+                "passed": report.passed,
+                "executable_allowed": report.executable_allowed,
+                "script_path": report.script_path,
+                "findings": report.findings,
+            },
+            ensure_ascii=False,
+            indent=2,
+        )
+    )
+    return 0 if report.passed else 1
+
+
+def command_execute(
+    cve: str,
+    authorize: str | None,
+    instance_id: str | None,
+    directory: str | None,
+) -> int:
+    from pathlib import Path
+
+    settings = load_settings()
+    gen_dir = Path(directory) if directory else None
+    outcome = run_execute(
+        settings,
+        cve,
+        authorize=authorize,
+        instance_id=instance_id,
+        generation_dir=gen_dir,
+    )
+    print(json.dumps(outcome, ensure_ascii=False, indent=2))
+    return 0 if outcome.get("remediation_success") else 1
+
+
+def command_verify(
+    cve: str,
+    instance_id: str | None,
+    directory: str | None,
+) -> int:
+    from pathlib import Path
+
+    settings = load_settings()
+    gen_dir = Path(directory) if directory else None
+    outcome = run_verify(
+        settings,
+        cve,
+        instance_id=instance_id,
+        generation_dir=gen_dir,
+    )
+    print(json.dumps(outcome, ensure_ascii=False, indent=2))
+    return 0 if outcome.get("ssm_status") == "Success" else 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -141,7 +276,23 @@ def main(argv: list[str] | None = None) -> int:
             return provision(authorize=args.authorize)
         if args.command == "cleanup":
             return cleanup(authorize=args.authorize)
-        return command_deferred(args.command)
+        if args.command == "generate":
+            return command_generate(args.cve)
+        if args.command == "validate":
+            return command_validate(args.cve, args.dir)
+        if args.command == "execute":
+            return command_execute(
+                args.cve, args.authorize, args.instance_id, args.dir
+            )
+        if args.command == "verify":
+            return command_verify(args.cve, args.instance_id, args.dir)
+        if args.command == "report":
+            print(
+                "O comando report pertence à Fase 6 e ainda não está ativo. "
+                "Nenhuma figura fictícia foi gerada."
+            )
+            return 2
+        raise ConfigError(f"Comando desconhecido: {args.command}")
     except (AuthorizationError, ConfigError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

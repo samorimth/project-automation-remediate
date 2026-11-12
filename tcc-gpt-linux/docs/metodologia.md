@@ -6,18 +6,29 @@ O trabalho analisa o uso de um único modelo GPT, acessado pela API da OpenAI, p
 
 Não há comparação entre modelos. Não há comparação experimental entre remediação manual e remediação assistida por IA. A possível redução de esforço manual será discutida apenas como benefício potencial. Ela não foi medida e nenhum percentual de redução será apresentado.
 
-## Situação da Fase 1 e da Fase 2 (aprovação CVE)
+## Fase 1 e Fase 2
 
-A Fase 1 constrói o ambiente controlado em que essa avaliação poderá ocorrer. O ambiente é uma VPC exclusiva, com instância Ubuntu descartável, sem IP público e acessível pelo Systems Manager. A definição está em Terraform e foi validada localmente.
+A Fase 1 constrói o ambiente controlado (VPC exclusiva, Ubuntu descartável, SSM). Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** e o estado vulnerável (`wget=1.21.4-1ubuntu4`) foi **provado** em `us-east-2` via SSM. Ver `scenarios/CVE-2024-38428/evidence/`.
 
-Na Fase 2, a **CVE-2024-38428 (`wget`)** foi **aprovada** como primeiro experimento. As demais fichas em `scenarios/` permanecem alternativas. Foram versionados a ficha completa e scripts Bash de preparação/verificação (`prepare.sh`, `verify_before.sh`, `verify_after.sh`) para SSM. Após bloqueios por SCP em `AWS_DEFAULT_REGION` (lab anterior)/`sa-east-1`, a tentativa 5 em `us-east-2` provisionou EC2 e **provou** o estado vulnerável (`wget=1.21.4-1ubuntu4`) via SSM. **Não** houve chamada a modelo generativo nem script de remediação GPT. Ver `scenarios/CVE-2024-38428/evidence/`.
+## Fase 3 — experimento controlado
 
-## Critérios que permanecem para as fases seguintes
+A Fase 3 integra a API OpenAI e o pipeline:
 
-Um script só poderá ser considerado eficaz se a versão do pacote, o status da CVE e o funcionamento do pacote forem verificados com dados independentes da resposta do modelo. A execução com código de saída zero, a ausência de alertas do ShellCheck ou uma afirmação do próprio modelo não bastam para declarar sucesso.
+1. **Prompt padronizado** (`prompts/remediation_prompt.txt`) preenchido com metadados do cenário — sem entregar script pronto ao modelo.
+2. **Geração** (`generate`) com registro de modelo, timestamp, latência, tokens, hashes de prompt/resposta/script e erros.
+3. **Validação em três níveis** (`validate`):
+   - Nível 1: `bash -n` (sintaxe)
+   - Nível 2: ShellCheck `-f json` (erros bloqueiam; avisos são registrados)
+   - Nível 3: checklist objetivo de segurança/adequação (comandos destrutivos, pacotes fora do escopo, credenciais, permissões perigosas, desativação de controles, estratégia inadequada, ausência de remediação apt do pacote-alvo)
+4. **Execução** (`execute`) somente com `AUTORIZO_EXECUCAO_SCRIPT_IA` e somente se a validação tiver aprovado o script.
+5. **Verificação independente** (`verify` / before-after via `dpkg --compare-versions` contra a versão corrigida oficial). Código de saída zero do script GPT ou ausência de alertas ShellCheck **não** bastam para declarar sucesso.
 
-As gerações futuras devem usar o mesmo modelo, o mesmo template e o mesmo estado vulnerável inicial. Todos os resultados, inclusive falhas, serão registrados. Esta fase não antecipa esses registros.
+Scripts reprovados não recebem bit de execução e são rejeitados pelo executor SSM.
 
-## Reprodutibilidade do que já existe
+## Critérios de eficácia
 
-A pilha usa variáveis com padrão explícito, AMI oficial da Canonical e estado local do Terraform. Os comandos de criação e destruição exigem frases distintas de autorização. O exemplo versionado mantém NAT, endpoints e instâncias desligados, de modo que a reprodução da Fase 1 não cria recurso pago.
+Um script só é considerado eficaz se a versão instalada do pacote passar de vulnerável (`lt` versão corrigida) para corrigida (`ge` versão corrigida), com evidência SSM independente da narrativa do modelo.
+
+## Reprodutibilidade
+
+Mesmo template, mesmo cenário e estado vulnerável inicial conhecido. Todas as gerações (incluindo falhas) são persistidas. Resultados quantitativos em CSV/JSON só contêm dados reais coletados.

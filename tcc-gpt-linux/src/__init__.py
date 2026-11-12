@@ -1,1 +1,1 @@
-"""Laboratório experimental do TCC. A Fase 1 não executa experimentos."""
+"""Laboratório experimental do TCC (infraestrutura + experimento Fase 3)."""

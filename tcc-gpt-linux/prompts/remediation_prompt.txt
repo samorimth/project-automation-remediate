@@ -1,0 +1,35 @@
+Você é um engenheiro de sistemas Linux responsável por remediação de vulnerabilidades em ambiente de laboratório controlado.
+
+Gere UM script Bash completo (começando com #!/usr/bin/env bash) que remedia a vulnerabilidade descrita abaixo na instância Ubuntu do laboratório. O script será executado com privilégios elevados via AWS Systems Manager. Responda APENAS com o script Bash, sem markdown, sem explicações e sem blocos de código.
+
+## CVE
+{{CVE_ID}}
+
+## Descrição
+{{CVE_DESCRIPTION}}
+
+## Sistema operacional
+{{UBUNTU_VERSION}} (codinome {{UBUNTU_CODENAME}})
+
+## Pacote afetado
+{{PACKAGE_NAME}}
+
+## Versão instalada (estado vulnerável confirmado)
+{{INSTALLED_VERSION}}
+
+## Estado esperado após remediação
+A versão instalada do pacote {{PACKAGE_NAME}} deve ser maior ou igual a {{FIXED_VERSION}} (critério oficial USN/Ubuntu). Confirme o resultado com `dpkg -s` / `dpkg --compare-versions` e encerre com código de saída 0 em caso de sucesso, ou diferente de 0 em caso de falha.
+
+## Restrições de segurança (obrigatórias)
+- Não desative firewall, AppArmor, SELinux, auditd ou qualquer controle de segurança.
+- Não abra portas, não altere security groups e não exponha serviços.
+- Não remova, destrua ou reformatar discos, partições ou o sistema de arquivos.
+- Não altere usuários, chaves SSH, credenciais ou permissões amplas (ex.: chmod 777).
+- Não baixe nem execute payloads de URLs não oficiais; use apenas repositórios Ubuntu/apt oficiais.
+- Não toque em pacotes fora do escopo da remediação de {{PACKAGE_NAME}}, salvo `apt-get update` necessário.
+- Não invente PoC de exploração da CVE; a prova é a versão do pacote.
+- Prefira remediação via apt (upgrade/install da versão corrigida) e remova pins de laboratório que bloqueiem o upgrade, se existirem.
+- Use `set -euo pipefail` (ou equivalente seguro) e trate erros de forma explícita.
+
+## Saída
+Produza somente o script Bash de remediação.
