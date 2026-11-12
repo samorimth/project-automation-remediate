@@ -1,27 +1,35 @@
 flowchart TB
-  subgraph localEnv [Ambiente local]
-    direction LR
-    Cursor[Cursor]
-    PythonCli[CLI Python]
-    TerraformCli[Terraform]
-    Cursor --> PythonCli --> TerraformCli
+  subgraph local [Ambiente local]
+    cursor[Cursor]
+    python[Aplicacao Python]
+    cursor --> python
+  end
+  python --> api[API OpenAI]
+  api --> modelo[Modelo GPT]
+  modelo --> script[Script Bash]
+  script --> validacao[Validacao estatica]
+  validacao --> revisao[Revisao de seguranca]
+  revisao --> relatorios[Relatorios CSV JSON e graficos]
+
+  subgraph historico [Arquitetura historica ja utilizada]
+    amiPublica[AMI publica da Canonical]
+    ec2Unica[Uma EC2 Ubuntu 24.04]
+    prepare[prepare.sh --apply na mesma EC2]
+    verifyHist[Verificacao por dpkg]
+    fimPilha[Destruicao da pilha inteira]
+    amiPublica --> ec2Unica --> prepare --> ec2Unica
+    ec2Unica --> verifyHist --> fimPilha
   end
 
-  subgraph awsEnv [AWS us-east-1 isolada]
-    direction TB
-    Vpc[VPC exclusiva]
-    PublicSubnet[Subnet pública do NAT]
-    PrivateSubnet[Subnet privada]
-    Iam[IAM role e instance profile]
-    Ec2[EC2 Ubuntu sem IP publico]
-    Ebs[EBS gp3]
-    Ssm[Systems Manager]
-    Vpc --> PublicSubnet
-    Vpc --> PrivateSubnet
-    PrivateSubnet --> Ec2
-    Iam --> Ec2
-    Ec2 --> Ebs
-    Ec2 --> Ssm
+  subgraph planejado [Arquitetura planejada ainda nao executada]
+    vpc[VPC compartilhada e Systems Manager]
+    amiPrivada[AMI privada de referencia]
+    ec2Nova[EC2 nova para um unico script]
+    antes[before.json]
+    depois[after.json e teste funcional]
+    fimEc2[Destruir somente essa EC2]
+    vpc --> amiPrivada --> ec2Nova --> antes --> depois --> fimEc2
   end
 
-  TerraformCli --> Vpc
+  revisao --> historico
+  revisao --> planejado

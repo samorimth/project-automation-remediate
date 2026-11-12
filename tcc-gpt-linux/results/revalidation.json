@@ -1,0 +1,52 @@
+{
+  "note": "Revalidação com o validador atual. Não substitui validation.json nem o booleano histórico de remediation_success.",
+  "original_first_pass_rep02": {
+    "repetition": 2,
+    "passed": false,
+    "exit_code": 1,
+    "reason": "checklist tratou $PACKAGE e || como pacotes fora do escopo",
+    "validation_json": "sobrescrito pela segunda passagem",
+    "source": "results/CVE-2024-38428/fase3_rep02_status.json"
+  },
+  "scripts": [
+    {
+      "repetition": 2,
+      "script": "generated_scripts/CVE-2024-38428/rep02/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep02",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 1,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    },
+    {
+      "repetition": 3,
+      "script": "generated_scripts/CVE-2024-38428/rep03/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep03",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 1,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    },
+    {
+      "repetition": 4,
+      "script": "generated_scripts/CVE-2024-38428/rep04/remediation.sh",
+      "review_dir": "results/fase6/revalidation/rep04",
+      "level1_passed": true,
+      "level2_passed": true,
+      "level2_info_or_warning": 3,
+      "level3_passed": true,
+      "passed": true,
+      "preserved_passed": true,
+      "matches_preserved_passed": true,
+      "note": "Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2."
+    }
+  ]
+}

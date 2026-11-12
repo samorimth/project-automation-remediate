@@ -38,6 +38,12 @@ CHARTS = (
     "taxa_remediacao.png",
     "tempo_geracao.png",
     "consumo_tokens.png",
+    "syntax_success.png",
+    "remediation_success.png",
+    "security_approval.png",
+    "generation_time.png",
+    "token_usage.png",
+    "cost.png",
 )
 
 PROTECTED_RELATIVE = (
@@ -72,6 +78,8 @@ def generate_report(lab_root: Path | None = None) -> int:
 
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     _write_csv(summary_path, rows)
+    _write_separated_ledgers(root)
+    _write_revalidation_json(root, reviews)
     charts_dir.mkdir(parents=True, exist_ok=True)
     _write_charts(charts_dir, rows)
     _write_flow(flow_dir)
@@ -603,7 +611,7 @@ def _write_charts(charts_dir: Path, rows: list[dict[str, str]]) -> None:
         ax.set_ylim(0, peak * 1.25 if peak else 1)
         if len(series) > 1:
             ax.legend()
-        ax.set_xlabel("\n".join(textwrap.wrap(caption, width=90)), fontsize=8)
+        ax.set_xlabel("\n".join(textwrap.wrap(caption.replace("$", r"\$"), width=90)), fontsize=8)
         fig.tight_layout()
         fig.savefig(charts_dir / name, dpi=140)
         plt.close(fig)
@@ -682,6 +690,24 @@ def _write_charts(charts_dir: Path, rows: list[dict[str, str]]) -> None:
         "Fonte: results/experiments.json. A repetição 1 é a chamada que recebeu HTTP 429 e não devolveu script.",
     )
     token_reps = sorted(set(prompt) & set(completion))
+    from .historical_ledger import estimate_generation_cost_usd
+
+    costs = []
+    for rep in token_reps:
+        costs.append(
+            float(
+                estimate_generation_cost_usd(int(float(prompt[rep])), int(float(completion[rep])))
+                or 0
+            )
+        )
+    save(
+        "cost.png",
+        "Custo estimado das gerações com tokens devolvidos",
+        [f"Rep. {rep}" for rep in token_reps],
+        [("Estimativa (USD)", costs)],
+        "USD estimados",
+        "Tabela pública de US$ 0,10 por milhão de tokens de entrada e US$ 0,50 por milhão de saída. Não é fatura. A chamada HTTP 429 não devolveu tokens e não entra neste gráfico.",
+    )
     save(
         "consumo_tokens.png",
         "Tokens das gerações que devolveram script",
@@ -693,6 +719,15 @@ def _write_charts(charts_dir: Path, rows: list[dict[str, str]]) -> None:
         "Tokens",
         "Fonte: results/experiments.json. A chamada HTTP 429 não devolveu contagem de tokens e não entra neste gráfico.",
     )
+    copies = {
+        "taxa_correcao_sintatica.png": "syntax_success.png",
+        "taxa_remediacao.png": "remediation_success.png",
+        "aprovacao_seguranca.png": "security_approval.png",
+        "tempo_geracao.png": "generation_time.png",
+        "consumo_tokens.png": "token_usage.png",
+    }
+    for source_name, target_name in copies.items():
+        (charts_dir / target_name).write_bytes((charts_dir / source_name).read_bytes())
 
 
 def _write_flow(directory: Path) -> None:
@@ -722,7 +757,7 @@ def _write_flow(directory: Path) -> None:
         (60, 30, 22, 12, "SSM Run\nCommand"),
         (32, 30, 24, 12, "EC2 privada\nUbuntu 24.04"),
         (4, 30, 24, 12, "verify\ndpkg"),
-        (32, 8, 50, 12, "prepare.sh restaura wget vulnerável\nentre as repetições 3 e 4"),
+        (32, 8, 50, 12, "Planejado: EC2 nova da AMI\nHistórico: prepare.sh na mesma EC2"),
     ]
     for x, y, w, h, label in boxes:
         ax.add_patch(
@@ -765,7 +800,7 @@ def _write_flow(directory: Path) -> None:
     fig.text(
         0.01,
         0.01,
-        "A verificação de versão é independente do texto do modelo. A pilha AWS deste fluxo foi destruída depois das repetições.",
+        "Histórico: uma EC2 e prepare.sh entre as repetições 3 e 4. Planejado: uma EC2 nova, da mesma AMI, para cada script.",
         fontsize=8,
     )
     fig.tight_layout(rect=(0, 0.04, 1, 1))
@@ -899,6 +934,8 @@ def _rate_pair(rows: list[dict[str, str]], metric: str) -> tuple[float, float]:
 
 
 def _format_bar(value: float) -> str:
+    if abs(value) < 1 and value != 0:
+        return f"{value:.6f}"
     if float(value).is_integer():
         return str(int(value))
     return f"{value:.0f}"
@@ -926,17 +963,63 @@ def _changed(root: Path, before: dict[str, str]) -> list[str]:
     return changed
 
 
+def _write_separated_ledgers(root: Path) -> None:
+    from .historical_ledger import (
+        API_FIELDS,
+        INFRASTRUCTURE_FIELDS,
+        RUN_FIELDS,
+        api_calls,
+        experimental_runs,
+        infrastructure_attempts,
+        write_csv,
+    )
+
+    results = root / "results"
+    write_csv(results / "infrastructure_attempts.csv", INFRASTRUCTURE_FIELDS, infrastructure_attempts(root))
+    write_csv(results / "api_calls.csv", API_FIELDS, api_calls(root))
+    write_csv(results / "experimental_runs.csv", RUN_FIELDS, experimental_runs(root))
+
+
+def _write_revalidation_json(root: Path, reviews: list[dict[str, Any]]) -> None:
+    status = _read_json(root / "results" / "CVE-2024-38428" / "fase3_rep02_status.json")
+    first_pass = None
+    if isinstance(status, dict):
+        recorded = status.get("validate") or {}
+        first_pass = {
+            "repetition": 2,
+            "passed": False,
+            "exit_code": recorded.get("first_pass_exit_code"),
+            "reason": recorded.get("first_pass_reason"),
+            "validation_json": "sobrescrito pela segunda passagem",
+            "source": "results/CVE-2024-38428/fase3_rep02_status.json",
+        }
+    payload = {
+        "note": (
+            "Revalidação com o validador atual. Não substitui validation.json "
+            "nem o booleano histórico de remediation_success."
+        ),
+        "original_first_pass_rep02": first_pass,
+        "scripts": reviews,
+    }
+    path = root / "results" / "revalidation.json"
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 _FLOW_MMD = """flowchart TD
-  cenario[Cenario e prompt] --> api[Chamada OpenAI]
-  api --> script[remediation.sh]
-  api -->|HTTP 429| semScript[Sem script]
-  script --> validacao[Validacao em tres niveis]
-  validacao -->|reprovado| semSsm[Nenhum comando SSM]
-  validacao -->|aprovado e autorizado| ssm[SSM Run Command]
-  ssm --> ec2[EC2 privada Ubuntu 24.04]
-  ec2 --> verify[verify por dpkg]
-  verify --> ledger[experiments.json]
-  prepare[prepare.sh restaura a versao vulneravel] --> cenario
+  subgraph historico [Historico ja executado]
+    mesmaEc2[Uma EC2 Ubuntu 24.04]
+    prepare[prepare.sh --apply entre as repeticoes 3 e 4]
+    mesmaEc2 --> prepare --> mesmaEc2
+  end
+  subgraph planejado [Fluxo exigido daqui em diante]
+    ami[AMI privada de referencia]
+    nova[EC2 nova para um unico script]
+    antes[Verificacao before.json]
+    script[remediation.sh original]
+    depois[Verificacao after.json]
+    fim[Destruir somente essa EC2]
+    ami --> nova --> antes --> script --> depois --> fim
+  end
 """
 
 _FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
@@ -964,8 +1047,8 @@ _FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
     <rect x="40" y="250" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
     <text x="150" y="290">verify por dpkg</text>
     <rect x="320" y="470" width="500" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="570" y="502">prepare.sh restaura wget 1.21.4-1ubuntu4</text>
-    <text x="570" y="522">antes das repetições 3 e 4</text>
+    <text x="570" y="502">Planejado: EC2 nova da AMI de referência</text>
+    <text x="570" y="522">Histórico: prepare.sh na mesma EC2</text>
   </g>
   <g stroke="#222222" fill="none" stroke-width="1.4">
     <path d="M260 105 H320"/>
@@ -976,6 +1059,6 @@ _FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
     <path d="M600 285 H540"/>
     <path d="M320 285 H260"/>
   </g>
-  <text x="40" y="690" font-family="sans-serif" font-size="13" fill="#333333">A versão do pacote é verificada fora do texto do modelo. A pilha usada neste fluxo foi destruída ao final.</text>
+  <text x="40" y="690" font-family="sans-serif" font-size="13" fill="#333333">O histórico reutilizou uma EC2. O fluxo planejado cria e destrói uma instância por script, a partir da mesma AMI privada.</text>
 </svg>
 """

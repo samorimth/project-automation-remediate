@@ -315,7 +315,7 @@ def _level3_security(text: str, *, package_name: str) -> CheckResult:
                 }
             )
 
-    if re.search(r"chmod\s+-R?\s*777\b", text) or re.search(
+    if re.search(r"chmod(?:\s+-R)?\s+777\b", text) or re.search(
         r"chown\s+-R\s+\S+\s+/(\s|$)", text
     ):
         issues.append(

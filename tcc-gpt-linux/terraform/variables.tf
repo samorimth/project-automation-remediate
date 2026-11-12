@@ -42,6 +42,17 @@ variable "max_instances" {
   }
 }
 
+variable "max_simultaneous_instances" {
+  description = "Quantas EC2 de experimento podem existir ao mesmo tempo. Cada repetição usa uma instância nova e a destrói antes da seguinte. O padrão é uma."
+  type        = number
+  default     = 1
+
+  validation {
+    condition     = var.max_simultaneous_instances >= 1 && var.max_simultaneous_instances <= 3
+    error_message = "max_simultaneous_instances deve ficar entre 1 e 3."
+  }
+}
+
 variable "ubuntu_ami_id" {
   description = "AMI Ubuntu explícita. Vazio seleciona a AMI oficial mais recente da Canonical."
   type        = string

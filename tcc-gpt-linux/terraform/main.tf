@@ -64,6 +64,11 @@ resource "terraform_data" "guards" {
 
   lifecycle {
     precondition {
+      condition     = local.lab_instance_count <= var.max_simultaneous_instances
+      error_message = "A pilha não cria mais EC2 simultâneas do que max_simultaneous_instances. Cada repetição troca a instância."
+    }
+
+    precondition {
       condition     = var.instance_count <= var.max_instances
       error_message = "instance_count não pode ser maior que max_instances."
     }

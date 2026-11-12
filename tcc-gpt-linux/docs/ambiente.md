@@ -1,5 +1,7 @@
 # Ambiente experimental
 
+Atualização de 12 de novembro de 2026: o parágrafo seguinte descreve o desenho da Fase 1, escrito quando nenhum `apply` tinha ocorrido. A tentativa 5 em `us-east-2` criou a pilha, as repetições rodaram na instância `i-04da3315297ec6c04` e a pilha foi destruída. O detalhe está em `docs/linha_do_tempo.md`. A próxima execução, ainda não autorizada, separa a infraestrutura compartilhada de uma AMI privada e de uma EC2 nova por script (`docs/plano_reexecucao.md`).
+
 ## Escopo desta fase
 
 A Fase 1 define o ambiente em que os experimentos futuros poderão ocorrer. O código descreve uma VPC exclusiva na conta pessoal, separada dos recursos que já existem nela. A validação realizada até aqui é local: `terraform validate`, testes automatizados e o comando `check`. Nenhum `terraform apply` foi executado e, portanto, nenhum recurso desta pilha foi criado na AWS.

@@ -51,3 +51,10 @@ python -m src.main report
 - [docs/resultados_tcc.md](docs/resultados_tcc.md)
 - [docs/arquitetura/descricao_arquitetura.md](docs/arquitetura/descricao_arquitetura.md)
 - [scenarios/README.md](scenarios/README.md)
+- [docs/auditoria_inicial.md](docs/auditoria_inicial.md)
+- [docs/auditoria_validador.md](docs/auditoria_validador.md)
+- [docs/modelo_ia.md](docs/modelo_ia.md)
+- [docs/linha_do_tempo.md](docs/linha_do_tempo.md)
+- [docs/plano_reexecucao.md](docs/plano_reexecucao.md)
+
+A auditoria de 12 de novembro de 2026 preserva as evidências em `evidence_archive/historical-cve-2024-38428/` e separa tentativas de infraestrutura, chamadas à API e execuções. A reexecução em EC2 novas não foi iniciada. O plano e a estimativa de custo estão em `docs/plano_reexecucao.md`.
