@@ -2,9 +2,9 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém o laboratório do TCC. Fases 1–2 concluídas (infra + CVE-2024-38428 aprovada com estado vulnerável provado em `us-east-2`, instância `i-04da3315297ec6c04`). A **Fase 3** implementa geração via OpenAI, validação em três níveis e execução SSM condicionada a autorização explícita.
+Este diretório contém o laboratório do TCC. A CVE-2024-38428 foi executada em `us-east-2` e a pilha AWS foi destruída. A Fase 6 consolida as evidências já gravadas.
 
-**Recursos pagos ativos** (NAT + EC2) até cleanup autorizado.
+**Nenhum recurso pago desta pilha permanece ligado.**
 
 ## O que a Fase 3 entrega
 
@@ -39,6 +39,7 @@ python -m src.main validate --cve CVE-2024-38428
 python -m src.main execute --cve CVE-2024-38428 --authorize AUTORIZO_EXECUCAO_SCRIPT_IA
 python -m src.main verify --cve CVE-2024-38428
 python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
+python -m src.main report
 ```
 
 ## Documentação

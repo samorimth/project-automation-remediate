@@ -75,9 +75,9 @@ def test_authorized_apply_and_destroy_call_terraform(monkeypatch):
     assert calls == [APPLY_COMMAND, DESTROY_COMMAND]
 
 
-def test_report_still_deferred_and_execute_needs_phrase(monkeypatch):
+def test_report_reads_recorded_results_and_execute_needs_phrase(monkeypatch):
     calls = _record_terraform(monkeypatch)
-    assert main.main(["report"]) == 2
+    assert main.main(["report"]) == 0
     # execute sem frase de autorização deve falhar sem Terraform
     code = main.main(["execute", "--cve", "CVE-2024-38428"])
     assert code == 1

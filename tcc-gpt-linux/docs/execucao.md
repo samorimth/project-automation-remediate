@@ -114,4 +114,8 @@ O binário do Terraform não estava no PATH desta máquina e o `terraform.tfstat
 
 ## Relatórios
 
-`report` permanece reservado à Fase 6 e encerra com código 2.
+```bash
+python -m src.main report
+```
+
+O comando lê `results/experiments.json`, os `validation.json` preservados e as evidências SSM. Grava `results/summary.csv`, os PNG em `results/charts/` e o laudo novo em `results/fase6/revalidation/`. Não chama a AWS, não chama a OpenAI e não reescreve o ledger nem os scripts gerados. Código 0 quando os números conferem; código 1 quando há divergência de versão, token, hash ou status.

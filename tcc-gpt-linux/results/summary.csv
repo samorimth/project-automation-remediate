@@ -1,0 +1,79 @@
+section,cve_id,repetition,metric,value,numerator,denominator,unit,source,notes
+openai_call,CVE-2024-38428,1,recorded_event,"generate_error:RateLimitError: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}",,,,results/experiments.json#row1,"generate_error:RateLimitError: Error code: 429 - {'error': {'message': 'You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.', 'type': 'insufficient_quota', 'param': None, 'code': 'credit_balance_exhausted'}}"
+openai_call,CVE-2024-38428,1,generation_latency_ms,3370,,,ms,results/experiments.json#row1,
+openai_call,CVE-2024-38428,2,recorded_event,generate_only,,,,results/experiments.json#row2,generate_only;reasoning_effort=none;reasoning_tokens=0
+openai_call,CVE-2024-38428,2,generation_latency_ms,6201,,,ms,results/experiments.json#row2,
+openai_call,CVE-2024-38428,2,prompt_tokens,585,,,tokens,results/experiments.json#row2,
+openai_call,CVE-2024-38428,2,completion_tokens,548,,,tokens,results/experiments.json#row2,
+openai_call,CVE-2024-38428,2,total_tokens,1133,,,tokens,results/experiments.json#row2,
+validation_event,CVE-2024-38428,2,recorded_event,validate,,,,results/experiments.json#row3,validate
+validation_event,CVE-2024-38428,2,validation_passed,0,,,,results/experiments.json#row3,
+validation_event,CVE-2024-38428,2,recorded_event,validate,,,,results/experiments.json#row4,validate
+validation_event,CVE-2024-38428,2,validation_passed,1,,,,results/experiments.json#row4,
+execution,CVE-2024-38428,2,recorded_event,execute,,,,results/experiments.json#row5,execute
+execution,CVE-2024-38428,2,execution_status,Success,,,,results/experiments.json#row5,
+execution,CVE-2024-38428,2,version_before,1.21.4-1ubuntu4,,,,results/experiments.json#row5,
+execution,CVE-2024-38428,2,version_after,1.21.4-1ubuntu4.5,,,,results/experiments.json#row5,
+execution,CVE-2024-38428,2,remediation_success,1,,,,results/experiments.json#row5,
+openai_call,CVE-2024-38428,3,recorded_event,generate_only,,,,results/experiments.json#row6,generate_only;reasoning_effort=none;reasoning_tokens=0
+openai_call,CVE-2024-38428,3,generation_latency_ms,6834,,,ms,results/experiments.json#row6,
+openai_call,CVE-2024-38428,3,prompt_tokens,585,,,tokens,results/experiments.json#row6,
+openai_call,CVE-2024-38428,3,completion_tokens,695,,,tokens,results/experiments.json#row6,
+openai_call,CVE-2024-38428,3,total_tokens,1280,,,tokens,results/experiments.json#row6,
+validation_event,CVE-2024-38428,3,recorded_event,validate,,,,results/experiments.json#row7,validate
+validation_event,CVE-2024-38428,3,validation_passed,1,,,,results/experiments.json#row7,
+execution,CVE-2024-38428,3,recorded_event,execute,,,,results/experiments.json#row8,execute
+execution,CVE-2024-38428,3,execution_status,Success,,,,results/experiments.json#row8,
+execution,CVE-2024-38428,3,version_before,1.21.4-1ubuntu4,,,,results/experiments.json#row8,
+execution,CVE-2024-38428,3,version_after,1.21.4-1ubuntu4.5,,,,results/experiments.json#row8,
+execution,CVE-2024-38428,3,remediation_success,1,,,,results/experiments.json#row8,
+openai_call,CVE-2024-38428,4,recorded_event,generate_only,,,,results/experiments.json#row9,generate_only;reasoning_effort=none;reasoning_tokens=0
+openai_call,CVE-2024-38428,4,generation_latency_ms,5625,,,ms,results/experiments.json#row9,
+openai_call,CVE-2024-38428,4,prompt_tokens,585,,,tokens,results/experiments.json#row9,
+openai_call,CVE-2024-38428,4,completion_tokens,651,,,tokens,results/experiments.json#row9,
+openai_call,CVE-2024-38428,4,total_tokens,1236,,,tokens,results/experiments.json#row9,
+validation_event,CVE-2024-38428,4,recorded_event,validate,,,,results/experiments.json#row10,validate
+validation_event,CVE-2024-38428,4,validation_passed,1,,,,results/experiments.json#row10,
+execution,CVE-2024-38428,4,recorded_event,execute,,,,results/experiments.json#row11,execute
+execution,CVE-2024-38428,4,execution_status,Success,,,,results/experiments.json#row11,
+execution,CVE-2024-38428,4,version_before,1.21.4-1ubuntu4,,,,results/experiments.json#row11,
+execution,CVE-2024-38428,4,version_after,1.21.4-1ubuntu4.5,,,,results/experiments.json#row11,
+execution,CVE-2024-38428,4,remediation_success,1,,,,results/experiments.json#row11,
+validation_preserved,CVE-2024-38428,2,level1_syntax_passed,1,,,,generated_scripts/CVE-2024-38428/rep02/validation.json,
+validation_preserved,CVE-2024-38428,2,level2_shellcheck_passed,1,,,,generated_scripts/CVE-2024-38428/rep02/validation.json,
+validation_preserved,CVE-2024-38428,2,level2_errors,0,,,count,generated_scripts/CVE-2024-38428/rep02/validation.json,
+validation_preserved,CVE-2024-38428,2,level2_info_or_warning,1,,,count,generated_scripts/CVE-2024-38428/rep02/validation.json,
+validation_preserved,CVE-2024-38428,2,level3_security_passed,1,,,,generated_scripts/CVE-2024-38428/rep02/validation.json,
+validation_preserved,CVE-2024-38428,3,level1_syntax_passed,1,,,,generated_scripts/CVE-2024-38428/rep03/validation.json,
+validation_preserved,CVE-2024-38428,3,level2_shellcheck_passed,1,,,,generated_scripts/CVE-2024-38428/rep03/validation.json,
+validation_preserved,CVE-2024-38428,3,level2_errors,0,,,count,generated_scripts/CVE-2024-38428/rep03/validation.json,
+validation_preserved,CVE-2024-38428,3,level2_info_or_warning,1,,,count,generated_scripts/CVE-2024-38428/rep03/validation.json,
+validation_preserved,CVE-2024-38428,3,level3_security_passed,1,,,,generated_scripts/CVE-2024-38428/rep03/validation.json,
+validation_preserved,CVE-2024-38428,4,level1_syntax_passed,1,,,,generated_scripts/CVE-2024-38428/rep04/validation.json,
+validation_preserved,CVE-2024-38428,4,level2_shellcheck_passed,1,,,,generated_scripts/CVE-2024-38428/rep04/validation.json,
+validation_preserved,CVE-2024-38428,4,level2_errors,0,,,count,generated_scripts/CVE-2024-38428/rep04/validation.json,
+validation_preserved,CVE-2024-38428,4,level2_info_or_warning,3,,,count,generated_scripts/CVE-2024-38428/rep04/validation.json,
+validation_preserved,CVE-2024-38428,4,level3_security_passed,1,,,,generated_scripts/CVE-2024-38428/rep04/validation.json,
+rate,CVE-2024-38428,,syntax_pass_among_generated_scripts,1.0000,3,3,ratio,generated_scripts/CVE-2024-38428/rep*/validation.json,validation.json preservado; a chamada sem script fica de fora
+rate,CVE-2024-38428,,static_analysis_pass_among_generated_scripts,1.0000,3,3,ratio,generated_scripts/CVE-2024-38428/rep*/validation.json,passou sem erro ShellCheck; avisos info permanecem contados à parte
+rate,CVE-2024-38428,,security_pass_among_recorded_validation_events,0.7500,3,4,ratio,results/experiments.json,inclui a primeira reprovação da repetição 2
+rate,CVE-2024-38428,,security_pass_among_preserved_final_validations,1.0000,3,3,ratio,generated_scripts/CVE-2024-38428/rep*/validation.json,último validation.json de cada script; a primeira reprovação foi sobrescrita
+rate,CVE-2024-38428,,remediation_among_executions,1.0000,3,3,ratio,results/experiments.json,remediation_success verdadeiro no ledger e conferido na evidência SSM
+rate,CVE-2024-38428,,remediation_among_openai_calls,0.7500,3,4,ratio,results/experiments.json,a chamada HTTP 429 não gerou script e não entra como remediação
+openai_call,CVE-2024-38428,,calls_total,4,,,count,results/experiments.json,
+openai_call,CVE-2024-38428,,calls_http_429,1,,,count,results/experiments.json,
+openai_call,CVE-2024-38428,,calls_with_script,3,,,count,results/experiments.json,
+validation_event,CVE-2024-38428,,events_failed,1,,,count,results/experiments.json,
+aws_provisioning,CVE-2024-38428,,attempt_4_apply,not_run,,,,results/CVE-2024-38428/execucao_bloqueada.json,Organizations SCP explicit deny on EC2 for IAM user cursor_agent (policy p-xikt6vmn) still present in Environment AWS_DEFAULT_REGION; IAM managed policies do not override SCP Deny
+aws_provisioning,CVE-2024-38428,,attempt_5_apply,succeeded,,,,scenarios/CVE-2024-38428/evidence/before.json,resources_added=18; instance=i-04da3315297ec6c04
+aws_provisioning,CVE-2024-38428,,cleanup_items_ok,14,,,count,scenarios/CVE-2024-38428/evidence/cleanup-fase3.json,
+openai_not_called,CVE-2024-38428,,blocked_without_api_key,1,,,count,scenarios/CVE-2024-38428/evidence/fase3_generate_blocked.json,generate not_run; não entra no denominador de chamadas à API
+execution_refused_locally,CVE-2024-38428,1,ssm_command_sent,0,,,,results/CVE-2024-38428/fase3_generate_status.json,Recusado localmente: não há remediation.sh com validação aprovada.
+baseline_restore,CVE-2024-38428,3,prepare_restored_vulnerable_version,1,,,,scenarios/CVE-2024-38428/evidence/ssm-prepare-rep03.json,command_id=5efc87f2-17d8-4ffb-bd51-fb86b6213ef5
+baseline_restore,CVE-2024-38428,4,prepare_restored_vulnerable_version,1,,,,scenarios/CVE-2024-38428/evidence/ssm-prepare-rep04.json,command_id=74060d56-31d9-46db-8a10-1f3423bd05c4
+revalidation_fase6,CVE-2024-38428,2,passed,1,,,,results/fase6/revalidation/rep02/validation.json,Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2.
+revalidation_fase6,CVE-2024-38428,2,matches_preserved_passed,1,,,,results/fase6/revalidation/rep02/validation.json,
+revalidation_fase6,CVE-2024-38428,3,passed,1,,,,results/fase6/revalidation/rep03/validation.json,Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2.
+revalidation_fase6,CVE-2024-38428,3,matches_preserved_passed,1,,,,results/fase6/revalidation/rep03/validation.json,
+revalidation_fase6,CVE-2024-38428,4,passed,1,,,,results/fase6/revalidation/rep04/validation.json,Revisão com o validador atual. Não substitui o validation.json da época da execução nem a primeira reprovação da repetição 2.
+revalidation_fase6,CVE-2024-38428,4,matches_preserved_passed,1,,,,results/fase6/revalidation/rep04/validation.json,

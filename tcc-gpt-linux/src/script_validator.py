@@ -109,6 +109,7 @@ def validate_script(
     *,
     package_name: str,
     shellcheck_bin: str | None = None,
+    persist_dir: Path | None = None,
 ) -> ValidationReport:
     text = script_path.read_text(encoding="utf-8")
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -139,8 +140,14 @@ def validate_script(
         findings=findings,
         executable_allowed=passed,
     )
-    _apply_executable_bit(script_path, allowed=passed)
-    _write_report(script_path, report)
+    if persist_dir is None:
+        _apply_executable_bit(script_path, allowed=passed)
+        _write_report(script_path, report)
+    else:
+        # Revisão posterior: grava o laudo à parte e não altera o script nem
+        # o validation.json original do experimento.
+        persist_dir.mkdir(parents=True, exist_ok=True)
+        _write_report(script_path, report, directory=persist_dir)
     return report
 
 
@@ -385,8 +392,12 @@ def _apply_executable_bit(script_path: Path, *, allowed: bool) -> None:
         script_path.chmod(mode & ~0o111)
 
 
-def _write_report(script_path: Path, report: ValidationReport) -> None:
-    directory = script_path.parent
+def _write_report(
+    script_path: Path,
+    report: ValidationReport,
+    directory: Path | None = None,
+) -> None:
+    directory = script_path.parent if directory is None else directory
     (directory / "validation.json").write_text(
         json.dumps(report.to_dict(), ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",

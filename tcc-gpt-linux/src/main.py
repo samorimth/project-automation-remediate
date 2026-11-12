@@ -33,7 +33,8 @@ def build_parser() -> argparse.ArgumentParser:
         prog="python -m src.main",
         description=(
             "Laboratório do TCC. check/provision/cleanup (Fase 1); "
-            "generate/validate/execute/verify (Fase 3). "
+            "generate/validate/execute/verify (Fase 3); "
+            "report (Fase 6, só lê evidências já gravadas). "
             "Execute de script IA exige autorização explícita."
         ),
     )
@@ -92,7 +93,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     commands.add_parser(
         "report",
-        help="Inativo nesta fase. Reservado para a Fase 6.",
+        help="Consolida evidências já gravadas em summary.csv e gráficos. Não chama AWS nem OpenAI.",
     )
     return parser
 
@@ -293,11 +294,9 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "verify":
             return command_verify(args.cve, args.instance_id, args.dir)
         if args.command == "report":
-            print(
-                "O comando report pertence à Fase 6 e ainda não está ativo. "
-                "Nenhuma figura fictícia foi gerada."
-            )
-            return 2
+            from .fase6_report import generate_report
+
+            return generate_report()
         raise ConfigError(f"Comando desconhecido: {args.command}")
     except (AuthorizationError, ConfigError) as exc:
         print(str(exc), file=sys.stderr)

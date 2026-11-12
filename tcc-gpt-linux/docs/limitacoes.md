@@ -2,7 +2,7 @@
 
 ## Limitações desta fase
 
-A infraestrutura está aplicada em `us-east-2` (NAT + EC2) e o estado vulnerável de `wget` foi provado. A Fase 3 adiciona integração OpenAI e validação, mas:
+A pilha de `us-east-2` foi destruída depois das repetições. O estado vulnerável de `wget` e as três remediações ficam registrados nas evidências. A Fase 6 apenas consolida esses arquivos. Limitações que permanecem:
 
 - `OPENAI_API_KEY` presente no ambiente não basta se a organização OpenAI estiver sem créditos. Em 12 de novembro de 2026, 07:44 (horário de Brasília), `generate` com `gpt-4.1` recebeu HTTP 429 `insufficient_quota`. Com créditos e `gpt-6-luna`, a repetição 2 de CVE-2024-38428 gerou, validou e corrigiu o `wget`. <!-- pragma: allowlist secret -->
 - `validate` e `execute` recusam a repetição quando `remediation.sh` não existe ou não passou na validação. `execute` não envia comando ao SSM nesse caso.
