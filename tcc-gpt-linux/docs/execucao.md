@@ -67,9 +67,10 @@ Versões oficiais (USN-6852-1 / OSV / Ubuntu CVE Tracker): vulnerável `1.21.4-1
 Em 2026-11-12 o usuário autorizou recursos pagos (`Sim, autorizo` → `enable_nat_gateway`, `enable_execution`, `AUTORIZO_RECURSOS_PAGOS`).
 
 - Tentativas 1–2: **BLOQUEADO** por ausência de `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` no run.
-- Tentativa 3: credenciais presentes; `aws sts get-caller-identity` OK (usuário IAM `cursor_agent`); `terraform.tfvars` local com NAT + execução; `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS` executado. O apply **falhou** com **deny explícito de SCP** (`p-xikt6vmn`) em APIs EC2 (`DescribeAvailabilityZones`, `DescribeImages`, etc.) em `regiao-padrao-lab` e `sa-east-1`. **Nenhum recurso criado** (sem estado Terraform). Classificação: **BLOQUEADO**. Evidência: `scenarios/CVE-2024-38428/evidence/`.
+- Tentativa 3: credenciais presentes; `aws sts get-caller-identity` OK (usuário IAM `cursor_agent`); `terraform.tfvars` local com NAT + execução; `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS` executado. O apply **falhou** com **deny explícito de SCP** (`p-xikt6vmn`) em APIs EC2 (`DescribeAvailabilityZones`, `DescribeImages`, etc.) em `regiao-padrao-lab` e `sa-east-1`. **Nenhum recurso criado** (sem estado Terraform). Classificação: **BLOQUEADO**.
+- Tentativa 4 (retry “Tente novamente”): STS OK; probe `aws ec2 describe-availability-zones --region "$AWS_DEFAULT_REGION"` ainda **403** por SCP `p-xikt6vmn`; **apply não executado**. Políticas IAM (`AmazonEC2FullAccess`, etc.) não removem deny de SCP. Evidência: `scenarios/CVE-2024-38428/evidence/`.
 
-Próximo passo: liberar EC2/VPC/IAM/SSM para `cursor_agent` na Organizations/IAM e repetir o provisionamento. Quando o apply for bem-sucedido, a limpeza exigirá `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
+Próximo passo: administrador da Organizations deve remover/estreitar o deny da SCP `p-xikt6vmn` para EC2/VPC; validar o probe na região do Environment (`AWS_DEFAULT_REGION`); só então repetir o provisionamento. Quando o apply for bem-sucedido, a limpeza exigirá `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
 
 ## Comandos das fases seguintes
 

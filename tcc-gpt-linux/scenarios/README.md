@@ -14,11 +14,11 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 | Chamada à API OpenAI | **não** |
 | Script gerado por GPT | **não** |
 | Resultado experimental inventado | **não** |
-| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** (tentativa 3) |
+| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** (tentativa 4) |
 
 ### Bloqueio atual: SCP / permissões EC2
 
-Credenciais AWS já estão no Environment (`sts get-caller-identity` OK, usuário `cursor_agent`). O Organizations SCP `p-xikt6vmn` nega explicitamente APIs EC2 em `regiao-padrao-lab` e `sa-east-1`. Liberar EC2/VPC/NAT/IAM/SSM para esse usuário e repetir o provisionamento; só então rodar `prepare.sh` / `verify_before.sh` via SSM.
+Credenciais AWS já estão no Environment (`sts get-caller-identity` OK, usuário `cursor_agent`). Managed policies IAM (ex.: `AmazonEC2FullAccess`) **não** bastam: o Organizations SCP `p-xikt6vmn` ainda nega explicitamente APIs EC2 (probe em `AWS_DEFAULT_REGION` (Environment) na tentativa 4). Um admin da Organizations precisa remover/estreitar esse deny; depois repetir o provisionamento e só então rodar `prepare.sh` / `verify_before.sh` via SSM.
 
 ## Critérios usados na seleção
 
