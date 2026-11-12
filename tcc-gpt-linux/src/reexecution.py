@@ -291,7 +291,7 @@ def _initial_ok(parsed: dict[str, str]) -> bool:
     )
 
 
-def terraform_apply() -> dict[str, Any]:
+def terraform_apply(experiment_id: str = EXPERIMENT_ID) -> dict[str, Any]:
     init = subprocess.run(
         ["terraform", "init", "-input=false"],
         cwd=TERRAFORM_DIR,
@@ -321,7 +321,7 @@ def terraform_apply() -> dict[str, Any]:
             "-var",
             "max_simultaneous_instances=1",
             "-var",
-            f"experiment_id={EXPERIMENT_ID}",
+            f"experiment_id={experiment_id}",
             "-var",
             "environment=lab",
             "-var",
@@ -371,7 +371,14 @@ def _block_devices(ec2: Any, ami_id: str) -> list[dict[str, Any]]:
     return mappings
 
 
-def launch_instance(ec2: Any, outputs: dict[str, Any], ami_id: str, name: str, role: str) -> str:
+def launch_instance(
+    ec2: Any,
+    outputs: dict[str, Any],
+    ami_id: str,
+    name: str,
+    role: str,
+    experiment_id: str = EXPERIMENT_ID,
+) -> str:
     response = ec2.run_instances(
         ImageId=ami_id,
         InstanceType=INSTANCE_TYPE,
@@ -393,7 +400,7 @@ def launch_instance(ec2: Any, outputs: dict[str, Any], ami_id: str, name: str, r
                 "Tags": [
                     {"Key": "Name", "Value": name},
                     {"Key": "Project", "Value": "tcc-gpt-linux"},
-                    {"Key": "ExperimentId", "Value": EXPERIMENT_ID},
+                    {"Key": "ExperimentId", "Value": experiment_id},
                     {"Key": "Environment", "Value": "lab"},
                     {"Key": "Purpose", "Value": "tcc-lab"},
                     {"Key": "Role", "Value": role},

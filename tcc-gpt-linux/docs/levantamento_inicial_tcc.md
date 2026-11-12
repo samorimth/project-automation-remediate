@@ -1,5 +1,7 @@
 # Levantamento inicial do laboratório
 
+Atualização da noite de 12 de novembro de 2026: a CVE-2024-32487 foi aprovada e executada. O resultado está em `docs/resultado_cve_2024_32487.md`. As seções abaixo descrevem o levantamento feito antes dessa execução.
+
 Texto de apoio à pré-banca de 16 de novembro de 2026. Os números abaixo vêm de arquivos já gravados. O que ainda não foi feito está marcado como planejado.
 
 ## 1. Objetivo
