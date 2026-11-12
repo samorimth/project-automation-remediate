@@ -100,3 +100,14 @@ Depois das repetições, a pilha com tag `Project=tcc-gpt-linux` e `ExperimentId
 `results/experimental_runs.csv` separa o booleano histórico `recorded_remediation_success` da classificação deste protocolo. As repetições 2, 3 e 4 continuam com remediação 1, porque a versão subiu de `1.21.4-1ubuntu4` para `1.21.4-1ubuntu4.5`. A classificação é INCONCLUSIVO: a mesma EC2 executou os três scripts e não há teste funcional do `wget` nem saída de scanner. A repetição 1 é NAO_EXECUTADO. Essas três taxas de 3/3 descrevem este conjunto, não outras CVEs.
 
 As tabelas separadas são `results/infrastructure_attempts.csv`, `results/api_calls.csv` e `results/experimental_runs.csv`. A chamada HTTP 429 está só na tabela de API. Os gráficos com os nomes em inglês pedidos para o TCC estão ao lado dos gráficos em português: `syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`. O gráfico de custo usa a tabela pública e omite a chamada sem tokens.
+
+## Reexecução de 12 de novembro, conjunto separado
+
+À tarde, os três scripts originais voltaram a ser executados, sem nova chamada à API. A AMI privada foi `ami-03629c5c47c71759b`. Cada script teve uma EC2 própria. O detalhe está em `docs/reexecucao_resultado.md`.
+
+| Conjunto | Instâncias | Versão final | Classificação gravada |
+| --- | --- | --- | --- |
+| Sonda `file://` | `i-0f4cd4e8ed81eb263`, `i-0553b8cad05d9a487`, `i-04bab8319ea0dd9a3` | `1.21.4-1ubuntu4.5` | FALHA da sonda: o `wget` deste Ubuntu responde `Unsupported scheme` |
+| HTTP em `127.0.0.1` | `i-0fcb8ab88a727b409`, `i-0ab458c87a79d078b`, `i-0a086264652dd0b86` | `1.21.4-1ubuntu4.5` | SUCESSO nas três |
+
+O `file://` também falhou no estado vulnerável da passagem HTTP. Essa falha não é permanência da versão vulnerável. Os dois conjuntos não entram nas taxas de `results/summary.csv`, que continuam sendo as do ledger histórico.

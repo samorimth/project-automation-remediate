@@ -4,7 +4,7 @@ flowchart TD
     prepare[prepare.sh --apply entre as repeticoes 3 e 4]
     mesmaEc2 --> prepare --> mesmaEc2
   end
-  subgraph planejado [Fluxo exigido daqui em diante]
+  subgraph usado [Usado na reexecucao do wget em 12/11/2026]
     ami[AMI privada de referencia]
     nova[EC2 nova para um unico script]
     antes[Verificacao before.json]

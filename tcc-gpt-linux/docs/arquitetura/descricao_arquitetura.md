@@ -21,4 +21,4 @@ O modelo não valida a própria correção. A eficácia usada nos resultados é 
 
 A instância Windows do CopySpider não integra o diagrama. Ela permanece fora desta VPC e desta pilha.
 
-Os arquivos `arquitetura.mmd`, `arquitetura.svg` e `arquitetura.png` distinguem o desenho histórico (uma EC2 a partir da AMI pública, restaurada com `prepare.sh`) do desenho planejado (AMI privada e uma EC2 nova por script, com destruição só dessa instância). Os arquivos `fluxo_experimental.*` repetem essa distinção no fluxograma. A reexecução planejada ainda não ocorreu.
+Os arquivos `arquitetura.mmd`, `arquitetura.svg` e `arquitetura.png` distinguem o experimento histórico (uma EC2 a partir da AMI pública, restaurada com `prepare.sh`) do padrão usado na reexecução do `wget` em 12 de novembro de 2026 (AMI privada `ami-03629c5c47c71759b` e uma EC2 nova por script). A segunda CVE ainda não foi executada. As figuras estão em página A4 horizontal.

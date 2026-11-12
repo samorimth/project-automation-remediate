@@ -757,7 +757,7 @@ def _write_flow(directory: Path) -> None:
         (60, 30, 22, 12, "SSM Run\nCommand"),
         (32, 30, 24, 12, "EC2 privada\nUbuntu 24.04"),
         (4, 30, 24, 12, "verify\ndpkg"),
-        (32, 8, 50, 12, "Planejado: EC2 nova da AMI\nHistórico: prepare.sh na mesma EC2"),
+        (32, 8, 50, 12, "Reexecução: EC2 nova da AMI\nHistórico: prepare.sh na mesma EC2"),
     ]
     for x, y, w, h, label in boxes:
         ax.add_patch(
@@ -800,7 +800,7 @@ def _write_flow(directory: Path) -> None:
     fig.text(
         0.01,
         0.01,
-        "Histórico: uma EC2 e prepare.sh entre as repetições 3 e 4. Planejado: uma EC2 nova, da mesma AMI, para cada script.",
+        "Histórico: uma EC2 e prepare.sh entre as repetições 3 e 4. Reexecução do wget: uma EC2 nova da AMI privada para cada script.",
         fontsize=8,
     )
     fig.tight_layout(rect=(0, 0.04, 1, 1))
@@ -1011,7 +1011,7 @@ _FLOW_MMD = """flowchart TD
     prepare[prepare.sh --apply entre as repeticoes 3 e 4]
     mesmaEc2 --> prepare --> mesmaEc2
   end
-  subgraph planejado [Fluxo exigido daqui em diante]
+  subgraph usado [Usado na reexecucao do wget em 12/11/2026]
     ami[AMI privada de referencia]
     nova[EC2 nova para um unico script]
     antes[Verificacao before.json]
@@ -1047,7 +1047,7 @@ _FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
     <rect x="40" y="250" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
     <text x="150" y="290">verify por dpkg</text>
     <rect x="320" y="470" width="500" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="570" y="502">Planejado: EC2 nova da AMI de referência</text>
+    <text x="570" y="502">Reexecução: EC2 nova da AMI privada</text>
     <text x="570" y="522">Histórico: prepare.sh na mesma EC2</text>
   </g>
   <g stroke="#222222" fill="none" stroke-width="1.4">
@@ -1059,6 +1059,6 @@ _FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
     <path d="M600 285 H540"/>
     <path d="M320 285 H260"/>
   </g>
-  <text x="40" y="690" font-family="sans-serif" font-size="13" fill="#333333">O histórico reutilizou uma EC2. O fluxo planejado cria e destrói uma instância por script, a partir da mesma AMI privada.</text>
+  <text x="40" y="690" font-family="sans-serif" font-size="13" fill="#333333">O histórico reutilizou uma EC2. A reexecução do wget criou e destruiu uma instância por script. A segunda CVE ainda não rodou.</text>
 </svg>
 """

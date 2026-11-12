@@ -37,6 +37,12 @@ Mesmo template, mesmo cenário e estado vulnerável inicial conhecido. Todas as 
 
 `python -m src.main report` calcula taxas, latência e tokens a partir do ledger e das evidências já gravadas. O denominador de cada taxa fica explícito: script gerado, evento de validação, execução ou chamada à API. A releitura dos scripts com o validador atual vai para `results/fase6/revalidation/` e para `results/revalidation.json`. Esses arquivos não substituem o `validation.json` da época da execução.
 
+## Escopo de 12 de novembro de 2026
+
+O laboratório passa a ter duas CVEs, não dez execuções. A primeira é a CVE-2024-38428, já executada. A segunda está proposta em `scenarios/CVE-2024-32487/scenario.md` e ainda não foi aprovada nem executada. Não há terceira CVE nesta etapa.
+
+Cada CVE deve ter três gerações com o mesmo modelo, o mesmo prompt e os mesmos parâmetros. Cada script aprovado roda uma vez, em uma EC2 criada da AMI privada daquela CVE. O total planejado é seis scripts e até seis execuções. As três gerações do `wget` já existem. A reexecução delas não gerou scripts novos.
+
 ## Por que a próxima execução pede uma EC2 nova
 
 As repetições 2, 3 e 4 rodaram na instância `i-04da3315297ec6c04`. As repetições 3 e 4 só voltaram ao pacote vulnerável porque `prepare.sh --apply` reinstalou o `.deb` na mesma máquina. Esse procedimento não entra no desenho daqui em diante.
