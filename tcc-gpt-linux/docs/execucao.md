@@ -73,7 +73,19 @@ Artefatos de cada repetição ficam em `generated_scripts/CVE-2024-38428/repXX/`
 | `validate --cve CVE-2024-38428` | 1 | `remediation.sh` ausente em `rep01`. |
 | `execute ... --authorize AUTORIZO_EXECUCAO_SCRIPT_IA` | 1 | Recusado localmente. Nenhum comando SSM. |
 
-A conta OpenAI precisa de créditos antes de uma nova geração. A instância de laboratório não foi modificada.
+A conta OpenAI precisa de créditos antes de uma nova geração. A instância de laboratório não foi modificada nessa tentativa.
+
+## Tentativa de 12 de novembro de 2026, 08:18 (horário de Brasília)
+
+`OPENAI_MODEL=gpt-6-luna`, com `reasoning_effort=none` e `temperature` 0.2. A EC2 `i-04da3315297ec6c04` estava `running`, SSM Online. <!-- pragma: allowlist secret -->
+
+| Comando | Código | Resultado |
+| --- | --- | --- |
+| `generate --cve CVE-2024-38428` | 0 | `rep02`, 6201 ms, 1133 tokens, 0 de raciocínio |
+| `validate` na primeira passagem | 1 | checklist tratou `$PACKAGE` e `||` como pacotes fora do escopo |
+| `validate` após o ajuste do checklist | 0 | `bash -n`, ShellCheck e Nível 3 aprovados |
+| `execute` com a frase de autorização | 0 | SSM Success. Antes `1.21.4-1ubuntu4`; depois `1.21.4-1ubuntu4.5` |
+| `verify` | 0 | `corrigido_por_versao`, independente do texto do modelo |
 
 ## Preparação documentada da CVE aprovada
 
@@ -83,7 +95,7 @@ Versões oficiais (USN-6852-1): vulnerável `1.21.4-1ubuntu4`; corrigida `1.21.4
 
 ## Estado da infraestrutura (Fase 2)
 
-Tentativa 5 em `us-east-2`: instância `i-04da3315297ec6c04`, SSM Online, `wget=1.21.4-1ubuntu4` (**vulnerável_por_versão**). Evidência: `scenarios/CVE-2024-38428/evidence/`.
+Tentativa 5 em `us-east-2`: instância `i-04da3315297ec6c04`, SSM Online, `wget=1.21.4-1ubuntu4` (**vulnerável_por_versão**). Evidência: `scenarios/CVE-2024-38428/evidence/`. Depois da repetição 2, a verificação independente registrou `wget=1.21.4-1ubuntu4.5`.
 
 **Custo ativo:** NAT + EIP + `t3.small` em `us-east-2` até:
 

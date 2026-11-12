@@ -20,7 +20,7 @@ Este diretório contém o laboratório do TCC. Fases 1–2 concluídas (infra + 
 - Python 3.11 ou superior.
 - Terraform 1.6 ou superior.
 - `shellcheck` no PATH (validação Nível 2).
-- `OPENAI_API_KEY` / `OPENAI_MODEL` para `generate`, com saldo na organização OpenAI. Sem créditos, a API responde `insufficient_quota` e nenhum script é gravado.
+- `OPENAI_API_KEY` / `OPENAI_MODEL` para `generate`, com saldo na organização OpenAI. O experimento usa `gpt-6-luna` com `reasoning_effort=none`. Sem créditos, a API responde `insufficient_quota` e nenhum script é gravado. <!-- pragma: allowlist secret -->
 
 ```bash
 python3 -m venv .venv

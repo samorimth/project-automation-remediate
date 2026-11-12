@@ -18,6 +18,26 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+_SHELL_OPERATORS = {
+    "||",
+    "&&",
+    ";",
+    "|",
+    "&",
+    "(",
+    ")",
+    "{",
+    "}",
+    "then",
+    "do",
+    "done",
+    "fi",
+    "else",
+    "elif",
+    "if",
+}
+
+
 # Critérios objetivos do Nível 3 (documentados para o TCC).
 LEVEL3_CRITERIA = {
     "destructive_commands": (
@@ -135,6 +155,47 @@ def is_execution_allowed(script_path: Path) -> bool:
     return script_path.is_file() and bool(script_path.stat().st_mode & 0o111)
 
 
+def _simple_assignments(text: str) -> dict[str, str]:
+    """Atribuições simples VAR=valor no início da linha, sem avaliar o shell."""
+    assigned: dict[str, str] = {}
+    pattern = re.compile(
+        r"(?m)^[ \t]*(?:readonly[ \t]+)?"
+        r"([A-Za-z_][A-Za-z0-9_]*)=(?:\"([^\"]*)\"|'([^']*)'|([^\s#]+))"
+    )
+    for match in pattern.finditer(text):
+        value = next(group for group in match.groups()[1:] if group is not None)
+        assigned[match.group(1)] = value
+    return assigned
+
+
+def _resolved_package_name(token: str, assigned: dict[str, str]) -> str | None:
+    """Nome de pacote de um argumento apt, ou None se o token não é pacote."""
+    if token.startswith("-") or token in _SHELL_OPERATORS:
+        return None
+    stripped = token.strip("'\"")
+    if stripped in _SHELL_OPERATORS or stripped.startswith("-"):
+        return None
+    if stripped.startswith("$"):
+        var = stripped[1:]
+        if var.startswith("{") and var.endswith("}"):
+            var = var[1:-1]
+        var = var.split(":", 1)[0]
+        resolved = assigned.get(var)
+        if resolved is None:
+            return stripped
+        return resolved.split("=", 1)[0]
+    return stripped.split("=", 1)[0]
+
+
+def _package_reference_pattern(package_name: str, assigned: dict[str, str]) -> str:
+    refs = [re.escape(package_name)]
+    for name, value in assigned.items():
+        if value.split("=", 1)[0].lower() == package_name.lower():
+            refs.append(re.escape(f"${name}"))
+            refs.append(re.escape(f"${{{name}}}"))
+    return "|".join(refs)
+
+
 def _level1_bash_n(script_path: Path) -> CheckResult:
     completed = subprocess.run(
         ["bash", "-n", str(script_path)],
@@ -209,7 +270,11 @@ def _level3_security(text: str, *, package_name: str) -> CheckResult:
                 }
             )
 
-    # Pacotes fora do escopo: apt(-get) install/remove/purge de nomes != package
+    assigned = _simple_assignments(text)
+    package_ref = _package_reference_pattern(package_name, assigned)
+
+    # Pacotes fora do escopo: apt(-get) install/remove/purge de nomes != package.
+    # Variável atribuída ao pacote-alvo e operadores de shell não contam.
     for match in re.finditer(
         r"apt(?:-get)?\s+(?:install|remove|purge)\s+([^\n#]+)",
         text,
@@ -217,15 +282,14 @@ def _level3_security(text: str, *, package_name: str) -> CheckResult:
     ):
         args = match.group(1)
         for raw_token in args.split():
-            if raw_token.startswith("-"):
+            name = _resolved_package_name(raw_token, assigned)
+            if name is None:
                 continue
-            token = raw_token
-            name = token.split("=", 1)[0].lower()
-            if name != package_name.lower():
+            if name.lower() != package_name.lower():
                 issues.append(
                     {
                         "rule": "out_of_scope_packages",
-                        "detail": f"Pacote fora do escopo: {token}",
+                        "detail": f"Pacote fora do escopo: {raw_token}",
                     }
                 )
 
@@ -288,12 +352,7 @@ def _level3_security(text: str, *, package_name: str) -> CheckResult:
     package_mentioned = package_name.lower() in lowered
     apt_remediation = bool(
         re.search(
-            rf"apt-get\s+(install|upgrade).*{re.escape(package_name)}",
-            text,
-            re.IGNORECASE,
-        )
-        or re.search(
-            rf"apt\s+(install|upgrade).*{re.escape(package_name)}",
+            rf"apt(?:-get)?\s+(?:install|upgrade).*({package_ref})",
             text,
             re.IGNORECASE,
         )

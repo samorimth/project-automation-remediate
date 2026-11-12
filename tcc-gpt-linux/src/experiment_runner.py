@@ -48,7 +48,7 @@ def run_generate(settings: Settings, cve_id: str) -> GenerationResult:
         version_before=None,
         version_after=None,
         remediation_success=None,
-        notes="generate_only" if result.ok else f"generate_error:{result.error}",
+        notes=_generate_note(result),
     )
     append_experiment(metrics)
     return result
@@ -184,6 +184,15 @@ def run_verify(
         output_dir=Path(directory),
     )
     return check.to_dict()
+
+
+def _generate_note(result: GenerationResult) -> str:
+    note = "generate_only" if result.ok else f"generate_error:{result.error}"
+    if result.reasoning_effort:
+        note = f"{note};reasoning_effort={result.reasoning_effort}"
+    if result.reasoning_tokens is not None:
+        note = f"{note};reasoning_tokens={result.reasoning_tokens}"
+    return note
 
 
 def _read_model(directory: Path) -> str | None:
