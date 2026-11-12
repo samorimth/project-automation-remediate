@@ -10,15 +10,15 @@ Este diretório registra candidatos a CVE para o laboratório. A **CVE-2024-3842
 | Autorização recursos pagos | **recebida** (`Sim, autorizo`) |
 | AMI / EC2 vulnerável preparada | **não** |
 | Recurso pago AWS criado | **não** |
-| `terraform apply` / `destroy` | **não executados** (BLOQUEADO: credenciais AWS ausentes) |
+| `terraform apply` / `destroy` | apply **tentado** e **falhou** (BLOQUEADO: SCP nega EC2); destroy não necessário |
 | Chamada à API OpenAI | **não** |
 | Script gerado por GPT | **não** |
 | Resultado experimental inventado | **não** |
-| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** |
+| Evidência | `CVE-2024-38428/evidence/` — classificação **BLOQUEADO** (tentativa 3) |
 
-### Bloqueio atual: credenciais AWS
+### Bloqueio atual: SCP / permissões EC2
 
-A autorização humana para NAT/execução/`AUTORIZO_RECURSOS_PAGOS` já existe. Falta disponibilizar no Environment do Cloud Agent: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` (e `AWS_SESSION_TOKEN` se temporário). Depois disso, repetir o provisionamento e só então rodar `prepare.sh` / `verify_before.sh` via SSM.
+Credenciais AWS já estão no Environment (`sts get-caller-identity` OK, usuário `cursor_agent`). O Organizations SCP `p-xikt6vmn` nega explicitamente APIs EC2 em `regiao-padrao-lab` e `sa-east-1`. Liberar EC2/VPC/NAT/IAM/SSM para esse usuário e repetir o provisionamento; só então rodar `prepare.sh` / `verify_before.sh` via SSM.
 
 ## Critérios usados na seleção
 
@@ -60,7 +60,7 @@ Detalhes, links oficiais e procedimentos previstos estão em `scenarios/<CVE>/sc
 
 ## Próximo passo
 
-1. **Ligar credenciais AWS** no Environment do Cloud Agent (sem colar no chat).
+1. **Ajustar SCP/IAM** do usuário `cursor_agent` para permitir EC2/VPC/NAT/IAM/SSM (remover o deny de `p-xikt6vmn` no escopo do laboratório).
 2. **Repetir provisionamento** com `terraform.tfvars` local (`enable_nat_gateway`/`enable_execution`) e `python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS`.
 3. **Preparar/verificar** via SSM; limpeza futura com `python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS`.
 
