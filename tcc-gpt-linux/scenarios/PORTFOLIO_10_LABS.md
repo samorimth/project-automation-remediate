@@ -5,7 +5,7 @@
 **SO alvo:** Ubuntu 24.04 LTS (`noble`), EC2 privada, sem exploração ativa.  
 **Data da proposta:** 21 de novembro de 2026.
 
-Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md`. Analogias para leitores não técnicos (problema / exemplo / correção): [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). O inventário histórico de candidatos CVE permanece em [`README.md`](README.md).
+Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md`. Analogias para leitores não técnicos (problema / exemplo / correção): [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). O inventário histórico de candidatos CVE permanece em [`README.md`](README.md). Pesquisa de CVEs de **alto impacto** (2021–2026) vs. fit do lab: [`CANDIDATOS_ALTO_IMPACTO.md`](CANDIDATOS_ALTO_IMPACTO.md).
 
 ## Inventário pré-proposta
 
