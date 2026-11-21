@@ -1,6 +1,6 @@
 # Cenários do laboratório — inventário e portfólio
 
-Este diretório registra candidatos a laboratório. O **portfólio oficial proposto de 10 labs** (6 CVE + 4 CONFIG) está em [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md).
+Este diretório registra candidatos a laboratório. O **portfólio oficial proposto de 10 labs** (6 CVE + 4 CONFIG) está em [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md). Descrições acessíveis (problema / exemplo prático / correção) para leitores não técnicos: [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md).
 
 ## Estado em 21 de novembro de 2026
 

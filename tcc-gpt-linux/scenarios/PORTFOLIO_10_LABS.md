@@ -5,7 +5,7 @@
 **SO alvo:** Ubuntu 24.04 LTS (`noble`), EC2 privada, sem exploração ativa.  
 **Data da proposta:** 21 de novembro de 2026.
 
-Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md`. O inventário histórico de candidatos CVE permanece em [`README.md`](README.md).
+Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md`. Analogias para leitores não técnicos (problema / exemplo / correção): [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). O inventário histórico de candidatos CVE permanece em [`README.md`](README.md).
 
 ## Inventário pré-proposta
 
