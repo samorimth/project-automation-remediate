@@ -49,6 +49,7 @@ python -m src.main report
 - [docs/resultados_tcc.md](docs/resultados_tcc.md)
 - [docs/arquitetura/descricao_arquitetura.md](docs/arquitetura/descricao_arquitetura.md)
 - [scenarios/README.md](scenarios/README.md)
+- [scenarios/PORTFOLIO_10_LABS.md](scenarios/PORTFOLIO_10_LABS.md) — portfólio proposto de 10 labs (2 executados, 8 pendentes de aprovação)
 - [docs/auditoria_inicial.md](docs/auditoria_inicial.md)
 - [docs/auditoria_validador.md](docs/auditoria_validador.md)
 - [docs/modelo_ia.md](docs/modelo_ia.md)
