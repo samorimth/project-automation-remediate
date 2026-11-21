@@ -8,7 +8,7 @@ Cada lab traz: o **problema** em poucas palavras, um **exemplo prático** do cot
 
 O laboratório **não** reproduz exploração ativa; a prova técnica é versão de pacote (CVE) ou inspeção de configuração/permissões (CONFIG). Detalhes: [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md), [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md) e `scenarios/<id>/scenario.md`.
 
-**Estado:** 2 CVE executadas; 6 CVE selecionadas (pendentes); **3 CONFIG selecionadas**; **1 CONFIG** ainda a escolher.
+**Estado:** 2 CVE executadas; 6 CVE selecionadas (pendentes); **4 CONFIG selecionadas/aprovadas** — portfólio completo (12 labs).
 
 ---
 
@@ -34,9 +34,9 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-## B. CONFIG selecionadas (3/4)
+## B. CONFIG selecionadas / aprovadas (4/4)
 
-### 3. CONFIG-SSH-PERMIT-ROOT — login root via SSH (CONFIG) — SELECIONADA
+### 3. CONFIG-SSH-PERMIT-ROOT — login root via SSH (CONFIG) — SELECIONADA / APROVADA
 
 **Problema.** O servidor de acesso remoto (SSH) está configurado para permitir que a conta **root** (o “administrador total” do sistema) entre com senha. Isso **não é CVE** — é configuração permissiva demais.
 
@@ -46,7 +46,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 4. CONFIG-NGINX-AUTOINDEX — listagem de diretório HTTP (CONFIG) — SELECIONADA
+### 4. CONFIG-NGINX-AUTOINDEX — listagem de diretório HTTP (CONFIG) — SELECIONADA / APROVADA
 
 **Problema.** O servidor web de laboratório (`nginx`) está com listagem de pastas ligada (`autoindex on`): quem acessa o endereço vê a lista de ficheiros, mesmo sem pedir um nome específico. **CONFIG**, não CVE.
 
@@ -56,7 +56,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 5. CONFIG-FAIL2BAN-ABSENT — fail2ban parado (CONFIG) — SELECIONADA
+### 5. CONFIG-FAIL2BAN-ABSENT — fail2ban parado (CONFIG) — SELECIONADA / APROVADA
 
 **Problema.** A ferramenta que bloqueia tentativas repetidas de acesso (`fail2ban`) está instalada mas **desligada**, ou ausente após um baseline “com proteção”. **CONFIG** (estado/ausência), não CVE.
 
@@ -66,53 +66,29 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-## C. CONFIG — 4ª vaga (escolher 1)
+### 6. CONFIG-SUDOERS-NOPASSWD — sudo sem senha (CONFIG) — SELECIONADA / APROVADA
 
-Detalhes completos: [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
+**Problema.** Um usuário de laboratório pode virar administrador (`root`) **sem digitar senha**, via regra `NOPASSWD` no `sudoers`. **CONFIG**, não CVE.
 
-### Opcionais originais (ainda candidatas)
+**Exemplo prático.** O estagiário ganha um crachá de “síndico permanente” que abre qualquer sala sem pedir confirmação. Basta alguém usar o crachá (ou a sessão do estagiário) e o prédio inteiro fica acessível.
 
-#### CONFIG-WORLD-WRITABLE-SENSITIVE — segredo world-writable (CONFIG)
-
-**Problema.** Arquivo sensível do laboratório com permissão de escrita para qualquer usuário (`0666`). **CONFIG**, não CVE.
-
-**Exemplo prático.** Caderno com a senha do Wi‑Fi aberto na mesa da sala de espera, com caneta ao lado: qualquer visitante lê **e** troca o que está escrito.
-
-**Correção.** Dono `root`, modo `0600`.
+**Correção.** Remover o drop-in `NOPASSWD` (ou exigir senha / restringir comandos) e validar com `visudo -c`.
 
 ---
 
-#### CONFIG-CRON-WEAK-PERMS — job cron com permissão fraca (CONFIG)
+## C. CONFIG — reservas (não selecionadas)
 
-**Problema.** Agendamento automático (`cron`) com permissão de escrita para todos. **CONFIG**, não CVE.
-
-**Exemplo prático.** Agenda da empresa no mural do corredor, com caneta livre: um estranho risca “pagar as contas” e escreve outra ordem.
-
-**Correção.** Job `0644` `root:root`.
-
----
-
-#### CONFIG-LOCAL-HTTP-BIND — serviço escutando em todas as interfaces (CONFIG)
-
-**Problema.** Serviço HTTP de lab escuta em `0.0.0.0` em vez de só `127.0.0.1`. **CONFIG**, não CVE.
-
-**Exemplo prático.** Interfone que atende também a rua e o prédio vizinho, não só a portaria.
-
-**Correção.** Bind em `127.0.0.1` ou desligar o serviço.
-
----
-
-### Outras propostas da 4ª vaga (resumo)
+Histórico completo: [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md). Mantidas só como reserva.
 
 | ID | Em uma frase, se não corrigir… |
 | --- | --- |
-| CONFIG-SUDOERS-NOPASSWD | O estagiário tem crachá de síndico sem pedir confirmação. |
+| CONFIG-WORLD-WRITABLE-SENSITIVE | Caderno com a senha do Wi‑Fi aberto na mesa, com caneta ao lado. |
+| CONFIG-CRON-WEAK-PERMS | Agenda no mural do corredor, com caneta livre. |
+| CONFIG-LOCAL-HTTP-BIND | Interfone que atende também a rua e o prédio vizinho. |
 | CONFIG-UFW-DISABLED | As portas internas do corredor estão destrancadas. |
 | CONFIG-UNATTENDED-UPGRADES-OFF | A assinatura dos recalls de segurança foi cancelada. |
 | CONFIG-PRIVATE-KEY-0644 | A chave do carro está no porta-luvas aberto. |
 | CONFIG-AUDITD-INACTIVE | As câmeras existem, mas o gravador está desligado. |
-
-**Top 3 sugeridos:** `CONFIG-SUDOERS-NOPASSWD`, `CONFIG-WORLD-WRITABLE-SENSITIVE`, `CONFIG-UFW-DISABLED`.
 
 ---
 
@@ -195,10 +171,10 @@ Mantidas só como reserva / histórico do inventário — **não** entram no por
 | --- | --- | --- | --- | --- |
 | 1 | CVE-2024-38428 | CVE | EXECUTADO — SUCESSO | O download pode ir ao “prédio errado”. |
 | 2 | CVE-2024-32487 | CVE | EXECUTADO — FALHA | Abrir um arquivo pode cumprir “ordem escondida” no nome. |
-| 3 | CONFIG-SSH-PERMIT-ROOT | CONFIG | SELECIONADA | A chave mestra fica na porta da frente. |
-| 4 | CONFIG-NGINX-AUTOINDEX | CONFIG | SELECIONADA | A gaveta de pastas fica aberta na mesa. |
-| 5 | CONFIG-FAIL2BAN-ABSENT | CONFIG | SELECIONADA | O porteiro eletrônico está desligado. |
-| 6 | 1 CONFIG a escolher | CONFIG | AGUARDANDO | ver 4ª vaga em `CONFIG_CANDIDATOS_EXTRA.md` |
+| 3 | CONFIG-SSH-PERMIT-ROOT | CONFIG | SELECIONADA / APROVADA | A chave mestra fica na porta da frente. |
+| 4 | CONFIG-NGINX-AUTOINDEX | CONFIG | SELECIONADA / APROVADA | A gaveta de pastas fica aberta na mesa. |
+| 5 | CONFIG-FAIL2BAN-ABSENT | CONFIG | SELECIONADA / APROVADA | O porteiro eletrônico está desligado. |
+| 6 | CONFIG-SUDOERS-NOPASSWD | CONFIG | SELECIONADA / APROVADA | O estagiário tem crachá de síndico sem confirmação. |
 | 7 | CVE-2024-6387 | CVE | SELECIONADA | A portaria pode se distrair no timeout (lab: atualizar pacote). |
 | 8 | CVE-2024-48990 | CVE | SELECIONADA | O encarregado pega a caixa de ferramentas trocada. |
 | 9 | CVE-2023-4911 | CVE | SELECIONADA | O “ajuste fino” longo demais troca quem dirige. |

@@ -1,21 +1,21 @@
 # Cenários do laboratório — inventário e portfólio
 
-Este diretório registra candidatos a laboratório. O **portfólio atualizado** (seleção do usuário) está em [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md). Descrições acessíveis: [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). Alto impacto: [`CANDIDATOS_ALTO_IMPACTO.md`](CANDIDATOS_ALTO_IMPACTO.md). **4ª CONFIG (candidatos):** [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
+Este diretório registra candidatos a laboratório. O **portfólio atualizado** (seleção do usuário) está em [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md). Descrições acessíveis: [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). Alto impacto: [`CANDIDATOS_ALTO_IMPACTO.md`](CANDIDATOS_ALTO_IMPACTO.md). Histórico CONFIG: [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
 
-## Estado em 21 de novembro de 2026 (seleção atualizada)
+## Estado em 21 de novembro de 2026 (seleção completa)
 
 | Item | Situação |
 | --- | --- |
-| Portfólio | **2 CVE executadas** + **6 CVE selecionadas** (pendentes) + **3 CONFIG selecionadas** + **1 CONFIG a escolher** → alvo **12 labs** (8 CVE + 4 CONFIG) |
+| Portfólio | **2 CVE executadas** + **6 CVE selecionadas** (pendentes) + **4 CONFIG selecionadas/aprovadas** → **12 labs** (8 CVE + 4 CONFIG) |
 | CVE executadas | **CVE-2024-38428 (`wget`) — SUCESSO**; **CVE-2024-32487 (`less`) — FALHA** |
 | CVE selecionadas | `CVE-2024-6387` (openssh), `CVE-2024-48990` (needrestart), `CVE-2023-4911` (glibc), `CVE-2024-12084` (rsync), `CVE-2025-48384` (git), `CVE-2024-11053` (curl) |
-| CONFIG selecionadas (3/4) | `CONFIG-SSH-PERMIT-ROOT`, `CONFIG-NGINX-AUTOINDEX`, `CONFIG-FAIL2BAN-ABSENT` |
-| CONFIG 4ª vaga | 8 propostas em `CONFIG_CANDIDATOS_EXTRA.md` (top 3: sudoers NOPASSWD, world-writable, ufw) |
+| CONFIG selecionadas (4/4) | `CONFIG-SSH-PERMIT-ROOT`, `CONFIG-NGINX-AUTOINDEX`, `CONFIG-FAIL2BAN-ABSENT`, `CONFIG-SUDOERS-NOPASSWD` |
+| CONFIG reserva | demais propostas em `CONFIG_CANDIDATOS_EXTRA.md` (não escolhidas) |
 | Substituídas (fora da seleção) | `CVE-2024-5742` (nano), `CVE-2025-1372` (elfutils) → reserva |
 | Recursos AWS agora | nenhuma pilha do lab ligada; não aplicar Terraform sem autorização |
 | Resultado inventado | **não** |
 
-**Gates:** aguardar escolha da 1 CONFIG restante e aprovação antes de preparar ambiente vulnerável; sem inventar CVE/versão; sem exploração ativa; EC2 privada; Ubuntu 24.04 (exceto nota jammy para glibc); modelo oficial `OPENAI_MODEL` quando houver geração. <!-- pragma: allowlist secret -->
+**Gates:** aguardar autorização explícita antes de preparar ambiente vulnerável; sem inventar CVE/versão; sem exploração ativa; EC2 privada; Ubuntu 24.04 (exceto nota jammy para glibc); modelo oficial `OPENAI_MODEL` quando houver geração. <!-- pragma: allowlist secret -->
 
 ## Portfólio (resumo)
 
@@ -23,10 +23,10 @@ Este diretório registra candidatos a laboratório. O **portfólio atualizado** 
 | --- | --- | --- | --- |
 | 1 | [CVE-2024-38428](CVE-2024-38428/scenario.md) | CVE | **EXECUTADO — SUCESSO** |
 | 2 | [CVE-2024-32487](CVE-2024-32487/scenario.md) | CVE | **EXECUTADO — FALHA** |
-| 3 | [CONFIG-SSH-PERMIT-ROOT](CONFIG-SSH-PERMIT-ROOT/scenario.md) | CONFIG | **SELECIONADA** / pendente preparação |
-| 4 | [CONFIG-NGINX-AUTOINDEX](CONFIG-NGINX-AUTOINDEX/scenario.md) | CONFIG | **SELECIONADA** / pendente preparação |
-| 5 | [CONFIG-FAIL2BAN-ABSENT](CONFIG-FAIL2BAN-ABSENT/scenario.md) | CONFIG | **SELECIONADA** / pendente preparação |
-| 6 | 1 CONFIG ([4ª vaga](CONFIG_CANDIDATOS_EXTRA.md)) | CONFIG | **AGUARDANDO ESCOLHA** |
+| 3 | [CONFIG-SSH-PERMIT-ROOT](CONFIG-SSH-PERMIT-ROOT/scenario.md) | CONFIG | **SELECIONADA / APROVADA** / pendente preparação |
+| 4 | [CONFIG-NGINX-AUTOINDEX](CONFIG-NGINX-AUTOINDEX/scenario.md) | CONFIG | **SELECIONADA / APROVADA** / pendente preparação |
+| 5 | [CONFIG-FAIL2BAN-ABSENT](CONFIG-FAIL2BAN-ABSENT/scenario.md) | CONFIG | **SELECIONADA / APROVADA** / pendente preparação |
+| 6 | [CONFIG-SUDOERS-NOPASSWD](CONFIG-SUDOERS-NOPASSWD/scenario.md) | CONFIG | **SELECIONADA / APROVADA** / pendente preparação |
 | 7 | CVE-2024-6387 (`openssh`) | CVE | **SELECIONADA** / ficha a criar |
 | 8 | CVE-2024-48990 (`needrestart`) | CVE | **SELECIONADA** / ficha a criar |
 | 9 | CVE-2023-4911 (`glibc`) | CVE | **SELECIONADA** / ficha a criar |
@@ -86,8 +86,8 @@ Fontes CVE: [Ubuntu CVE Tracker](https://ubuntu.com/security/), [Ubuntu Security
 
 ## Próximo passo
 
-1. CVE (8) e CONFIG (3/4) já refletidas.  
-2. Usuário escolhe **1 CONFIG** (4ª vaga em `CONFIG_CANDIDATOS_EXTRA.md`).  
+1. Seleção completa: **8 CVE + 4 CONFIG** refletidas.  
+2. Aguardar autorização do usuário para **iniciar implementação** (CONFIG vs. CVE).  
 3. **Não** há `terraform apply`, geração OpenAI nem AMI vulnerável nesta fase.
 
 ## Aviso sobre backports e pacotes históricos

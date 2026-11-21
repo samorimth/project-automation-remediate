@@ -1,7 +1,7 @@
-# CONFIG-FAIL2BAN-ABSENT — proposta (selecionada)
+# CONFIG-FAIL2BAN-ABSENT — proposta (selecionada / aprovada)
 
 **Tipo:** **CONFIG** (estado de serviço de defesa — **não é CVE**)  
-**Status de aprovação:** **selecionada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
+**Status de aprovação:** **selecionada / aprovada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  

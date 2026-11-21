@@ -1,7 +1,7 @@
-# CONFIG-NGINX-AUTOINDEX — proposta (selecionada)
+# CONFIG-NGINX-AUTOINDEX — proposta (selecionada / aprovada)
 
 **Tipo:** **CONFIG** (configuração de serviço web — **não é CVE**)  
-**Status de aprovação:** **selecionada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
+**Status de aprovação:** **selecionada / aprovada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  

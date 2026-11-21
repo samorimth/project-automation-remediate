@@ -1,11 +1,11 @@
-# CONFIG-SSH-PERMIT-ROOT — proposta (pendente de aprovação)
+# CONFIG-SSH-PERMIT-ROOT — proposta (selecionada / aprovada)
 
 **Tipo:** **CONFIG** (configuração insegura do SO — **não é CVE**)  
-**Status de aprovação:** **selecionada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
+**Status de aprovação:** **selecionada / aprovada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  
-**Portfólio:** CONFIG #1 de 4 — trio selecionado com NGINX-AUTOINDEX e FAIL2BAN-ABSENT (`PORTFOLIO_10_LABS.md`)
+**Portfólio:** CONFIG #1 de 4 — quarteto com NGINX-AUTOINDEX, FAIL2BAN-ABSENT e SUDOERS-NOPASSWD (`PORTFOLIO_10_LABS.md`)
 
 ## Identificador
 
