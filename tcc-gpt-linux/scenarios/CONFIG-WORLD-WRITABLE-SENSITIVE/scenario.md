@@ -1,11 +1,11 @@
 # CONFIG-WORLD-WRITABLE-SENSITIVE — proposta (pendente de aprovação)
 
 **Tipo:** **CONFIG** (permissões inseguras — **não é CVE**)  
-**Status de aprovação:** pendente  
+**Status de aprovação:** candidata **opcional** (não confirmada; ver também `CONFIG_CANDIDATOS_EXTRA.md`)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  
-**Portfólio:** lab #4 de 10 (`PORTFOLIO_10_LABS.md`)
+**Portfólio:** candidata opcional CONFIG (`PORTFOLIO_10_LABS.md`, `CONFIG_CANDIDATOS_EXTRA.md`)
 
 ## Identificador
 

@@ -1,11 +1,11 @@
 # CONFIG-SSH-PERMIT-ROOT — proposta (pendente de aprovação)
 
 **Tipo:** **CONFIG** (configuração insegura do SO — **não é CVE**)  
-**Status de aprovação:** pendente  
+**Status de aprovação:** **selecionada** (pendente de preparação — sem AMI/GPT/terraform até autorização)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  
-**Portfólio:** lab #3 de 10 (`PORTFOLIO_10_LABS.md`)
+**Portfólio:** CONFIG #1 de 4 (`PORTFOLIO_10_LABS.md`)
 
 ## Identificador
 

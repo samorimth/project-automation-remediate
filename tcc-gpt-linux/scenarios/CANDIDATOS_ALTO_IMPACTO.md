@@ -13,9 +13,11 @@ Pesquisa para escolher CVEs de **maior impacto / notoriedade** alinhados ao lab 
 | **Baixo** | Famoso, porém 22.04/24.04 não afetados no tracker, ou Ubuntu released “Not affected”, ou sucesso dependeria de exploit |
 
 **Já no portfólio / feito** (marcar e não reescolher como “novo”):  
-CVE-2024-38428 (`wget`), CVE-2024-32487 (`less`), CVE-2024-11053 (`curl`), CVE-2024-5742 (`nano`), CVE-2025-1372 (`elfutils`), CVE-2025-48384 (`git`).
+CVE-2024-38428 (`wget`, EXECUTADO), CVE-2024-32487 (`less`, EXECUTADO),  
+**selecionadas:** CVE-2024-6387 (`openssh`), CVE-2024-48990 (`needrestart`), CVE-2023-4911 (`glibc`), CVE-2024-12084 (`rsync`), CVE-2025-48384 (`git`), CVE-2024-11053 (`curl`).
 
-Reservas já documentadas no inventário: `binutils`, `libpng`, `tar`, `rsync` — ver [`README.md`](README.md) / [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md).
+**Substituídas → reserva:** CVE-2024-5742 (`nano`), CVE-2025-1372 (`elfutils`).  
+Outras reservas: `binutils`, `libpng`, `tar` — ver [`README.md`](README.md) / [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md).
 
 **Nenhum ambiente foi preparado nesta pesquisa.**
 
@@ -182,10 +184,14 @@ Analogias de uma linha são opcionais e não técnicas.
 | --- | --- | --- | --- | --- | --- |
 | [CVE-2024-38428](https://ubuntu.com/security/CVE-2024-38428) | 2024 | `wget` | medium / 9.1 | [USN-6852-1](https://ubuntu.com/security/notices/USN-6852-1) | **EXECUTADO — SUCESSO** |
 | [CVE-2024-32487](https://ubuntu.com/security/CVE-2024-32487) | 2024 | `less` | medium / 8.6 | [USN-6756-1](https://ubuntu.com/security/notices/USN-6756-1) | **EXECUTADO — FALHA** |
-| [CVE-2024-11053](https://ubuntu.com/security/CVE-2024-11053) | 2024 | `curl` | low / 3.4 | [USN-7162-1](https://ubuntu.com/security/notices/USN-7162-1) | portfólio / pendente |
-| [CVE-2024-5742](https://ubuntu.com/security/CVE-2024-5742) | 2024 | `nano` | low / 6.7 | [USN-7064-1](https://ubuntu.com/security/notices/USN-7064-1) | portfólio / pendente |
-| [CVE-2025-1372](https://ubuntu.com/security/CVE-2025-1372) | 2025 | `elfutils` | medium / ~5.3 | [USN-7369-1](https://ubuntu.com/security/notices/USN-7369-1) | portfólio / pendente |
-| [CVE-2025-48384](https://ubuntu.com/security/CVE-2025-48384) | 2025 | `git` | high / 8.0 | [USN-7626-1](https://ubuntu.com/security/notices/USN-7626-1) | portfólio / pendente |
+| [CVE-2024-6387](https://ubuntu.com/security/CVE-2024-6387) | 2024 | `openssh` | high / 8.1 | [USN-6859-1](https://ubuntu.com/security/notices/USN-6859-1) | **selecionada** / pendente prep. |
+| [CVE-2024-48990](https://ubuntu.com/security/CVE-2024-48990) | 2024 | `needrestart` | high / 7.8 | [USN-7117-1](https://ubuntu.com/security/notices/USN-7117-1) | **selecionada** / pendente prep. |
+| [CVE-2023-4911](https://ubuntu.com/security/CVE-2023-4911) | 2023 | `glibc` | high / 7.8 | [USN-6409-1](https://ubuntu.com/security/notices/USN-6409-1) | **selecionada** / preferir jammy |
+| [CVE-2024-12084](https://ubuntu.com/security/CVE-2024-12084) | 2024 | `rsync` | high / 9.8 | [USN-7206-1](https://ubuntu.com/security/notices/USN-7206-1) | **selecionada** / pendente prep. |
+| [CVE-2024-11053](https://ubuntu.com/security/CVE-2024-11053) | 2024 | `curl` | low / 3.4 | [USN-7162-1](https://ubuntu.com/security/notices/USN-7162-1) | **selecionada** / pendente prep. |
+| [CVE-2025-48384](https://ubuntu.com/security/CVE-2025-48384) | 2025 | `git` | high / 8.0 | [USN-7626-1](https://ubuntu.com/security/notices/USN-7626-1) | **selecionada** / pendente prep. |
+| [CVE-2024-5742](https://ubuntu.com/security/CVE-2024-5742) | 2024 | `nano` | low / 6.7 | [USN-7064-1](https://ubuntu.com/security/notices/USN-7064-1) | reserva (substituída) |
+| [CVE-2025-1372](https://ubuntu.com/security/CVE-2025-1372) | 2025 | `elfutils` | medium / ~5.3 | [USN-7369-1](https://ubuntu.com/security/notices/USN-7369-1) | reserva (substituída) |
 
 ### Portfólio — o que cada CVE explora (pendentes + executadas)
 

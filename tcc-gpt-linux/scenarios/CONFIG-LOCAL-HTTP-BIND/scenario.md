@@ -1,11 +1,11 @@
 # CONFIG-LOCAL-HTTP-BIND — proposta (pendente de aprovação)
 
 **Tipo:** **CONFIG** (serviço desnecessário escutando em interface ampla — **não é CVE**)  
-**Status de aprovação:** pendente  
+**Status de aprovação:** candidata **opcional** (não confirmada; ver também `CONFIG_CANDIDATOS_EXTRA.md`)  
 **AMI / instância vulnerável preparada:** não  
 **Recurso pago AWS criado:** não  
 **Script gerado por GPT:** não  
-**Portfólio:** lab #6 de 10 (`PORTFOLIO_10_LABS.md`)
+**Portfólio:** candidata opcional CONFIG (`PORTFOLIO_10_LABS.md`, `CONFIG_CANDIDATOS_EXTRA.md`)
 
 ## Identificador
 

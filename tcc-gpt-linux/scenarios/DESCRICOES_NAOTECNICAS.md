@@ -1,4 +1,4 @@
-# Descrições não técnicas — portfólio de 10 labs
+# Descrições não técnicas — portfólio atualizado
 
 Texto em português, acessível a leitores não técnicos (banca / TCC).  
 Cada lab traz: o **problema** em poucas palavras, um **exemplo prático** do cotidiano (analogia — sem passo a passo de ataque) e a **correção** esperada.
@@ -6,121 +6,183 @@ Cada lab traz: o **problema** em poucas palavras, um **exemplo prático** do cot
 **CVE** = falha em software (corrige-se atualizando o pacote).  
 **CONFIG** = configuração ou permissão mal ajustada no sistema (corrige-se mudando a configuração — **não é CVE**).
 
-O laboratório **não** reproduz exploração ativa; a prova técnica é versão de pacote (CVE) ou inspeção de configuração/permissões (CONFIG). Detalhes técnicos: [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md) e `scenarios/<id>/scenario.md`.
+O laboratório **não** reproduz exploração ativa; a prova técnica é versão de pacote (CVE) ou inspeção de configuração/permissões (CONFIG). Detalhes: [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md), [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md) e `scenarios/<id>/scenario.md`.
+
+**Estado:** 2 CVE executadas; 6 CVE selecionadas (pendentes); 1 CONFIG selecionada; 3 CONFIG ainda a escolher.
 
 ---
 
-## 1. CVE-2024-38428 — `wget` (CVE)
+## A. CVE executadas
 
-**Problema.** O programa `wget` (usado para baixar arquivos da internet) interpreta mal certos endereços: o que deveria ser só “login” do endereço pode ser lido como o nome do servidor, e a ferramenta pode conectar-se a um destino diferente do pretendido.
+### 1. CVE-2024-38428 — `wget` (CVE) — EXECUTADO — SUCESSO
 
-**Exemplo prático.** Imagine que você pede a um mensageiro para entregar uma carta no banco da sua cidade, mas o endereço veio escrito de forma confusa — com um detalhe no meio do texto que parece outro número de rua. O mensageiro, sem perceber, leva a carta para outro prédio. Você achava que falava com o banco; na verdade falava com um estranho. Sem a correção, um endereço “mal escrito” de propósito pode redirecionar o download para o lugar errado.
+**Problema.** O programa `wget` interpreta mal certos endereços: o que deveria ser só “login” do endereço pode ser lido como o nome do servidor, e a ferramenta pode conectar-se a um destino diferente do pretendido.
 
-**Correção.** Atualizar o pacote `wget` para a versão corrigida publicada pela Canonical (USN-6852-1), de modo que o endereço seja interpretado corretamente.
+**Exemplo prático.** Imagine que você pede a um mensageiro para entregar uma carta no banco da sua cidade, mas o endereço veio escrito de forma confusa — com um detalhe no meio do texto que parece outro número de rua. O mensageiro, sem perceber, leva a carta para outro prédio. Você achava que falava com o banco; na verdade falava com um estranho.
+
+**Correção.** Atualizar o pacote `wget` para a versão corrigida (USN-6852-1).
 
 ---
 
-## 2. CVE-2024-32487 — `less` (CVE)
+### 2. CVE-2024-32487 — `less` (CVE) — EXECUTADO — FALHA
 
 **Problema.** O visualizador de texto `less` trata mal nomes de arquivo que contêm quebras de linha; em certas condições, abrir um arquivo com nome “armadilha” pode fazer o sistema executar comandos que o usuário não pediu.
 
-**Exemplo prático.** Pense em uma pasta de documentos em que cada arquivo tem um rótulo na capa. Alguém cola um rótulo com duas linhas: na primeira, o título inocente (“relatório”); na segunda, uma ordem escondida (“abra também o cofre”). Quando a secretária só queria folhear o relatório, o sistema “lê” as duas linhas e cumpre a ordem extra. Sem a correção, um nome de arquivo enganoso pode virar uma instrução indesejada.
+**Exemplo prático.** Pense em uma pasta de documentos em que cada arquivo tem um rótulo na capa. Alguém cola um rótulo com duas linhas: na primeira, o título inocente (“relatório”); na segunda, uma ordem escondida (“abra também o cofre”). Quando a secretária só queria folhear o relatório, o sistema “lê” as duas linhas e cumpre a ordem extra.
 
-**Correção.** Atualizar o pacote `less` para a versão corrigida (USN-6756-1), para que nomes especiais não sejam interpretados como comandos.
-
----
-
-## 3. CONFIG-SSH-PERMIT-ROOT — login root via SSH (CONFIG)
-
-**Problema.** O servidor de acesso remoto (SSH) está configurado para permitir que a conta **root** (o “administrador total” do sistema) entre com senha. Isso **não é uma falha de software catalogada como CVE** — é uma **configuração** permissiva demais.
-
-**Exemplo prático.** É como deixar a chave mestra do prédio na fechadura da porta da frente, com um cartaz “pode entrar quem souber a senha do síndico”. Qualquer um que descubra ou chute essa senha ganha controle de tudo: apartamentos, arquivos, luzes. Em boas práticas, a chave mestra não se usa assim; entra-se com identidade individual e, se preciso, com chave especial (não senha simples).
-
-**Correção.** Ajustar `PermitRootLogin` para `prohibit-password` ou `no` (hardening típico), e recarregar o SSH — sem precisar “corrigir um bug” de pacote.
+**Correção.** Atualizar o pacote `less` para a versão corrigida (USN-6756-1).
 
 ---
 
-## 4. CONFIG-WORLD-WRITABLE-SENSITIVE — segredo world-writable (CONFIG)
+## B. CONFIG selecionada
 
-**Problema.** Um arquivo sensível do laboratório (token/senha de exemplo) está com permissão de escrita para **qualquer usuário** da máquina (`0666`). De novo: **CONFIG**, não CVE — o problema é quem pode ler/alterar o arquivo.
+### 3. CONFIG-SSH-PERMIT-ROOT — login root via SSH (CONFIG) — SELECIONADA
 
-**Exemplo prático.** Imagine um caderno com a senha do Wi‑Fi (ou o PIN do cofre) deixado aberto na mesa da sala de espera, e ainda com uma caneta ao lado: qualquer visitante pode ler **e** trocar o que está escrito. Em casa, você guardaria esse caderno na gaveta trancada; no servidor, o equivalente é restringir quem lê e quem escreve.
+**Problema.** O servidor de acesso remoto (SSH) está configurado para permitir que a conta **root** (o “administrador total” do sistema) entre com senha. Isso **não é CVE** — é configuração permissiva demais.
 
-**Correção.** Restringir o arquivo a dono `root` e modo `0600` (só o administrador lê/escreve), como se trancasse o caderno na gaveta.
+**Exemplo prático.** É como deixar a chave mestra do prédio na fechadura da porta da frente, com um cartaz “pode entrar quem souber a senha do síndico”. Qualquer um que descubra ou chute essa senha ganha controle de tudo.
 
----
-
-## 5. CONFIG-CRON-WEAK-PERMS — job cron com permissão fraca (CONFIG)
-
-**Problema.** Um agendamento automático (`cron`) — a “lista de tarefas diárias do sistema” — foi criado com permissão de escrita para todos. Qualquer usuário local poderia alterar o que o sistema fará no horário marcado. **CONFIG**, não CVE.
-
-**Exemplo prático.** É a agenda da empresa afixada no mural do corredor, com espaço em branco e caneta livre: “toda manhã, pagar as contas”. Um estranho pode riscar e escrever “toda manhã, transferir o caixa para outra conta”. O relógio continua batendo; a tarefa muda. Sem permissões corretas, o “piloto automático” do sistema deixa de ser confiável.
-
-**Correção.** Deixar o arquivo do job só legível (ex.: `0644`) e de propriedade do administrador (`root:root`), para que ninguém altere a agenda sem autorização.
+**Correção.** Ajustar `PermitRootLogin` para `prohibit-password` ou `no` e recarregar o SSH.
 
 ---
 
-## 6. CONFIG-LOCAL-HTTP-BIND — serviço escutando em todas as interfaces (CONFIG)
+## C. CONFIG opcionais (originais — ainda não confirmadas)
 
-**Problema.** Um serviço HTTP de laboratório escuta em **todas** as interfaces da máquina (`0.0.0.0`), em vez de só no “interior” (`127.0.0.1`). **CONFIG** de superfície de ataque — não é CVE de pacote.
+### CONFIG-WORLD-WRITABLE-SENSITIVE — segredo world-writable (CONFIG)
 
-**Exemplo prático.** Pense em um interfone do condomínio: o correto é atender só quem está na portaria do seu prédio. Deixar o serviço em `0.0.0.0` é como ligar o interfone também para a rua e para o prédio vizinho — qualquer um na rede local pode “tocar a campainha”. No lab a máquina não está na internet pública, mas a configuração ainda ensina o risco: serviço administrativo não deve ficar “visível” além do necessário.
+**Problema.** Arquivo sensível do laboratório com permissão de escrita para qualquer usuário (`0666`). **CONFIG**, não CVE.
 
-**Correção.** Reconfigurar o bind para `127.0.0.1` (só a própria máquina) ou desligar o serviço, reduzindo a superfície exposta.
+**Exemplo prático.** Caderno com a senha do Wi‑Fi aberto na mesa da sala de espera, com caneta ao lado: qualquer visitante lê **e** troca o que está escrito.
 
----
-
-## 7. CVE-2024-11053 — `curl` e vazamento de senha em redirecionamento (CVE)
-
-**Problema.** O cliente `curl`, ao usar senhas guardadas em um arquivo de credenciais (`.netrc`) e seguir um redirecionamento HTTP, pode, em certos casos, enviar a senha do primeiro site para o segundo site.
-
-**Exemplo prático.** Você entrega ao carteiro o envelope com a senha do banco A, pedindo para ir só ao banco A. No caminho, alguém coloca um aviso na porta: “esta agência mudou — vá ao banco B”. O carteiro, sem perceber o risco, leva o **mesmo envelope com a senha** para o banco B. Você só queria autenticar no A; o B acaba vendo o segredo. Sem a correção, um redirecionamento malicioso pode “carregar” a senha para o destino errado.
-
-**Correção.** Atualizar `curl` / `libcurl` para a versão corrigida (USN-7162-1), para que a senha não acompanhe redirecionamentos indevidos.
+**Correção.** Dono `root`, modo `0600`.
 
 ---
 
-## 8. CVE-2024-5742 — `nano` e arquivo de emergência inseguro (CVE)
+### CONFIG-CRON-WEAK-PERMS — job cron com permissão fraca (CONFIG)
 
-**Problema.** Se o editor `nano` for interrompido no meio da edição, pode gravar um arquivo de emergência com permissões inadequadas; em cenários raros (por exemplo com `nano` rodando como administrador), isso abre janela para abuso via arquivo temporário.
+**Problema.** Agendamento automático (`cron`) com permissão de escrita para todos. **CONFIG**, não CVE.
 
-**Exemplo prático.** Imagine um gerente ditando um documento confidencial na sala dele. No meio da frase, a luz cai e o rascunho de emergência é deixado na mesa da **sala comum**, onde qualquer funcionário pode mexer ou trocar o papel por um falso. Quem depois “retoma” a edição pode acabar confiando nesse rascunho errado. A correção é o editor guardar o rascunho de forma segura, sem deixar a “mesa comum” aberta.
+**Exemplo prático.** Agenda da empresa no mural do corredor, com caneta livre: um estranho risca “pagar as contas” e escreve outra ordem.
 
-**Correção.** Atualizar o pacote `nano` para a versão corrigida (USN-7064-1), endurecendo o tratamento do arquivo de emergência.
-
----
-
-## 9. CVE-2025-1372 — `elfutils` / `eu-readelf` e arquivo malicioso (CVE)
-
-**Problema.** A ferramenta `eu-readelf` (inspeciona arquivos de programa) pode falhar ou travar ao processar um arquivo especialmente preparado — risco local de negação de serviço (o programa “quebra”), sem o lab exigir exploração.
-
-**Exemplo prático.** É como um scanner de bagagem no aeroporto que, diante de uma mala montada de propósito para confundir o sensor, trava a esteira inteira. Ninguém “roubou o avião”; o prejuízo é o serviço parar. Se um técnico ou um script automático inspecionar um arquivo “estragado de propósito”, a ferramenta pode cair e interromper o trabalho.
-
-**Correção.** Atualizar `elfutils` (e bibliotecas correlatas) para a versão corrigida (USN-7369-1), para que entradas inválidas não derrubem a ferramenta.
+**Correção.** Job `0644` `root:root`.
 
 ---
 
-## 10. CVE-2025-48384 — `git` e truque de caminho / submódulo (CVE)
+### CONFIG-LOCAL-HTTP-BIND — serviço escutando em todas as interfaces (CONFIG)
 
-**Problema.** O Git trata mal certos caracteres especiais (fim de linha) em caminhos de configuração e submódulo: o checkout pode ir para um lugar diferente do esperado e, em combinação com outros truques, pode acabar executando código sem a intenção do usuário.
+**Problema.** Serviço HTTP de lab escuta em `0.0.0.0` em vez de só `127.0.0.1`. **CONFIG**, não CVE.
 
-**Exemplo prático.** Você pede à mudança que leve as caixas para o “depósito 3”. No rótulo, alguém cola um detalhe quase invisível que faz a mudança ler “depósito 3” e, na prática, entregar no **depósito 8** — onde já há um bilhete pedindo para “ligar o motor ao chegar”. Você achava que só estava organizando pastas; o sistema acabou seguindo um caminho e uma ordem que você não escolheu. Sem a correção, um repositório/submódulo enganoso pode desviar o destino dos arquivos.
+**Exemplo prático.** Interfone que atende também a rua e o prédio vizinho, não só a portaria.
 
-**Correção.** Atualizar o pacote `git` para a versão corrigida (USN-7626-1), com tratamento seguro de caminhos e configuração.
+**Correção.** Bind em `127.0.0.1` ou desligar o serviço.
 
 ---
 
-## Resumo rápido (CVE × CONFIG)
+## D. CVE selecionadas (pendentes de preparação)
 
-| # | ID | Tipo | Em uma frase, se não corrigir… |
-| --- | --- | --- | --- |
-| 1 | CVE-2024-38428 | CVE | O download pode ir ao “prédio errado”. |
-| 2 | CVE-2024-32487 | CVE | Abrir um arquivo pode cumprir uma “ordem escondida” no nome. |
-| 3 | CONFIG-SSH-PERMIT-ROOT | CONFIG | A chave mestra fica na porta da frente. |
-| 4 | CONFIG-WORLD-WRITABLE-SENSITIVE | CONFIG | O caderno de senhas fica na mesa da sala. |
-| 5 | CONFIG-CRON-WEAK-PERMS | CONFIG | Qualquer um pode riscar a agenda automática. |
-| 6 | CONFIG-LOCAL-HTTP-BIND | CONFIG | O interfone atende também a rua. |
-| 7 | CVE-2024-11053 | CVE | A senha do banco A pode ir parar no banco B. |
-| 8 | CVE-2024-5742 | CVE | O rascunho de emergência fica na “mesa comum”. |
-| 9 | CVE-2025-1372 | CVE | Um arquivo “estragado” pode travar a inspeção. |
-| 10 | CVE-2025-48384 | CVE | As caixas podem ir ao depósito errado (e acionar algo). |
+### 4. CVE-2024-6387 — OpenSSH regreSSHion (CVE) — SELECIONADA
+
+**Problema.** O servidor SSH tem uma “corrida” (race) no tratamento de sinais: em condições difíceis de timing, um atacante remoto sem senha poderia, em teoria, obter acesso indevido. O lab **não** tenta esse ataque — só confere se o pacote foi atualizado.
+
+**Exemplo prático.** O segurança da portaria atende o interfone e, no exato instante do timeout, se distrai — alguém poderia passar sem mostrar documento (na prática o “timing” é difícil; no lab basta trocar a fechadura/firmware — o pacote).
+
+**Correção.** Atualizar `openssh-server` / `openssh` (USN-6859-1) para versão ≥ `1:9.6p1-3ubuntu13.3` em Ubuntu 24.04.
+
+---
+
+### 5. CVE-2024-48990 — `needrestart` (CVE) — SELECIONADA
+
+**Problema.** A ferramenta que decide quais serviços reiniciar após atualizações pode ser enganada e acabar executando código como administrador, herdando um ambiente manipulado.
+
+**Exemplo prático.** O encarregado que reinicia os elevadores pega a “caixa de ferramentas” do estagiário sem olhar o conteúdo — e a caixa foi trocada. Quem reinicia serviços não deveria usar ferramentas plantadas por outra pessoa.
+
+**Correção.** Atualizar `needrestart` (USN-7117-1) para ≥ `3.6-7ubuntu4.3` em 24.04.
+
+---
+
+### 6. CVE-2023-4911 — glibc Looney Tunables (CVE) — SELECIONADA
+
+**Problema.** O carregador de programas (`ld.so` da biblioteca C) trata mal a variável `GLIBC_TUNABLES`; valores exagerados/malformados podem estourar um buffer e, em programas privilegiados, levar a privilégios de administrador. Em Ubuntu **24.04** a linha de release já veio corrigida; o lab vulnerável histórico costuma usar **22.04**.
+
+**Exemplo prático.** Um “ajuste fino” escrito no bilhete do motorista que, se for longo demais, rasga o painel e troca quem está no volante.
+
+**Correção.** Atualizar `libc6` (USN-6409-1); em jammy ≥ `2.35-0ubuntu3.4`; reinício recomendado.
+
+---
+
+### 7. CVE-2024-12084 — `rsync` (CVE) — SELECIONADA
+
+**Problema.** Overflow de memória no protocolo/`rsync` ao tratar certos dados; em cenários reais o impacto pode ser grave. No lab a prova é **só pela versão do pacote** — sem subir daemon nem abrir porta.
+
+**Exemplo prático.** Conferir a lista de volumes da mudança com uma calculadora que estoura e começa a escrever no livro-caixa.
+
+**Correção.** Atualizar `rsync` (USN-7206-1) para ≥ `3.2.7-1ubuntu1.1` em 24.04.
+
+---
+
+### 8. CVE-2025-48384 — `git` (CVE) — SELECIONADA
+
+**Problema.** O Git trata mal certos caracteres especiais em caminhos de configuração e submódulo: o checkout pode ir para um lugar diferente do esperado e, em combinação com outros truques, pode acabar executando código sem a intenção do usuário.
+
+**Exemplo prático.** Você pede à mudança que leve as caixas para o “depósito 3”. No rótulo, um detalhe quase invisível faz entregar no **depósito 8** — onde já há um bilhete pedindo para “ligar o motor ao chegar”.
+
+**Correção.** Atualizar `git` (USN-7626-1) para ≥ `1:2.43.0-1ubuntu7.3` em 24.04.
+
+---
+
+### 9. CVE-2024-11053 — `curl` e vazamento de senha em redirecionamento (CVE) — SELECIONADA
+
+**Problema.** O cliente `curl`, ao usar senhas em `.netrc` e seguir um redirecionamento HTTP, pode em certos casos enviar a senha do primeiro site para o segundo.
+
+**Exemplo prático.** Você entrega ao carteiro o envelope com a senha do banco A. No caminho, um aviso diz “vá ao banco B”. O carteiro leva o **mesmo envelope** para o B.
+
+**Correção.** Atualizar `curl` / `libcurl` (USN-7162-1) para ≥ `8.5.0-2ubuntu10.6` em 24.04.
+
+---
+
+## E. CVE substituídas (fora da seleção atual)
+
+Mantidas só como reserva / histórico do inventário — **não** entram no portfólio selecionado:
+
+| ID | Pacote | Nota |
+| --- | --- | --- |
+| CVE-2024-5742 | `nano` | Substituída pelas CVE de alto impacto selecionadas |
+| CVE-2025-1372 | `elfutils` | Substituída pelas CVE de alto impacto selecionadas |
+
+---
+
+## F. CONFIG extras (novas propostas)
+
+Descrições completas (problema / exemplo / correção / verify / fit): [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
+
+Resumo em uma frase:
+
+| ID | Em uma frase, se não corrigir… |
+| --- | --- |
+| CONFIG-SSH-PASSWORD-AUTH | A portaria aceita senha numérica além do cartão. |
+| CONFIG-SSH-EMPTY-PASSPHRASE-KEY | A chave de casa não tem PIN no chaveiro. |
+| CONFIG-UFW-DISABLED | As portas internas do corredor estão destrancadas. |
+| CONFIG-SUDOERS-NOPASSWD | O estagiário tem crachá de síndico sem pedir confirmação. |
+| CONFIG-SUDOERS-UNRESTRICTED | A lista de síndicos está no mural com caneta livre. |
+| CONFIG-PRIVATE-KEY-0644 | A chave do carro está no porta-luvas aberto. |
+| CONFIG-BASHRC-PATH-HIJACK | A primeira caixa de ferramentas é a da recepção. |
+| CONFIG-SYSCTL-IP-FORWARD | A porta dos fundos vira corredor sem necessidade. |
+| CONFIG-NGINX-AUTOINDEX | A gaveta de pastas fica aberta na mesa. |
+| CONFIG-FAIL2BAN-ABSENT | O porteiro eletrônico existe, mas está desligado. |
+
+---
+
+## Resumo rápido (seleção atual)
+
+| # | ID | Tipo | Status | Em uma frase… |
+| --- | --- | --- | --- | --- |
+| 1 | CVE-2024-38428 | CVE | EXECUTADO — SUCESSO | O download pode ir ao “prédio errado”. |
+| 2 | CVE-2024-32487 | CVE | EXECUTADO — FALHA | Abrir um arquivo pode cumprir “ordem escondida” no nome. |
+| 3 | CONFIG-SSH-PERMIT-ROOT | CONFIG | SELECIONADA | A chave mestra fica na porta da frente. |
+| 4–6 | 3 CONFIG a escolher | CONFIG | AGUARDANDO | ver opcionais + extras |
+| 7 | CVE-2024-6387 | CVE | SELECIONADA | A portaria pode se distrair no timeout (lab: atualizar pacote). |
+| 8 | CVE-2024-48990 | CVE | SELECIONADA | O encarregado pega a caixa de ferramentas trocada. |
+| 9 | CVE-2023-4911 | CVE | SELECIONADA | O “ajuste fino” longo demais troca quem dirige. |
+| 10 | CVE-2024-12084 | CVE | SELECIONADA | A calculadora da mudança estoura o livro-caixa. |
+| 11 | CVE-2025-48384 | CVE | SELECIONADA | As caixas vão ao depósito errado. |
+| 12 | CVE-2024-11053 | CVE | SELECIONADA | A senha do banco A pode ir para o banco B. |
