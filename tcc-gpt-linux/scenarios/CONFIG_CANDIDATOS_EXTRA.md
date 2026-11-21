@@ -1,84 +1,56 @@
-# Candidatos CONFIG extras — escolher 3 para completar o bloco de 4
+# CONFIG — trio selecionado + candidatos para a 4ª vaga
 
 **Tipo:** todos são **CONFIG** (configuração / permissão / política de SO). **Não são CVE.**  
 **SO alvo:** Ubuntu 24.04 LTS, EC2 **privada**, remediação por Bash, verificação independente, **sem** PoC de exploração.  
-**Contexto:** 1 CONFIG já **selecionada** — `CONFIG-SSH-PERMIT-ROOT`. Faltam **3**.  
-**Opcionais já propostas (também elegíveis):** `CONFIG-WORLD-WRITABLE-SENSITIVE`, `CONFIG-CRON-WEAK-PERMS`, `CONFIG-LOCAL-HTTP-BIND` (ver `PORTFOLIO_10_LABS.md`).
+**Contexto:** **3 CONFIG selecionadas** — falta **1** para completar o bloco de 4.
 
-Nenhum ambiente foi preparado. Após a escolha do usuário, criar `scenarios/<id>/scenario.md` + prepare/verify.
-
----
-
-## Tabela rápida (novas propostas)
-
-| ID | Tema | Correção típica | Verify (ideia) | Fit |
-| --- | --- | --- | --- | --- |
-| CONFIG-SSH-PASSWORD-AUTH | SSH com senha habilitada | `PasswordAuthentication no` | `sshd -T` | Alto |
-| CONFIG-SSH-EMPTY-PASSPHRASE-KEY | Chave SSH lab sem passphrase | regenerar com passphrase / remover | `ssh-keygen -y` + teste passphrase | Alto |
-| CONFIG-UFW-DISABLED | Firewall ufw inativo | `ufw enable` + regras mínimas | `ufw status` | Alto |
-| CONFIG-SUDOERS-NOPASSWD | sudo sem senha para usuário lab | remover `NOPASSWD` | `sudo -l -U` | Alto |
-| CONFIG-SUDOERS-UNRESTRICTED | sudoers amplo (`ALL=(ALL) ALL` + write fraco) | restringir comando + `0440` | `stat` + `visudo -c` / `sudo -l` | Alto |
-| CONFIG-PRIVATE-KEY-0644 | chave privada `0644` | `chmod 600` | `stat -c '%a'` | Alto |
-| CONFIG-BASHRC-PATH-HIJACK | `PATH` inseguro no `.bashrc` | PATH só com dirs confiáveis | `grep`/inspecionar PATH efetivo | Alto |
-| CONFIG-SYSCTL-IP-FORWARD | `ip_forward=1` sem necessidade | `sysctl` → `0` | `sysctl net.ipv4.ip_forward` | Médio-Alto |
-| CONFIG-NGINX-AUTOINDEX | listagem de diretório HTTP | `autoindex off` | curl local / conf | Médio-Alto |
-| CONFIG-FAIL2BAN-ABSENT | fail2ban instalado mas parado | `systemctl enable --now` | `systemctl is-active` | Médio |
-
-*(Docker socket root-equivalente: **omitido** de propósito — pesado demais para o lab atual.)*
+Nenhum ambiente foi preparado. Após a escolha do usuário, criar/ajustar `scenarios/<id>/scenario.md` + prepare/verify.
 
 ---
 
-## Detalhes por candidato
+## Trio já selecionado (3/4)
 
-### 1. CONFIG-SSH-PASSWORD-AUTH
+| # | ID | Tema | Status |
+| --- | --- | --- | --- |
+| 1 | CONFIG-SSH-PERMIT-ROOT | SSH `PermitRootLogin yes` | **SELECIONADA** |
+| 2 | CONFIG-NGINX-AUTOINDEX | nginx `autoindex on` (listagem HTTP) | **SELECIONADA** |
+| 3 | CONFIG-FAIL2BAN-ABSENT | fail2ban parado/desabilitado | **SELECIONADA** |
 
-**Problema.** O servidor SSH aceita autenticação por senha (`PasswordAuthentication yes`). Em EC2/cloud o padrão saudável é só chave; senha abre força bruta e vazamento de credencial. **CONFIG**, não CVE.
+Fichas: `scenarios/CONFIG-SSH-PERMIT-ROOT/`, `CONFIG-NGINX-AUTOINDEX/`, `CONFIG-FAIL2BAN-ABSENT/`.
 
-**Exemplo não técnico.** É como o prédio ter fechadura de senha numérica na portaria, além da biometria dos moradores: qualquer um que descubra ou chute o código entra. Melhor deixar só o cartão (chave) autorizado.
-
-**Correção.** Drop-in sshd com `PasswordAuthentication no` (e, se aplicável, `KbdInteractiveAuthentication no`); `systemctl reload ssh`.
-
-**Verify.**  
-- Antes: `sshd -T | awk '/^passwordauthentication /{print $2}'` → `yes`.  
-- Depois: → `no`.
-
-**Fit.** Alto — espelha o lab de `PermitRootLogin`; só config; EC2 privada; sem PoC de login.
+**O que o trio já cobre:** autenticação SSH permissiva (root) · endurecimento de serviço web (vitrine de ficheiros) · estado de ferramenta de defesa (ban).  
+**O que a 4ª deve acrescentar:** privilégios locais, segredos/perms, exposição de rede/firewall, higiene de updates, ou logging/audit **distinto** de fail2ban — **sem** outro gémeo puro de auth SSH.
 
 ---
 
-### 2. CONFIG-SSH-EMPTY-PASSPHRASE-KEY
+## 4ª vaga — tabela rápida (8 propostas complementares)
 
-**Problema.** Uma chave privada de laboratório é gerada **sem** passphrase e fica utilizável por quem obtiver o arquivo. Não é bug de OpenSSH — é má higiene de credencial. **CONFIG**.
+| ID | Tema | Correção típica | Verify (ideia) | Fit | Por que complementa o trio |
+| --- | --- | --- | --- | --- | --- |
+| CONFIG-SUDOERS-NOPASSWD | privilégios (`sudo` sem senha) | remover `NOPASSWD` | `sudo -n -l -U` | Alto | Privileges — não coberto pelo trio |
+| CONFIG-WORLD-WRITABLE-SENSITIVE | segredo world-writable | `chmod 0600` | `stat` | Alto | Secrets/perms — distinto de nginx/SSH |
+| CONFIG-UFW-DISABLED | firewall host inativo | `ufw enable` + regras | `ufw status` | Alto | Rede/host — SG ≠ ufw; ≠ fail2ban |
+| CONFIG-UNATTENDED-UPGRADES-OFF | higiene de updates desligada | reativar `unattended-upgrades` | `systemctl` + conf | Alto | Pacotes/updates — eixo novo |
+| CONFIG-LOCAL-HTTP-BIND | serviço em `0.0.0.0` | bind `127.0.0.1` | `ss`/`curl` | Alto | Exposição de rede — ≠ autoindex |
+| CONFIG-PRIVATE-KEY-0644 | chave privada `0644` | `chmod 600` | `stat -c '%a'` | Alto | Segredo em disco — ≠ PermitRootLogin |
+| CONFIG-CRON-WEAK-PERMS | cron world-writable | `0644` `root:root` | `stat` | Alto | Persistência/agendamento — eixo novo |
+| CONFIG-AUDITD-INACTIVE | auditd parado | `enable --now auditd` | `systemctl is-active` | Médio-Alto | Logging/audit trail ≠ fail2ban (ban) |
 
-**Exemplo não técnico.** É a chave de casa sem segredo extra no chaveiro: quem achar o chaveiro físico abre a porta na hora. Com senha na chave (passphrase), achar o arquivo ainda exige o “PIN” mental.
-
-**Correção.** Remover a chave insegura do lab **ou** regenerar com passphrase (`ssh-keygen -p` / nova chave); garantir que só o dono lê o arquivo.
-
-**Verify.**  
-- Antes: chave existe e `ssh-keygen -y -f ... -P ''` aceita passphrase vazia (só inspeção local).  
-- Depois: chave ausente **ou** passphrase vazia rejeitada / arquivo `0600` + política documentada “com passphrase”.
-
-**Fit.** Alto — claro, reversível, sem rede; cuidado: não versionar chave real.
-
----
-
-### 3. CONFIG-UFW-DISABLED
-
-**Problema.** O firewall do host (`ufw`) está **inativo**, deixando a política de filtragem local desligada. Em EC2 o Security Group já filtra, mas o lab ensina defesa em profundidade. **CONFIG**.
-
-**Exemplo não técnico.** O condomínio tem portaria na rua (Security Group), mas as portas internas dos apartamentos estão todas destrancadas (ufw off). Se alguém já estiver no corredor, nada impede ir de porta em porta.
-
-**Correção.** `ufw default deny incoming`, permitir só o necessário (ex. SSH da rede privada), `ufw --force enable`.
-
-**Verify.**  
-- Antes: `ufw status` → `inactive`.  
-- Depois: `ufw status` → `active` (+ regra SSH presente).
-
-**Fit.** Alto — comando Bash simples; verificável; sem PoC de scan.
+*(Omitidos de propósito como 4ª vaga: `CONFIG-SSH-PASSWORD-AUTH` / gémeos SSH de auth — sobrepõem demais o slot 1.)*
 
 ---
 
-### 4. CONFIG-SUDOERS-NOPASSWD
+## Recomendação (top 3 para a 4ª vaga)
+
+1. **CONFIG-SUDOERS-NOPASSWD** — melhor equilíbrio pedagógico: privilégios locais clássicos CIS, verify claro, zero overlap com nginx/fail2ban/SSH-root.  
+2. **CONFIG-WORLD-WRITABLE-SENSITIVE** — eixo “segredos em disco”; stub já existe; muito barato no pipeline.  
+3. **CONFIG-UFW-DISABLED** — defesa em profundidade de **rede** (complementa fail2ban, que é reação a tentativas, não filtragem de portas).
+
+---
+
+## Detalhes por candidato (4ª vaga)
+
+### 1. CONFIG-SUDOERS-NOPASSWD
 
 **Problema.** Um usuário de lab tem `NOPASSWD: ALL` (ou amplo) em `/etc/sudoers.d/`, podendo virar root sem digitar senha. **CONFIG** clássica de hardening.
 
@@ -92,114 +64,152 @@ Nenhum ambiente foi preparado. Após a escolha do usuário, criar `scenarios/<id
 
 **Fit.** Alto — padrão CIS; inspeção clara; EC2 privada.
 
+**Por que complementa o trio.** Privileges locais; não toca SSH root, nginx nem fail2ban.
+
 ---
 
-### 5. CONFIG-SUDOERS-UNRESTRICTED
+### 2. CONFIG-WORLD-WRITABLE-SENSITIVE
 
-**Problema.** Arquivo em `/etc/sudoers.d/` concede `ALL=(ALL:ALL) ALL` **e** está com permissão fraca (ex. `0644` ou world-writable). Combina política ampla + risco de adulteração. **CONFIG**.
+**Problema.** Arquivo sensível sintético (`/etc/tcc-lab/secret.env`) com modo `0666` (qualquer usuário local escreve). **CONFIG** de permissão POSIX — não é CVE.
 
-**Exemplo não técnico.** Além do crachá de síndico, a lista de quem pode ser síndico está afixada no mural com caneta livre: qualquer um risca o próprio nome. Política ampla + lista editável = desastre administrativo.
+**Exemplo não técnico.** Caderno com a senha do Wi‑Fi aberto na mesa da sala de espera, com caneta ao lado: qualquer visitante lê **e** troca o que está escrito.
 
-**Correção.** Restringir regras (ou remover o drop-in de lab); `chown root:root` + `chmod 0440`; `visudo -c`.
+**Correção.** `chown root:root` + `chmod 0600` no ficheiro de lab.
 
 **Verify.**  
-- Antes: `stat -c '%a %U:%G' /etc/sudoers.d/99-tcc-lab` ≠ `440 root:root` **e/ou** regra `ALL` presente.  
-- Depois: modo `0440`, root:root, regra restrita ou arquivo removido; `visudo -c` OK.
+- Antes: `stat -c '%a'` → `666`.  
+- Depois: → `600` (sem bit de escrita para other).
 
-**Fit.** Alto — combina bem com o tema “permissões”; distinto do NOPASSWD puro se focar em permissão do arquivo + regra ampla.
+**Fit.** Alto — stub já em `CONFIG-WORLD-WRITABLE-SENSITIVE/scenario.md`.
+
+**Por que complementa o trio.** Secrets/perms em disco; eixo diferente de serviço web e de auth SSH.
+
+---
+
+### 3. CONFIG-UFW-DISABLED
+
+**Problema.** O firewall do host (`ufw`) está **inativo**. Em EC2 o Security Group já filtra, mas o lab ensina defesa em profundidade. **CONFIG**.
+
+**Exemplo não técnico.** O condomínio tem portaria na rua (Security Group), mas as portas internas dos apartamentos estão todas destrancadas (ufw off). Se alguém já estiver no corredor, nada impede ir de porta em porta.
+
+**Correção.** `ufw default deny incoming`, permitir só o necessário (ex. SSH da rede privada), `ufw --force enable`.
+
+**Verify.**  
+- Antes: `ufw status` → `inactive`.  
+- Depois: `ufw status` → `active` (+ regra SSH presente).
+
+**Fit.** Alto — comando Bash simples; verificável; sem PoC de scan.
+
+**Por que complementa o trio.** Rede/host firewall ≠ fail2ban (ban após tentativas) ≠ listagem nginx ≠ PermitRootLogin.
+
+---
+
+### 4. CONFIG-UNATTENDED-UPGRADES-OFF
+
+**Problema.** `unattended-upgrades` desabilitado / conf de lab com atualizações automáticas de segurança **off**, deixando o host sem higiene contínua de patches. **CONFIG** de política de updates (não é “corrigir um CVE específico”).
+
+**Exemplo não técnico.** A assinatura da revista de recalls de segurança foi cancelada: o prédio deixa de receber avisos e peças de reposição sozinho. Cada falha nova fica sem remendo até alguém lembrar de ir à loja.
+
+**Correção.** Reativar pacote/serviço `unattended-upgrades` e conf mínima (`APT::Periodic::Unattended-Upgrade "1"`); `systemctl enable --now unattended-upgrades` (ou equivalente documentado).
+
+**Verify.**  
+- Antes: serviço inactive **ou** conf com Unattended-Upgrade `"0"` / pacote removido.  
+- Depois: conf `"1"` + serviço enabled/active (critério documentado).
+
+**Fit.** Alto — eixo “higiene de pacotes”; alinhado ao discurso CVE-vs-CONFIG do TCC.
+
+**Por que complementa o trio.** Update hygiene — nenhum dos três slots cobre manutenção contínua.
+
+---
+
+### 5. CONFIG-LOCAL-HTTP-BIND
+
+**Problema.** Serviço HTTP de lab escuta em `0.0.0.0` em vez de só `127.0.0.1`. **CONFIG** de exposição de rede.
+
+**Exemplo não técnico.** Interfone que atende também a rua e o prédio vizinho, não só a portaria.
+
+**Correção.** Bind em `127.0.0.1` ou desligar o serviço.
+
+**Verify.**  
+- Antes: `ss -lntp` mostra listen em `*:PORT` / `0.0.0.0:PORT`.  
+- Depois: só `127.0.0.1:PORT` (ou serviço parado).
+
+**Fit.** Alto — stub já existe; distinto de autoindex (aqui o problema é **onde** escuta, não a listagem).
+
+**Por que complementa o trio.** Network exposure; mesmo se usar HTTP, o eixo é bind, não `autoindex`.
 
 ---
 
 ### 6. CONFIG-PRIVATE-KEY-0644
 
-**Problema.** Chave privada SSH (ou TLS de lab) com modo `0644` (legível por outros usuários locais). **CONFIG** de permissão POSIX.
+**Problema.** Chave privada SSH (ou TLS de lab) com modo `0644` (legível por outros usuários locais). **CONFIG** de permissão.
 
-**Exemplo não técnico.** A chave do carro fica no porta-luvas **destrancado** e com o vidro aberto: qualquer passageiro do banco de trás pode pegar. O certo é trancar o porta-luvas (só o dono lê).
+**Exemplo não técnico.** A chave do carro fica no porta-luvas **destrancado** e com o vidro aberto: qualquer passageiro do banco de trás pode pegar.
 
-**Correção.** `chmod 600` (e `chown` do usuário dono); opcionalmente mover para `~/.ssh/` com dir `700`.
+**Correção.** `chmod 600` (e `chown` do dono); dir `~/.ssh` com `700`.
 
 **Verify.**  
-- Antes: `stat -c '%a' /path/to/id_lab` → `644` (ou pior).  
-- Depois: → `600` (ou ausente se política for remover).
+- Antes: `stat -c '%a' /path/to/id_lab` → `644`.  
+- Depois: → `600`.
 
-**Fit.** Alto — mínimo, ótimo para pipeline CONFIG; distinto de world-writable de “token” se focar em chave criptográfica.
+**Fit.** Alto — mínimo; cuidado: não versionar chave real.
+
+**Por que complementa o trio.** Credencial em ficheiro (perms), não política `PermitRootLogin`.
 
 ---
 
-### 7. CONFIG-BASHRC-PATH-HIJACK
+### 7. CONFIG-CRON-WEAK-PERMS
 
-**Problema.** O `.bashrc` (ou `/etc/profile.d/tcc-lab.sh`) coloca um diretório **gravável por todos** (ex. `/tmp/tcc-bin` ou `~/worldwrite/bin`) **no início** do `PATH`. Um usuário local poderia plantar um executável com nome de comando comum. O lab **não** executa hijack — só detecta PATH inseguro. **CONFIG**.
+**Problema.** Job em `/etc/cron.d/` (ou script chamado pelo cron) com permissão de escrita para todos. **CONFIG**.
 
-**Exemplo não técnico.** A empresa manda o entregador procurar ferramentas “na primeira caixa da prateleira”. Essa primeira caixa é a caixa aberta da recepção, onde qualquer visitante pode colocar uma chave de fenda falsa. Quem pega a ferramenta sem olhar usa a falsa.
+**Exemplo não técnico.** Agenda da empresa no mural do corredor, com caneta livre: um estranho risca “pagar as contas” e escreve outra ordem.
 
-**Correção.** Remover o prefixo inseguro do PATH; garantir que dirs no PATH não sejam world-writable; recarregar shell de teste.
+**Correção.** Job `0644` `root:root` (script associado sem write para other).
 
 **Verify.**  
-- Antes: script de verify confere que `PATH` começa com dir world-writable conhecido do lab.  
-- Depois: esse dir não está no PATH (ou não é world-writable).
+- Antes: `stat` mostra world-writable.  
+- Depois: `0644` `root:root`.
 
-**Fit.** Alto — pedagógico; verificação só por inspeção; sem payload.
+**Fit.** Alto — stub já existe; eixo persistência/agendamento.
+
+**Por que complementa o trio.** Scheduling/perms — fora de SSH, nginx e fail2ban.
 
 ---
 
-### 8. CONFIG-SYSCTL-IP-FORWARD
+### 8. CONFIG-AUDITD-INACTIVE
 
-**Problema.** `net.ipv4.ip_forward=1` habilitado sem o host ser roteador. Aumenta superfície se a máquina for comprometida ou mal posicionada na rede. **CONFIG** de kernel sysctl.
+**Problema.** `auditd` instalado mas **parado/desabilitado**, sem trilha de auditoria local. **CONFIG** de logging/monitoramento (eixo distinto de fail2ban).
 
-**Exemplo não técnico.** O apartamento deixa a porta dos fundos aberta “só para passar encomendas ao vizinho”, transformando a sala em corredor. Se ninguém precisa de corredor, a porta dos fundos deve ficar fechada.
+**Exemplo não técnico.** As câmeras do corredor existem, mas o gravador está desligado: ninguém é barrado na porta (isso seria o porteiro/fail2ban), mas também **não fica registo** de quem passou.
 
-**Correção.** `sysctl -w net.ipv4.ip_forward=0` + drop-in `/etc/sysctl.d/99-tcc-lab.conf` com `net.ipv4.ip_forward=0`.
+**Correção.** `apt-get install -y auditd` (se ausente) + `systemctl enable --now auditd`.
 
 **Verify.**  
-- Antes: `sysctl -n net.ipv4.ip_forward` → `1`.  
-- Depois: → `0`.
+- Antes: `systemctl is-active auditd` → `inactive`.  
+- Depois: → `active` (+ `is-enabled`).
 
-**Fit.** Médio-Alto — uma linha; claro; sem PoC de roteamento.
+**Fit.** Médio-Alto — parecido na forma com fail2ban (estado de serviço), mas o **papel** é audit trail, não ban. Usar só se quiser contraste explícito “deteção/registo vs. reação”.
+
+**Por que complementa o trio.** Logging/audit ≠ fail2ban (reação) ≠ nginx ≠ SSH root. Preferir se a banca valorizar monitoramento; senão, privilégios/segredos/ufw são mais ortogonais.
 
 ---
 
-### 9. CONFIG-NGINX-AUTOINDEX
+## Alternativas já documentadas (fora do top da 4ª vaga)
 
-**Problema.** `nginx` (pacote leve de lab) com `autoindex on` em um site local, listando arquivos do document root. **CONFIG** de serviço web; bind preferencialmente `127.0.0.1`.
+Ainda elegíveis, mas **não** recomendadas agora por overlap ou prioridade menor:
 
-**Exemplo não técnico.** A secretária deixa a gaveta de pastas aberta na mesa: qualquer um que entre na sala vê a lista de todos os documentos, mesmo sem abrir cada um. Desligar a listagem é fechar a gaveta — ainda se pode pedir um arquivo específico com nome conhecido, mas a vitrine some.
-
-**Correção.** `autoindex off;` (ou remover o server block de lab); `nginx -t && systemctl reload nginx`.
-
-**Verify.**  
-- Antes: `curl -sI http://127.0.0.1:<port>/` ou corpo HTML indica listagem / conf contém `autoindex on`.  
-- Depois: `autoindex off` efetivo; resposta sem índice de diretório.
-
-**Fit.** Médio-Alto — precisa instalar nginx; ainda assim remediável por conf; sem exposição pública se bind local + SG fechado.
+| ID | Nota |
+| --- | --- |
+| CONFIG-SSH-PASSWORD-AUTH | Gémeo forte de auth SSH com o slot 1 — evitar como 4ª |
+| CONFIG-SSH-EMPTY-PASSPHRASE-KEY | Credencial SSH; overlap temático com slot 1 |
+| CONFIG-SUDOERS-UNRESTRICTED | Próximo de NOPASSWD; escolher **um** dos dois |
+| CONFIG-BASHRC-PATH-HIJACK | Bom pedagogicamente; um pouco mais abstracto |
+| CONFIG-SYSCTL-IP-FORWARD | Válido; menos “clássico” que ufw/sudoers |
 
 ---
 
-### 10. CONFIG-FAIL2BAN-ABSENT
+## Como escolher a 4ª
 
-**Problema.** `fail2ban` está instalado no lab mas o serviço está **parado/desabilitado**, ou o pacote foi removido após baseline “com proteção”. O caso ensina controle de serviço de defesa. **CONFIG** (ausência/estado), não CVE.
+Responder com **1 ID**. Sugestão: começar pelo top 3 acima.
 
-**Exemplo não técnico.** O porteiro eletrônico existe, mas está no modo “folga”: a caixa está na parede, desligada. Quem tenta várias senhas na fechadura não é barrado pelo sistema de alertas.
-
-**Correção.** `apt-get install -y fail2ban` (se ausente) + `systemctl enable --now fail2ban`; jail mínima SSH se desejado.
-
-**Verify.**  
-- Antes: `systemctl is-active fail2ban` → `inactive` **ou** pacote ausente.  
-- Depois: `active` + `is-enabled` true (critério documentado).
-
-**Fit.** Médio — um pouco mais “presença de ferramenta” do que misconfig clássica; ainda assim verificável e remediável por Bash. Preferir se quiser diversidade operacional.
-
----
-
-## Como escolher as 3
-
-Sugestão de combinação equilibrada (apenas orientação):
-
-1. **Autenticação/acesso:** `CONFIG-SSH-PASSWORD-AUTH` ou `CONFIG-SUDOERS-NOPASSWD`  
-2. **Permissões/arquivo:** `CONFIG-PRIVATE-KEY-0644` ou opcional `CONFIG-WORLD-WRITABLE-SENSITIVE`  
-3. **Rede/host:** `CONFIG-UFW-DISABLED` ou `CONFIG-SYSCTL-IP-FORWARD` ou opcional `CONFIG-LOCAL-HTTP-BIND`
-
-Evitar duplicar demais com a já selecionada `CONFIG-SSH-PERMIT-ROOT` (não pegar *só* variantes SSH sem diversificar).
-
-## Próximo passo
-
-Responder com os **3 IDs** aprovados (mistura de opcionais + extras permitida). Até lá: só documentação.
+Até lá: só documentação — **sem** AMI / GPT / `terraform apply`.

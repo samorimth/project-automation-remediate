@@ -8,7 +8,7 @@ Cada lab traz: o **problema** em poucas palavras, um **exemplo prático** do cot
 
 O laboratório **não** reproduz exploração ativa; a prova técnica é versão de pacote (CVE) ou inspeção de configuração/permissões (CONFIG). Detalhes: [`PORTFOLIO_10_LABS.md`](PORTFOLIO_10_LABS.md), [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md) e `scenarios/<id>/scenario.md`.
 
-**Estado:** 2 CVE executadas; 6 CVE selecionadas (pendentes); 1 CONFIG selecionada; 3 CONFIG ainda a escolher.
+**Estado:** 2 CVE executadas; 6 CVE selecionadas (pendentes); **3 CONFIG selecionadas**; **1 CONFIG** ainda a escolher.
 
 ---
 
@@ -34,7 +34,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-## B. CONFIG selecionada
+## B. CONFIG selecionadas (3/4)
 
 ### 3. CONFIG-SSH-PERMIT-ROOT — login root via SSH (CONFIG) — SELECIONADA
 
@@ -46,9 +46,33 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-## C. CONFIG opcionais (originais — ainda não confirmadas)
+### 4. CONFIG-NGINX-AUTOINDEX — listagem de diretório HTTP (CONFIG) — SELECIONADA
 
-### CONFIG-WORLD-WRITABLE-SENSITIVE — segredo world-writable (CONFIG)
+**Problema.** O servidor web de laboratório (`nginx`) está com listagem de pastas ligada (`autoindex on`): quem acessa o endereço vê a lista de ficheiros, mesmo sem pedir um nome específico. **CONFIG**, não CVE.
+
+**Exemplo prático.** A secretária deixa a gaveta de pastas aberta na mesa: qualquer um que entre na sala vê a lista de todos os documentos, mesmo sem abrir cada um. Desligar a listagem é fechar a gaveta.
+
+**Correção.** `autoindex off;` (ou remover o site de lab) e recarregar o nginx.
+
+---
+
+### 5. CONFIG-FAIL2BAN-ABSENT — fail2ban parado (CONFIG) — SELECIONADA
+
+**Problema.** A ferramenta que bloqueia tentativas repetidas de acesso (`fail2ban`) está instalada mas **desligada**, ou ausente após um baseline “com proteção”. **CONFIG** (estado/ausência), não CVE.
+
+**Exemplo prático.** O porteiro eletrônico existe, mas está no modo “folga”: a caixa está na parede, desligada. Quem tenta várias senhas na fechadura não é barrado pelo sistema de alertas.
+
+**Correção.** Instalar se necessário e `systemctl enable --now fail2ban`.
+
+---
+
+## C. CONFIG — 4ª vaga (escolher 1)
+
+Detalhes completos: [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
+
+### Opcionais originais (ainda candidatas)
+
+#### CONFIG-WORLD-WRITABLE-SENSITIVE — segredo world-writable (CONFIG)
 
 **Problema.** Arquivo sensível do laboratório com permissão de escrita para qualquer usuário (`0666`). **CONFIG**, não CVE.
 
@@ -58,7 +82,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### CONFIG-CRON-WEAK-PERMS — job cron com permissão fraca (CONFIG)
+#### CONFIG-CRON-WEAK-PERMS — job cron com permissão fraca (CONFIG)
 
 **Problema.** Agendamento automático (`cron`) com permissão de escrita para todos. **CONFIG**, não CVE.
 
@@ -68,7 +92,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### CONFIG-LOCAL-HTTP-BIND — serviço escutando em todas as interfaces (CONFIG)
+#### CONFIG-LOCAL-HTTP-BIND — serviço escutando em todas as interfaces (CONFIG)
 
 **Problema.** Serviço HTTP de lab escuta em `0.0.0.0` em vez de só `127.0.0.1`. **CONFIG**, não CVE.
 
@@ -78,9 +102,23 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
+### Outras propostas da 4ª vaga (resumo)
+
+| ID | Em uma frase, se não corrigir… |
+| --- | --- |
+| CONFIG-SUDOERS-NOPASSWD | O estagiário tem crachá de síndico sem pedir confirmação. |
+| CONFIG-UFW-DISABLED | As portas internas do corredor estão destrancadas. |
+| CONFIG-UNATTENDED-UPGRADES-OFF | A assinatura dos recalls de segurança foi cancelada. |
+| CONFIG-PRIVATE-KEY-0644 | A chave do carro está no porta-luvas aberto. |
+| CONFIG-AUDITD-INACTIVE | As câmeras existem, mas o gravador está desligado. |
+
+**Top 3 sugeridos:** `CONFIG-SUDOERS-NOPASSWD`, `CONFIG-WORLD-WRITABLE-SENSITIVE`, `CONFIG-UFW-DISABLED`.
+
+---
+
 ## D. CVE selecionadas (pendentes de preparação)
 
-### 4. CVE-2024-6387 — OpenSSH regreSSHion (CVE) — SELECIONADA
+### 7. CVE-2024-6387 — OpenSSH regreSSHion (CVE) — SELECIONADA
 
 **Problema.** O servidor SSH tem uma “corrida” (race) no tratamento de sinais: em condições difíceis de timing, um atacante remoto sem senha poderia, em teoria, obter acesso indevido. O lab **não** tenta esse ataque — só confere se o pacote foi atualizado.
 
@@ -90,7 +128,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 5. CVE-2024-48990 — `needrestart` (CVE) — SELECIONADA
+### 8. CVE-2024-48990 — `needrestart` (CVE) — SELECIONADA
 
 **Problema.** A ferramenta que decide quais serviços reiniciar após atualizações pode ser enganada e acabar executando código como administrador, herdando um ambiente manipulado.
 
@@ -100,7 +138,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 6. CVE-2023-4911 — glibc Looney Tunables (CVE) — SELECIONADA
+### 9. CVE-2023-4911 — glibc Looney Tunables (CVE) — SELECIONADA
 
 **Problema.** O carregador de programas (`ld.so` da biblioteca C) trata mal a variável `GLIBC_TUNABLES`; valores exagerados/malformados podem estourar um buffer e, em programas privilegiados, levar a privilégios de administrador. Em Ubuntu **24.04** a linha de release já veio corrigida; o lab vulnerável histórico costuma usar **22.04**.
 
@@ -110,7 +148,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 7. CVE-2024-12084 — `rsync` (CVE) — SELECIONADA
+### 10. CVE-2024-12084 — `rsync` (CVE) — SELECIONADA
 
 **Problema.** Overflow de memória no protocolo/`rsync` ao tratar certos dados; em cenários reais o impacto pode ser grave. No lab a prova é **só pela versão do pacote** — sem subir daemon nem abrir porta.
 
@@ -120,7 +158,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 8. CVE-2025-48384 — `git` (CVE) — SELECIONADA
+### 11. CVE-2025-48384 — `git` (CVE) — SELECIONADA
 
 **Problema.** O Git trata mal certos caracteres especiais em caminhos de configuração e submódulo: o checkout pode ir para um lugar diferente do esperado e, em combinação com outros truques, pode acabar executando código sem a intenção do usuário.
 
@@ -130,7 +168,7 @@ O laboratório **não** reproduz exploração ativa; a prova técnica é versão
 
 ---
 
-### 9. CVE-2024-11053 — `curl` e vazamento de senha em redirecionamento (CVE) — SELECIONADA
+### 12. CVE-2024-11053 — `curl` e vazamento de senha em redirecionamento (CVE) — SELECIONADA
 
 **Problema.** O cliente `curl`, ao usar senhas em `.netrc` e seguir um redirecionamento HTTP, pode em certos casos enviar a senha do primeiro site para o segundo.
 
@@ -151,27 +189,6 @@ Mantidas só como reserva / histórico do inventário — **não** entram no por
 
 ---
 
-## F. CONFIG extras (novas propostas)
-
-Descrições completas (problema / exemplo / correção / verify / fit): [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
-
-Resumo em uma frase:
-
-| ID | Em uma frase, se não corrigir… |
-| --- | --- |
-| CONFIG-SSH-PASSWORD-AUTH | A portaria aceita senha numérica além do cartão. |
-| CONFIG-SSH-EMPTY-PASSPHRASE-KEY | A chave de casa não tem PIN no chaveiro. |
-| CONFIG-UFW-DISABLED | As portas internas do corredor estão destrancadas. |
-| CONFIG-SUDOERS-NOPASSWD | O estagiário tem crachá de síndico sem pedir confirmação. |
-| CONFIG-SUDOERS-UNRESTRICTED | A lista de síndicos está no mural com caneta livre. |
-| CONFIG-PRIVATE-KEY-0644 | A chave do carro está no porta-luvas aberto. |
-| CONFIG-BASHRC-PATH-HIJACK | A primeira caixa de ferramentas é a da recepção. |
-| CONFIG-SYSCTL-IP-FORWARD | A porta dos fundos vira corredor sem necessidade. |
-| CONFIG-NGINX-AUTOINDEX | A gaveta de pastas fica aberta na mesa. |
-| CONFIG-FAIL2BAN-ABSENT | O porteiro eletrônico existe, mas está desligado. |
-
----
-
 ## Resumo rápido (seleção atual)
 
 | # | ID | Tipo | Status | Em uma frase… |
@@ -179,7 +196,9 @@ Resumo em uma frase:
 | 1 | CVE-2024-38428 | CVE | EXECUTADO — SUCESSO | O download pode ir ao “prédio errado”. |
 | 2 | CVE-2024-32487 | CVE | EXECUTADO — FALHA | Abrir um arquivo pode cumprir “ordem escondida” no nome. |
 | 3 | CONFIG-SSH-PERMIT-ROOT | CONFIG | SELECIONADA | A chave mestra fica na porta da frente. |
-| 4–6 | 3 CONFIG a escolher | CONFIG | AGUARDANDO | ver opcionais + extras |
+| 4 | CONFIG-NGINX-AUTOINDEX | CONFIG | SELECIONADA | A gaveta de pastas fica aberta na mesa. |
+| 5 | CONFIG-FAIL2BAN-ABSENT | CONFIG | SELECIONADA | O porteiro eletrônico está desligado. |
+| 6 | 1 CONFIG a escolher | CONFIG | AGUARDANDO | ver 4ª vaga em `CONFIG_CANDIDATOS_EXTRA.md` |
 | 7 | CVE-2024-6387 | CVE | SELECIONADA | A portaria pode se distrair no timeout (lab: atualizar pacote). |
 | 8 | CVE-2024-48990 | CVE | SELECIONADA | O encarregado pega a caixa de ferramentas trocada. |
 | 9 | CVE-2023-4911 | CVE | SELECIONADA | O “ajuste fino” longo demais troca quem dirige. |

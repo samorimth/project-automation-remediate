@@ -1,14 +1,14 @@
-# Portfólio de laboratórios — seleção atualizada (aprovação parcial)
+# Portfólio de laboratórios — seleção atualizada (faltando 1 CONFIG)
 
-**Status geral:** 2 labs **executados**; **6 CVE selecionadas** ainda **pendentes de preparação**; **1 CONFIG selecionada** (`SSH PermitRootLogin`); faltam **3 CONFIG** para completar o bloco de 4 (escolher entre candidatas originais + extras).  
+**Status geral:** 2 labs **executados**; **6 CVE selecionadas** ainda **pendentes de preparação**; **3 CONFIG selecionadas** (`SSH PermitRootLogin`, `nginx autoindex`, `fail2ban ausente/parado`); falta **1 CONFIG** para completar o bloco de 4.  
 **Não** preparar AMI / **não** gerar script GPT / **não** `terraform apply` até autorização explícita.  
 **Modelo oficial previsto (quando houver geração):** `OPENAI_MODEL` (mesmo modelo dos experimentos oficiais).   <!-- pragma: allowlist secret -->
 **SO alvo:** Ubuntu 24.04 LTS (`noble`), EC2 privada, sem exploração ativa — com nota especial para CVE-2023-4911 (preferência **22.04** para estado vulnerável histórico).  
-**Data da proposta:** 21 de novembro de 2026 (atualização: seleção do usuário).
+**Data da proposta:** 21 de novembro de 2026 (atualização: 3/4 CONFIG escolhidas).
 
-Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md` (quando existir). Analogias para leitores não técnicos: [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). Inventário histórico: [`README.md`](README.md). Pesquisa de alto impacto: [`CANDIDATOS_ALTO_IMPACTO.md`](CANDIDATOS_ALTO_IMPACTO.md). **Candidatos CONFIG extras** (para escolher +3): [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
+Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<id>/scenario.md` (quando existir). Analogias para leitores não técnicos: [`DESCRICOES_NAOTECNICAS.md`](DESCRICOES_NAOTECNICAS.md). Inventário histórico: [`README.md`](README.md). Pesquisa de alto impacto: [`CANDIDATOS_ALTO_IMPACTO.md`](CANDIDATOS_ALTO_IMPACTO.md). **4ª CONFIG (candidatos):** [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md).
 
-**Composição alvo após aprovação das 3 CONFIG restantes:** **8 CVE + 4 CONFIG = 12 labs** (expansão do desenho original “10 = 6 CVE + 4 CONFIG”, porque o usuário manteve as 2 executadas e selecionou **6** CVE adicionais).
+**Composição alvo após aprovação da 4ª CONFIG:** **8 CVE + 4 CONFIG = 12 labs** (expansão do desenho original “10 = 6 CVE + 4 CONFIG”, porque o usuário manteve as 2 executadas e selecionou **6** CVE adicionais).
 
 ## Inventário pré-proposta (atualizado)
 
@@ -25,10 +25,12 @@ Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<
 | CVE-2024-5742 (`nano`) | sim | não | **substituída** → reserva / fora da seleção |
 | CVE-2025-1372 (`elfutils`) | sim | não | **substituída** → reserva / fora da seleção |
 | CONFIG-SSH-PERMIT-ROOT | sim | stubs | **SELECIONADA** — pendente preparação |
-| CONFIG-WORLD-WRITABLE-SENSITIVE | sim | stubs | **candidata opcional** (não confirmada) |
-| CONFIG-CRON-WEAK-PERMS | sim | stubs | **candidata opcional** (não confirmada) |
-| CONFIG-LOCAL-HTTP-BIND | sim | stubs | **candidata opcional** (não confirmada) |
-| CONFIG extras | ver `CONFIG_CANDIDATOS_EXTRA.md` | não | propostas novas — escolher 3 no total com as opcionais |
+| CONFIG-NGINX-AUTOINDEX | sim | stubs | **SELECIONADA** — pendente preparação |
+| CONFIG-FAIL2BAN-ABSENT | sim | stubs | **SELECIONADA** — pendente preparação |
+| CONFIG-WORLD-WRITABLE-SENSITIVE | sim | stubs | candidata **4ª vaga** (não confirmada) |
+| CONFIG-CRON-WEAK-PERMS | sim | stubs | candidata **4ª vaga** (não confirmada) |
+| CONFIG-LOCAL-HTTP-BIND | sim | stubs | candidata **4ª vaga** (não confirmada) |
+| CONFIG 4ª vaga (outras) | ver `CONFIG_CANDIDATOS_EXTRA.md` | não | propostas complementares — **escolher 1** |
 
 ## Tabela dos labs (CVE + CONFIG)
 
@@ -37,7 +39,9 @@ Este documento é a ficha de portfólio. Detalhes por lab estão em `scenarios/<
 | 1 | CVE-2024-38428 | **CVE** | `wget` | **EXECUTADO — SUCESSO** | `1.21.4-1ubuntu4` → `≥ 1.21.4-1ubuntu4.1` | [CVE](https://ubuntu.com/security/CVE-2024-38428), [USN-6852-1](https://ubuntu.com/security/notices/USN-6852-1) |
 | 2 | CVE-2024-32487 | **CVE** | `less` | **EXECUTADO — FALHA** | `590-2ubuntu2` → `≥ 590-2ubuntu2.1` | [CVE](https://ubuntu.com/security/CVE-2024-32487), [USN-6756-1](https://ubuntu.com/security/notices/USN-6756-1) |
 | 3 | CONFIG-SSH-PERMIT-ROOT | **CONFIG** | `sshd` `PermitRootLogin` | **SELECIONADA** (pendente prep.) | `PermitRootLogin yes` → `prohibit-password` (ou `no`) | CIS / hardening SSH; **não é CVE** |
-| 4–6 | *(3 CONFIG a escolher)* | **CONFIG** | ver opcionais + extras | **AGUARDANDO ESCOLHA** | config Bash / permissões / serviço | **não é CVE** |
+| 4 | CONFIG-NGINX-AUTOINDEX | **CONFIG** | `nginx` `autoindex` | **SELECIONADA** (pendente prep.) | `autoindex on` → `off` | hardening web; **não é CVE** |
+| 5 | CONFIG-FAIL2BAN-ABSENT | **CONFIG** | `fail2ban` serviço | **SELECIONADA** (pendente prep.) | inactive/disabled → `enable --now` | defesa em profundidade; **não é CVE** |
+| 6 | *(1 CONFIG a escolher)* | **CONFIG** | ver 4ª vaga | **AGUARDANDO ESCOLHA** | config Bash / permissões / rede / higiene | **não é CVE** |
 | 7 | CVE-2024-6387 | **CVE** | `openssh-server` | **SELECIONADA** (pendente prep.) | ex. `1:9.6p1-3ubuntu13` → `≥ 1:9.6p1-3ubuntu13.3` | [CVE](https://ubuntu.com/security/CVE-2024-6387), [USN-6859-1](https://ubuntu.com/security/notices/USN-6859-1) |
 | 8 | CVE-2024-48990 | **CVE** | `needrestart` | **SELECIONADA** (pendente prep.) | ex. `3.6-7ubuntu4` → `≥ 3.6-7ubuntu4.3` | [CVE](https://ubuntu.com/security/CVE-2024-48990), [USN-7117-1](https://ubuntu.com/security/notices/USN-7117-1) |
 | 9 | CVE-2023-4911 | **CVE** | `libc6` / glibc | **SELECIONADA** (pendente prep.) | **jammy:** ex. `2.35-0ubuntu3.3` → `≥ 2.35-0ubuntu3.4`; **noble** já Fixed em `2.38-1ubuntu6` (release) | [CVE](https://ubuntu.com/security/CVE-2023-4911), [USN-6409-1](https://ubuntu.com/security/notices/USN-6409-1) |
@@ -57,34 +61,36 @@ Versões CVE conferidas nas páginas oficiais da Canonical (CVE Tracker + USN / 
 | CVE-2024-12084 (rsync) | Fit **Alto**; lab só por versão — **sem** daemon / porta 873. |
 | CVE-2025-48384 (git) / CVE-2024-11053 (curl) | Já tinham fichas; mantidas na seleção. |
 
-### CONFIG: selecionada vs. opcionais vs. extras
+### CONFIG: trio selecionado vs. 4ª vaga
 
 | ID | Status | Papel |
 | --- | --- | --- |
-| CONFIG-SSH-PERMIT-ROOT | **SELECIONADA** | 1 das 4 CONFIG |
-| CONFIG-WORLD-WRITABLE-SENSITIVE | candidata **opcional** | pode ser uma das +3 |
-| CONFIG-CRON-WEAK-PERMS | candidata **opcional** | pode ser uma das +3 |
-| CONFIG-LOCAL-HTTP-BIND | candidata **opcional** | pode ser uma das +3 |
-| CONFIG-* em [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md) | propostas **novas** | escolher até completar 4 CONFIG no total |
+| CONFIG-SSH-PERMIT-ROOT | **SELECIONADA** | 1/4 — autenticação SSH (root) |
+| CONFIG-NGINX-AUTOINDEX | **SELECIONADA** | 2/4 — endurecimento de serviço web |
+| CONFIG-FAIL2BAN-ABSENT | **SELECIONADA** | 3/4 — presença/estado de defesa |
+| *(1 a escolher)* | **AGUARDANDO** | 4/4 — ver [`CONFIG_CANDIDATOS_EXTRA.md`](CONFIG_CANDIDATOS_EXTRA.md) |
+
+**Cobertura do trio:** acesso SSH permissivo + exposição de listagem HTTP + ferramenta de ban desligada. A 4ª vaga deve **complementar** (privilégios, segredos/perms, rede, higiene de pacotes, logging/audit distinto de fail2ban) — **evitar** outro gémeo puro de autenticação SSH.
 
 ## Por que CONFIG ≠ CVE
 
 Cada caso CONFIG muda **configuração / permissões / bind / política**, verificável por inspeção (`sshd -T`, `stat`, `ss`, `ufw status`, `sudo -l`, etc.), remediável por Bash **sem** depender de `.deb` vulnerável, e rotulado **CONFIG** para não misturar com remediação por atualização de pacote.
 
-## Ordem recomendada (após aprovação das 3 CONFIG + autorização)
+## Ordem recomendada (após aprovação da 4ª CONFIG + autorização)
 
 1. **CONFIG-SSH-PERMIT-ROOT** — já selecionada; barata (drop-in sshd).  
-2. **3 CONFIG escolhidas** — da lista opcional + extras.  
-3. **CVE-2024-11053 (`curl`)** — similar ao wget.  
-4. **CVE-2024-6387 (`openssh`)** / **CVE-2024-48990 (`needrestart`)** — High, apt + versão.  
-5. **CVE-2024-12084 (`rsync`)** / **CVE-2025-48384 (`git`)**.  
-6. **CVE-2023-4911 (`glibc`)** — preferir jammy; reboot.
+2. **CONFIG-NGINX-AUTOINDEX** / **CONFIG-FAIL2BAN-ABSENT** — selecionadas; pacotes de lab + conf/serviço.  
+3. **4ª CONFIG escolhida** — da lista complementar.  
+4. **CVE-2024-11053 (`curl`)** — similar ao wget.  
+5. **CVE-2024-6387 (`openssh`)** / **CVE-2024-48990 (`needrestart`)** — High, apt + versão.  
+6. **CVE-2024-12084 (`rsync`)** / **CVE-2025-48384 (`git`)**.  
+7. **CVE-2023-4911 (`glibc`)** — preferir jammy; reboot.
 
 Labs 1–2 (wget / less) já fechados; não precisam reexecução salvo pedido explícito.
 
 ## Gates obrigatórios
 
-- Aguardar aprovação das **3 CONFIG** restantes e autorização antes de preparar ambiente vulnerável.  
+- Aguardar aprovação da **1 CONFIG** restante e autorização antes de preparar ambiente vulnerável.  
 - Sem inventar CVE/versão.  
 - Sem `terraform apply` / recursos pagos AWS sem `AUTORIZO_RECURSOS_PAGOS`.  
 - Casos CONFIG claramente distintos de CVE.  
@@ -94,6 +100,6 @@ Labs 1–2 (wget / less) já fechados; não precisam reexecução salvo pedido e
 
 ## Próximo passo
 
-1. **Confirmar** a lista de 6 CVE selecionadas (já refletida acima).  
-2. **Escolher 3 CONFIG** entre as 3 opcionais originais + as novas em `CONFIG_CANDIDATOS_EXTRA.md`.  
+1. CVE (8) e CONFIG (3/4) já refletidas acima.  
+2. **Escolher 1 CONFIG** em `CONFIG_CANDIDATOS_EXTRA.md` (secção 4ª vaga).  
 3. Só então: stubs prepare/verify → eventual provisionamento.
