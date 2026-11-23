@@ -1,6 +1,16 @@
 # Descrição da arquitetura
 
-O diagrama [arquitetura.svg](arquitetura.svg) descreve a topologia do laboratório: ambiente local de um lado e a VPC exclusiva do outro. Essa topologia foi aplicada em `us-east-2` na tentativa 5 e destruída depois das repetições da CVE-2024-38428. O rótulo da região na fonte Mermaid está redigido; a região efetivamente usada está em `scenarios/CVE-2024-38428/evidence/before.json`.
+A figura para o texto do TCC está em [arquitetura-tcc.png](arquitetura-tcc.png), em página A4 horizontal. O original editável é [arquitetura-tcc.drawio](arquitetura-tcc.drawio), no formato do diagrams.net (draw.io). A versão vetorial está em [arquitetura-tcc.svg](arquitetura-tcc.svg).
+
+Legenda sugerida para a seção 4.2:
+
+Figura – Arquitetura do laboratório experimental
+
+Fonte: elaborada pelo autor.
+
+A leitura acompanha essa seção. Na linha de cima, o cenário entrega o prompt à CLI Python, que consulta a API da OpenAI. O script devolvido passa pelo validador: sintaxe (`bash -n`), ShellCheck e checklist de segurança. Somente o script aprovado segue para o Systems Manager. Abaixo, a VPC `10.42.0.0/16` em `us-east-2` separa a sub-rede pública `10.42.0.0/24`, com o Internet Gateway e o NAT Gateway, da sub-rede privada `10.42.1.0/24`, onde fica a EC2 Ubuntu 24.04 sem IP público. O volume é gp3 criptografado, o security group não tem entrada e a função IAM limita-se a `AmazonSSMManagedInstanceCore`. A saída da instância usa HTTPS pelo NAT. O Terraform cria e remove essa pilha. A evidência registrada no ambiente local é a verificação por `dpkg`, independente do texto do modelo.
+
+As figuras anteriores deste diretório conservam o contraste entre o experimento histórico e a reexecução. O diagrama [arquitetura.svg](arquitetura.svg) descreve a topologia do laboratório: ambiente local de um lado e a VPC exclusiva do outro. Essa topologia foi aplicada em `us-east-2` na tentativa 5 e destruída depois das repetições da CVE-2024-38428. O rótulo da região na fonte Mermaid está redigido; a região efetivamente usada está em `scenarios/CVE-2024-38428/evidence/before.json`.
 
 No ambiente local estão o Cursor, a CLI Python e o Terraform. A CLI verifica a configuração, prepara o plano e recusa criação ou destruição sem frase de autorização.
 
