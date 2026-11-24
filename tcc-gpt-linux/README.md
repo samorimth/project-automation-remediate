@@ -4,7 +4,7 @@ Uso da inteligência artificial generativa na geração e validação de scripts
 
 O caso apresentado no TCC é a CVE-2024-38428 (`wget`), executada em `us-east-2`. A contextualização, a arquitetura e as limitações estão no [README da raiz do repositório](../README.md). A figura do TCC está em [docs/arquitetura/figura-projeto-tcc.png](docs/arquitetura/figura-projeto-tcc.png).
 
-A CVE-2024-32487 (`less`) também foi executada em 12 de novembro de 2026. Os três scripts falharam no Systems Manager e a classificação gravada é FALHA. Esse experimento não integra os resultados apresentados na versão atual do TCC. Os arquivos permanecem em [generated_scripts/CVE-2024-32487/](generated_scripts/CVE-2024-32487/), [results/reexecution/CVE-2024-32487/](results/reexecution/CVE-2024-32487/) e [docs/resultado_cve_2024_32487.md](docs/resultado_cve_2024_32487.md). As fichas dos candidatos levantados continuam em [scenarios/](scenarios/).
+A CVE-2024-32487 (`less`) também foi executada em 12 de novembro de 2026. Os três scripts falharam no Systems Manager e a classificação gravada é FALHA. Esse experimento não integra os resultados apresentados na versão atual do TCC. Os arquivos originais estão na tag `archive/experimento-cve-2024-32487`, no commit `4cb0d28`. A ficha permanece em [scenarios/CVE-2024-32487/](scenarios/CVE-2024-32487/). As demais fichas de candidatos continuam em [scenarios/](scenarios/).
 
 As pilhas, os NAT Gateways e as AMIs privadas foram destruídos depois da coleta.
 
@@ -72,7 +72,4 @@ Os commits desse material no histórico são `82b6270`, `a182465` e `d7b95f9`.
 - [docs/auditoria_validador.md](docs/auditoria_validador.md)
 - [docs/modelo_ia.md](docs/modelo_ia.md)
 - [docs/linha_do_tempo.md](docs/linha_do_tempo.md)
-- [docs/plano_reexecucao.md](docs/plano_reexecucao.md)
-- [docs/levantamento_inicial_tcc.md](docs/levantamento_inicial_tcc.md)
 - [docs/reexecucao_resultado.md](docs/reexecucao_resultado.md)
-- [docs/resultado_cve_2024_32487.md](docs/resultado_cve_2024_32487.md)

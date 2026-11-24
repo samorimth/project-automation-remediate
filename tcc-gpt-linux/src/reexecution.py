@@ -659,6 +659,51 @@ def run_repetition(
                 _write_json(destination / "classification.json", record)
 
 
+def _functional_description(record: dict[str, Any]) -> str:
+    """Descreve o teste funcional a partir do conjunto e dos campos já gravados."""
+    functional = record.get("functional")
+    if not isinstance(functional, dict):
+        functional = {}
+    if record.get("set") == "reexecucao_http_local":
+        return _http_functional_description(functional)
+    return _file_functional_description(functional)
+
+
+def _observed_bits(functional: dict[str, Any]) -> str:
+    observed: list[str] = []
+    if functional.get("exit_code") not in (None, ""):
+        observed.append(f"código {functional['exit_code']}")
+    if functional.get("bytes") not in (None, ""):
+        observed.append(f"{functional['bytes']} bytes")
+    if functional.get("first_line") not in (None, ""):
+        observed.append(f"primeira linha `{functional['first_line']}`")
+    if not observed:
+        return ""
+    return ", com " + ", ".join(observed)
+
+
+def _http_functional_description(functional: dict[str, Any]) -> str:
+    file_exit = ""
+    if functional.get("file_exit") not in (None, ""):
+        file_exit = f", que terminou com código {functional['file_exit']}"
+    return (
+        "O critério funcional desta repetição foi "
+        "`wget -O <arquivo temporário> --timeout=20 http://127.0.0.1:9876/lab`"
+        f"{_observed_bits(functional)}. "
+        "O mesmo procedimento também executou "
+        "`wget -O <arquivo temporário> --timeout=10 file:///etc/os-release`"
+        f"{file_exit}. Essa sonda não compõe o critério."
+    )
+
+
+def _file_functional_description(functional: dict[str, Any]) -> str:
+    return (
+        "O teste funcional foi "
+        "`wget -O <arquivo temporário> --timeout=20 file:///etc/os-release`"
+        f"{_observed_bits(functional)}."
+    )
+
+
 def _write_markdown(path: Path, record: dict[str, Any], before: dict[str, Any], execution: dict[str, Any] | None) -> None:
     assert_evidence_dir(path)
     lines = [
@@ -674,7 +719,7 @@ def _write_markdown(path: Path, record: dict[str, Any], before: dict[str, Any], 
         f"- Classificação: {record['classification']}",
         f"- Motivo: {record['classification_reason']}",
         "",
-        "O teste funcional foi `wget -O <arquivo temporário> file:///etc/os-release`.",
+        _functional_description(record),
         "Não houve teste de exploração da CVE.",
         "",
     ]

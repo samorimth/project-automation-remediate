@@ -39,15 +39,15 @@ Mesmo template, mesmo cenário e estado vulnerável inicial conhecido. Todas as 
 
 ## Escopo de 12 de novembro de 2026
 
-O laboratório passa a ter duas CVEs, não dez execuções. A primeira é a CVE-2024-38428, já executada. A segunda está proposta em `scenarios/CVE-2024-32487/scenario.md` e ainda não foi aprovada nem executada. Não há terceira CVE nesta etapa.
+O caso apresentado no TCC é a CVE-2024-38428. As fichas levantadas estão em `scenarios/`. A CVE-2024-32487 foi executada em 12 de novembro de 2026 e a classificação gravada é FALHA. Esse conjunto não entra nos resultados apresentados no TCC. Os arquivos originais estão na tag `archive/experimento-cve-2024-32487`. A ficha permanece em `scenarios/CVE-2024-32487/`. Não há terceira CVE.
 
-Cada CVE deve ter três gerações com o mesmo modelo, o mesmo prompt e os mesmos parâmetros. Cada script aprovado roda uma vez, em uma EC2 criada da AMI privada daquela CVE. O total planejado é seis scripts e até seis execuções. As três gerações do `wget` já existem. A reexecução delas não gerou scripts novos.
+As gerações do caso apresentado usaram o mesmo modelo, o mesmo prompt e os mesmos parâmetros. A reexecução do `wget` não gerou scripts novos.
 
-## Por que a próxima execução pede uma EC2 nova
+## EC2 nova na reexecução do wget
 
-As repetições 2, 3 e 4 rodaram na instância `i-04da3315297ec6c04`. As repetições 3 e 4 só voltaram ao pacote vulnerável porque `prepare.sh --apply` reinstalou o `.deb` na mesma máquina. Esse procedimento não entra no desenho daqui em diante.
+As repetições 2, 3 e 4 do conjunto histórico rodaram na instância `i-04da3315297ec6c04`. As repetições 3 e 4 só voltaram ao pacote vulnerável porque `prepare.sh --apply` reinstalou o `.deb` na mesma máquina. A reexecução não usou esse procedimento.
 
-Cada script passa a ser executado em uma EC2 criada na hora, a partir de uma AMI privada de referência, e destruída ao fim daquela repetição. A infraestrutura compartilhada (VPC, NAT, papéis) permanece. O limite padrão de instâncias simultâneas é 1. Se a versão inicial não for a esperada, o script não roda e a classificação é INCONCLUSIVO.
+Na reexecução, cada script foi executado em uma EC2 criada na hora, a partir de uma AMI privada de referência, e essa instância foi destruída ao fim da repetição. O limite de instâncias simultâneas foi 1. Se a versão inicial não fosse a esperada, o script não rodaria e a classificação ficaria INCONCLUSIVO.
 
 As três repetições de uma mesma CVE devem usar o mesmo AMI ID, o mesmo tipo de instância, a mesma versão do Ubuntu, a mesma versão inicial do pacote, o mesmo modelo, o mesmo template, os mesmos parâmetros de geração, a mesma versão do validador e os mesmos critérios de verificação. Isso não autoriza dizer que as instâncias são idênticas sem a evidência de cada uma.
 

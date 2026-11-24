@@ -114,4 +114,4 @@ O `file://` também falhou no estado vulnerável da passagem HTTP. Essa falha n�
 
 ## CVE-2024-32487, conjunto separado
 
-Em 12 de novembro de 2026, três scripts novos do pacote `less` foram gerados, validados e executados em instâncias distintas da AMI `ami-0c49cb4a0e4553411`. Os três passaram na validação estática. Os três terminaram no SSM com código 141 e a versão permaneceu `590-2ubuntu2`. A classificação gravada é FALHA. O detalhe está em `docs/resultado_cve_2024_32487.md`. Essas execuções não entram em `results/summary.csv`.
+Em 12 de novembro de 2026, três scripts novos do pacote `less` foram gerados, validados e executados em instâncias distintas da AMI `ami-0c49cb4a0e4553411`. Os três passaram na validação estática. Os três terminaram no SSM com código 141 e a versão permaneceu `590-2ubuntu2`. A classificação gravada é FALHA. Essas execuções não entram em `results/summary.csv`. Os arquivos originais estão na tag `archive/experimento-cve-2024-32487`.

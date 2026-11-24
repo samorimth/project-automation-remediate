@@ -103,13 +103,7 @@ No conjunto histórico houve quatro chamadas à API. Três devolveram scripts di
 
 Na tarde de 12 de novembro de 2026, os três scripts originais foram executados de novo, sem nova chamada à API, cada um em uma EC2 nova. O conjunto que usou `file://` ficou classificado como FALHA. O conjunto HTTP ficou classificado como SUCESSO nas três repetições. O teste HTTP não explora a CVE e não demonstra mudança de comportamento do `wget`: a resposta foi a mesma antes e depois da atualização. A classificação SUCESSO exige, juntas, a versão mínima e essa resposta HTTP.
 
-A CVE-2024-32487, no pacote `less`, também foi executada nesse dia. Os três scripts falharam no Systems Manager e a classificação gravada é FALHA. Esse experimento não integra os resultados apresentados na versão atual do TCC. Os arquivos permanecem para rastreabilidade:
-
-- `tcc-gpt-linux/generated_scripts/CVE-2024-32487/`
-- `tcc-gpt-linux/results/reexecution/CVE-2024-32487/`
-- `tcc-gpt-linux/docs/resultado_cve_2024_32487.md`
-
-As fichas dos candidatos levantados, inclusive a do `less`, permanecem em `tcc-gpt-linux/scenarios/`.
+A CVE-2024-32487, no pacote `less`, também foi executada nesse dia. Os três scripts falharam no Systems Manager e a classificação gravada é FALHA. Esse experimento não integra os resultados apresentados na versão atual do TCC. Os arquivos originais estão na tag `archive/experimento-cve-2024-32487`, no commit `4cb0d28`. A ficha permanece em `tcc-gpt-linux/scenarios/CVE-2024-32487/`. As demais fichas de candidatos também permanecem em `tcc-gpt-linux/scenarios/`.
 
 ## Evidências experimentais
 
