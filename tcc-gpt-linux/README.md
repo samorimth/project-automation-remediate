@@ -2,23 +2,29 @@
 
 Uso da inteligência artificial generativa na geração e validação de scripts para remediação de vulnerabilidades em sistemas operacionais Linux.
 
-Este diretório contém o laboratório do TCC. A CVE-2024-38428 e a CVE-2024-32487 foram executadas em `us-east-2`. As pilhas, os NAT e as AMIs privadas foram destruídos depois da coleta.
+O caso apresentado no TCC é a CVE-2024-38428 (`wget`), executada em `us-east-2`. A contextualização, a arquitetura e as limitações estão no [README da raiz do repositório](../README.md). A figura do TCC está em [docs/arquitetura/figura-projeto-tcc.png](docs/arquitetura/figura-projeto-tcc.png).
 
-## O que a Fase 3 entrega
+A CVE-2024-32487 (`less`) também foi executada em 12 de novembro de 2026. Os três scripts falharam no Systems Manager e a classificação gravada é FALHA. Esse experimento não integra os resultados apresentados na versão atual do TCC. Os arquivos permanecem em [generated_scripts/CVE-2024-32487/](generated_scripts/CVE-2024-32487/), [results/reexecution/CVE-2024-32487/](results/reexecution/CVE-2024-32487/) e [docs/resultado_cve_2024_32487.md](docs/resultado_cve_2024_32487.md). As fichas dos candidatos levantados continuam em [scenarios/](scenarios/).
 
-- Template de prompt (`prompts/remediation_prompt.txt`) e `scenario.json` da CVE.
-- Cliente OpenAI com telemetria (modelo, latência, tokens, hashes) sem logar a API key.
-- Validador: `bash -n` + ShellCheck + checklist de segurança/adequação.
-- Executor SSM que exige `AUTORIZO_EXECUCAO_SCRIPT_IA` e script previamente aprovado.
-- Verificação independente de versão do pacote (`verify`).
-- Persistência mínima de métricas reais em `results/`.
+As pilhas, os NAT Gateways e as AMIs privadas foram destruídos depois da coleta.
+
+## O que o laboratório faz
+
+- Monta o prompt a partir de [prompts/remediation_prompt.txt](prompts/remediation_prompt.txt) e do `scenario.json` da CVE.
+- Consulta a API da OpenAI e grava modelo, latência, tokens e hashes, sem registrar a chave.
+- Valida o script com `bash -n`, ShellCheck e um checklist. Erro do ShellCheck reprova; aviso e informação não reprovam.
+- Executa pelo Systems Manager somente o script aprovado e somente com a frase `AUTORIZO_EXECUCAO_SCRIPT_IA`.
+- Confere a versão do pacote com `dpkg`, fora do texto do modelo.
+- Grava as métricas em [results/](results/).
+
+O campo `model` dos metadados é um único identificador. O padrão `gpt-4o-mini` de [src/config.py](src/config.py) vale quando a variável de ambiente não define o modelo. Ele não é o identificador gravado nas três gerações que produziram script. A repetição 1 pediu `gpt-4.1`, recebeu HTTP 429 e não gerou script. O cliente não separa o modelo pedido do modelo devolvido.
 
 ## Pré-requisitos locais
 
 - Python 3.11 ou superior.
 - Terraform 1.6 ou superior.
-- `shellcheck` no PATH (validação Nível 2).
-- `OPENAI_API_KEY` / `OPENAI_MODEL` para `generate`, com saldo na organização OpenAI. O experimento usa `gpt-6-luna` com `reasoning_effort=none`. Sem créditos, a API responde `insufficient_quota` e nenhum script é gravado. <!-- pragma: allowlist secret -->
+- `shellcheck` no PATH, para a validação de nível 2.
+- `OPENAI_API_KEY` e, se for o caso, `OPENAI_MODEL`, apenas para `generate`. Sem saldo, a API não grava script.
 
 ```bash
 python3 -m venv .venv
@@ -28,7 +34,9 @@ python -m src.main check
 pytest
 ```
 
-## Comandos principais
+`check` e `pytest` não acessam a AWS nem a OpenAI.
+
+## Comandos
 
 ```bash
 python -m src.main provision --authorize AUTORIZO_RECURSOS_PAGOS
@@ -39,6 +47,17 @@ python -m src.main verify --cve CVE-2024-38428
 python -m src.main cleanup --authorize AUTORIZO_DESTRUIR_RECURSOS
 python -m src.main report
 ```
+
+`provision`, `execute` e `cleanup` criam, executam ou destroem recursos pagos. `report` só relê evidências já gravadas.
+
+## Onde estão as evidências do wget
+
+- Conjunto histórico: [generated_scripts/CVE-2024-38428/](generated_scripts/CVE-2024-38428/) e [results/experiments.json](results/experiments.json). `verify_independent.json` existe na repetição 2 e não existe nas repetições 3 e 4.
+- Reexecução com `file://`, classificada como FALHA: [results/reexecution/CVE-2024-38428/](results/reexecution/CVE-2024-38428/).
+- Reexecução HTTP, classificada como SUCESSO: [results/reexecution/CVE-2024-38428-http/](results/reexecution/CVE-2024-38428-http/).
+- Cópia congelada: [evidence_archive/historical-cve-2024-38428/](evidence_archive/historical-cve-2024-38428/).
+
+Os commits desse material no histórico são `82b6270`, `a182465` e `d7b95f9`.
 
 ## Documentação
 
@@ -55,8 +74,5 @@ python -m src.main report
 - [docs/linha_do_tempo.md](docs/linha_do_tempo.md)
 - [docs/plano_reexecucao.md](docs/plano_reexecucao.md)
 - [docs/levantamento_inicial_tcc.md](docs/levantamento_inicial_tcc.md)
-- [docs/plano_13_15.md](docs/plano_13_15.md)
 - [docs/reexecucao_resultado.md](docs/reexecucao_resultado.md)
 - [docs/resultado_cve_2024_32487.md](docs/resultado_cve_2024_32487.md)
-
-A auditoria de 12 de novembro de 2026 preserva as evidências em `evidence_archive/historical-cve-2024-38428/`. A reexecução do wget está em `docs/reexecucao_resultado.md`. O experimento do less está em `docs/resultado_cve_2024_32487.md`.
