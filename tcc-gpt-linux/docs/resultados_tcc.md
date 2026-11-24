@@ -99,7 +99,7 @@ Depois das repetições, a pilha com tag `Project=tcc-gpt-linux` e `ExperimentId
 
 `results/experimental_runs.csv` separa o booleano histórico `recorded_remediation_success` da classificação deste protocolo. As repetições 2, 3 e 4 continuam com remediação 1, porque a versão subiu de `1.21.4-1ubuntu4` para `1.21.4-1ubuntu4.5`. A classificação é INCONCLUSIVO: a mesma EC2 executou os três scripts e não há teste funcional do `wget` nem saída de scanner. A repetição 1 é NAO_EXECUTADO. Essas três taxas de 3/3 descrevem este conjunto, não outras CVEs.
 
-As tabelas separadas são `results/infrastructure_attempts.csv`, `results/api_calls.csv` e `results/experimental_runs.csv`. A chamada HTTP 429 está só na tabela de API. Os gráficos com os nomes em inglês pedidos para o TCC estão ao lado dos gráficos em português: `syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`. O gráfico de custo usa a tabela pública e omite a chamada sem tokens.
+As tabelas separadas são `results/infrastructure_attempts.csv`, `results/api_calls.csv` e `results/experimental_runs.csv`. A chamada HTTP 429 está só na tabela de API. Os gráficos versionados estão em `results/charts/`, com os nomes em português listados acima e `cost.png`. As cópias de mesmo conteúdo que tinham nomes em inglês foram retiradas da árvore. O gráfico de custo usa a tabela pública e omite a chamada sem tokens.
 
 ## Reexecução de 12 de novembro, conjunto separado
 

@@ -1,24 +1,13 @@
 # Descrição da arquitetura
 
-O diagrama [arquitetura.svg](arquitetura.svg) descreve a topologia do laboratório: ambiente local de um lado e a VPC exclusiva do outro. Essa topologia foi aplicada em `us-east-2` na tentativa 5 e destruída depois das repetições da CVE-2024-38428. O rótulo da região na fonte Mermaid está redigido; a região efetivamente usada está em `scenarios/CVE-2024-38428/evidence/before.json`.
+A figura usada no TCC está em [figura-projeto-tcc.png](figura-projeto-tcc.png). O PDF de origem está em [ProjetoTCC.pdf](ProjetoTCC.pdf).
 
-No ambiente local estão o Cursor, a CLI Python e o Terraform. A CLI verifica a configuração, prepara o plano e recusa criação ou destruição sem frase de autorização.
+O desenho mostra o caminho do experimento. O cenário da CVE entrega um prompt padronizado à CLI Python, que oferece `generate`, `validate`, `execute` e `verify`. A CLI envia o prompt à API da OpenAI. A API devolve `remediation.sh`. O validador desenhado na figura aplica `bash -n` e ShellCheck. No código há um terceiro nível, o checklist de segurança e de adequação ao pacote alvo, em `src/script_validator.py`. O rótulo da figura não nomeia esse terceiro nível. Somente o script aprovado segue para o Systems Manager Run Command.
 
-Na AWS, o diagrama mostra a VPC `10.42.0.0/16`, a subnet reservada ao NAT e a subnet privada da instância. A EC2 Ubuntu não tem IP público. O volume gp3 e a role do Systems Manager estão ligados a essa instância. A role usa apenas `AmazonSSMManagedInstanceCore`. O security group sem entrada não aparece como um bloco separado para manter a figura legível em página A4; ele está definido no código e descrito em [ambiente.md](../ambiente.md).
+A região desenhada é `us-east-2`. A VPC `10.42.0.0/16` separa a sub-rede pública `10.42.0.0/24`, com Internet Gateway e NAT Gateway, da sub-rede privada `10.42.1.0/24`, com a EC2 Ubuntu 24.04. A instância não tem IP público. A saída dela passa pelo NAT. O Terraform cria e remove a infraestrutura. As evidências saem da instância para o ambiente local, em JSON e CSV.
 
-O fluxo do experimento, que a figura de topologia não mostra, está em [fluxo_experimental.svg](fluxo_experimental.svg) e [fluxo_experimental.png](fluxo_experimental.png), com a mesma sequência em [fluxo_experimental.mmd](fluxo_experimental.mmd):
+Fora do desenho, e definidos no Terraform, ficam o security group sem regra de entrada, o volume gp3 criptografado, o IMDSv2 e o papel IAM limitado a `AmazonSSMManagedInstanceCore`. Não há SSH. Esses itens estão descritos em [ambiente.md](../ambiente.md).
 
-1. o cenário e o prompt preenchido;
-2. a chamada à API da OpenAI, que pode falhar sem produzir script;
-3. `remediation.sh`;
-4. a validação em três níveis;
-5. a parada sem SSM quando a validação reprova;
-6. o SSM Run Command na EC2 privada quando o script foi aprovado e a frase de execução foi dada;
-7. a verificação por `dpkg`, independente do texto do modelo;
-8. `prepare.sh`, que restaurou o `wget` vulnerável antes das repetições 3 e 4.
+A verificação independente da versão usa `dpkg` e não depende do texto devolvido pelo modelo. A comparação de versão é a medida de eficácia usada nos resultados. O modelo não valida a própria correção.
 
-O modelo não valida a própria correção. A eficácia usada nos resultados é a comparação de versão do pacote.
-
-A instância Windows do CopySpider não integra o diagrama. Ela permanece fora desta VPC e desta pilha.
-
-Os arquivos `arquitetura.mmd`, `arquitetura.svg` e `arquitetura.png` distinguem o experimento histórico (uma EC2 a partir da AMI pública, restaurada com `prepare.sh`) do padrão usado na reexecução do `wget` em 12 de novembro de 2026 (AMI privada `ami-03629c5c47c71759b` e uma EC2 nova por script). A segunda CVE ainda não foi executada. As figuras estão em página A4 horizontal.
+No conjunto histórico, as repetições 3 e 4 restauraram o `wget` vulnerável com `prepare.sh` na mesma EC2. Na reexecução de 12 de novembro de 2026, cada script rodou em uma EC2 nova da AMI privada `ami-03629c5c47c71759b`. A pilha foi destruída depois da coleta.

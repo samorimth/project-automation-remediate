@@ -46,7 +46,7 @@ Na repetição 2 do `wget`, a primeira passagem reprovou o script porque tratou 
 
 ## 7. Métricas
 
-As taxas usam denominadores diferentes. Elas estão em `results/summary.csv` e nos gráficos `results/charts/syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`.
+As taxas usam denominadores diferentes. Elas estão em `results/summary.csv` e nos gráficos `results/charts/taxa_correcao_sintatica.png`, `analise_estatica.png`, `aprovacao_seguranca.png`, `taxa_remediacao.png`, `tempo_geracao.png`, `consumo_tokens.png` e `cost.png`.
 
 | Métrica, conjunto histórico | Numerador / denominador |
 | --- | --- |
@@ -72,4 +72,4 @@ A redução de esforço manual não foi medida. Não há comparação entre mode
 
 ## 10. Próximas etapas
 
-A segunda CVE só começa depois da aprovação e de nova autorização para recursos pagos e, se houver geração, para a API. O plano dos dias 13, 14 e 15 de novembro está em `docs/plano_13_15.md`. A destruição da VPC, do NAT e da AMI privada que ainda estão ligados pede a frase `AUTORIZO_DESTRUIR_RECURSOS`.
+A segunda CVE só começa depois da aprovação e de nova autorização para recursos pagos e, se houver geração, para a API. O plano dos dias 13, 14 e 15 de novembro foi retirado da árvore e permanece no histórico do Git, no caminho `docs/plano_13_15.md`. A destruição da VPC, do NAT e da AMI privada que ainda estão ligados pede a frase `AUTORIZO_DESTRUIR_RECURSOS`.

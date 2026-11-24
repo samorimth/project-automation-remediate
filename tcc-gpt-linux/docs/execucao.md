@@ -118,7 +118,7 @@ O binário do Terraform não estava no PATH desta máquina e o `terraform.tfstat
 python -m src.main report
 ```
 
-O comando lê `results/experiments.json`, os `validation.json` preservados e as evidências SSM. Grava `results/summary.csv`, `results/experiments.csv`, os PNG em `results/charts/` (incluindo `syntax_success.png`, `remediation_success.png`, `security_approval.png`, `generation_time.png`, `token_usage.png` e `cost.png`), as tabelas `infrastructure_attempts.csv`, `api_calls.csv` e `experimental_runs.csv`, e o laudo em `results/revalidation.json` e `results/fase6/revalidation/`. Não chama a AWS, não chama a OpenAI e não reescreve o ledger nem os scripts gerados. Código 0 quando os números conferem; código 1 quando há divergência de versão, token, hash ou status.
+O comando lê `results/experiments.json`, os `validation.json` preservados e as evidências SSM. Grava `results/summary.csv`, `results/experiments.csv`, os gráficos `taxa_correcao_sintatica.png`, `analise_estatica.png`, `aprovacao_seguranca.png`, `taxa_remediacao.png`, `tempo_geracao.png`, `consumo_tokens.png` e `cost.png` em `results/charts/`, as tabelas `infrastructure_attempts.csv`, `api_calls.csv` e `experimental_runs.csv`, e o laudo em `results/revalidation.json` e `results/fase6/revalidation/`. A versão atual do comando também grava cópias de mesmo conteúdo com nomes em inglês; essas cópias não são mantidas na árvore. Não chama a AWS, não chama a OpenAI e não reescreve o ledger nem os scripts gerados. Código 0 quando os números conferem; código 1 quando há divergência de versão, token, hash ou status.
 
 ## Próxima execução, ainda não autorizada
 
