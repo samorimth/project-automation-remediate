@@ -200,8 +200,21 @@ def test_report_keeps_originals_and_separates_denominators(tmp_path: Path):
         "taxa_remediacao.png",
         "tempo_geracao.png",
         "consumo_tokens.png",
+        "cost.png",
     ):
         assert (tmp_path / "results" / "charts" / name).stat().st_size > 0
+    for name in (
+        "syntax_success.png",
+        "remediation_success.png",
+        "security_approval.png",
+        "generation_time.png",
+        "token_usage.png",
+    ):
+        assert not (tmp_path / "results" / "charts" / name).exists()
+    architecture = tmp_path / "docs" / "arquitetura"
+    assert not (architecture / "fluxo_experimental.mmd").exists()
+    assert not (architecture / "fluxo_experimental.svg").exists()
+    assert not (architecture / "fluxo_experimental.png").exists()
 
 
 def test_report_flags_a_version_mismatch_without_rewriting_the_ledger(tmp_path: Path):

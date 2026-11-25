@@ -28,4 +28,4 @@ Não entram no arquivo como originais: `results/summary.csv`, os gráficos e `re
 | `prepare.sh --apply` antes das repetições 3 e 4 | `ssm-prepare-rep03.json` e `ssm-prepare-rep04.json` |
 | Pilha destruída, 14 itens com `ok=true` | `evidence/cleanup-fase3.json` |
 
-A AMI privada de referência ainda não existe. O identificador acima é o da imagem pública usada no experimento histórico.
+O identificador da tabela é o da imagem pública usada no experimento histórico. A reexecução posterior usou a AMI privada `ami-03629c5c47c71759b`, destruída depois da coleta.

@@ -38,11 +38,6 @@ CHARTS = (
     "taxa_remediacao.png",
     "tempo_geracao.png",
     "consumo_tokens.png",
-    "syntax_success.png",
-    "remediation_success.png",
-    "security_approval.png",
-    "generation_time.png",
-    "token_usage.png",
     "cost.png",
 )
 
@@ -63,7 +58,6 @@ def generate_report(lab_root: Path | None = None) -> int:
     charts_dir = root / "results" / "charts"
     review_root = root / "results" / "fase6" / "revalidation"
     audit_path = root / "results" / "fase6" / "auditoria.json"
-    flow_dir = root / "docs" / "arquitetura"
 
     try:
         ledger = _load_ledger(root / "results" / "experiments.json")
@@ -82,7 +76,6 @@ def generate_report(lab_root: Path | None = None) -> int:
     _write_revalidation_json(root, reviews)
     charts_dir.mkdir(parents=True, exist_ok=True)
     _write_charts(charts_dir, rows)
-    _write_flow(flow_dir)
     audit_path.parent.mkdir(parents=True, exist_ok=True)
     audit_path.write_text(
         json.dumps(audit, ensure_ascii=False, indent=2) + "\n",
@@ -719,93 +712,6 @@ def _write_charts(charts_dir: Path, rows: list[dict[str, str]]) -> None:
         "Tokens",
         "Fonte: results/experiments.json. A chamada HTTP 429 não devolveu contagem de tokens e não entra neste gráfico.",
     )
-    copies = {
-        "taxa_correcao_sintatica.png": "syntax_success.png",
-        "taxa_remediacao.png": "remediation_success.png",
-        "aprovacao_seguranca.png": "security_approval.png",
-        "tempo_geracao.png": "generation_time.png",
-        "consumo_tokens.png": "token_usage.png",
-    }
-    for source_name, target_name in copies.items():
-        (charts_dir / target_name).write_bytes((charts_dir / source_name).read_bytes())
-
-
-def _write_flow(directory: Path) -> None:
-    directory.mkdir(parents=True, exist_ok=True)
-    svg = directory / "fluxo_experimental.svg"
-    png = directory / "fluxo_experimental.png"
-    mmd = directory / "fluxo_experimental.mmd"
-    svg.write_text(_FLOW_SVG, encoding="utf-8")
-    mmd.write_text(_FLOW_MMD, encoding="utf-8")
-    import matplotlib
-
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import FancyBboxPatch
-
-    fig, ax = plt.subplots(figsize=(11.2, 7.2))
-    ax.set_xlim(0, 112)
-    ax.set_ylim(0, 72)
-    ax.axis("off")
-    fig.patch.set_facecolor("white")
-    boxes = [
-        (4, 52, 24, 12, "Cenário e prompt"),
-        (32, 52, 24, 12, "Chamada OpenAI"),
-        (60, 52, 22, 12, "remediation.sh"),
-        (86, 52, 22, 12, "Validação\n3 níveis"),
-        (86, 30, 22, 12, "Reprovado:\nsem SSM"),
-        (60, 30, 22, 12, "SSM Run\nCommand"),
-        (32, 30, 24, 12, "EC2 privada\nUbuntu 24.04"),
-        (4, 30, 24, 12, "verify\ndpkg"),
-        (32, 8, 50, 12, "Reexecução: EC2 nova da AMI\nHistórico: prepare.sh na mesma EC2"),
-    ]
-    for x, y, w, h, label in boxes:
-        ax.add_patch(
-            FancyBboxPatch(
-                (x, y),
-                w,
-                h,
-                boxstyle="round,pad=0.4,rounding_size=1.2",
-                linewidth=1,
-                edgecolor="#222222",
-                facecolor="#f4f4f4",
-            )
-        )
-        ax.text(x + w / 2, y + h / 2, label, ha="center", va="center", fontsize=9)
-
-    def arrow(x1: float, y1: float, x2: float, y2: float) -> None:
-        ax.annotate(
-            "",
-            xy=(x2, y2),
-            xytext=(x1, y1),
-            arrowprops={"arrowstyle": "-|>", "color": "#222222", "lw": 1.4},
-            zorder=5,
-        )
-
-    arrow(28, 58, 32, 58)
-    arrow(56, 58, 60, 58)
-    arrow(82, 58, 86, 58)
-    arrow(97, 52, 97, 42)
-    arrow(86, 52, 82, 42)
-    arrow(60, 36, 56, 36)
-    arrow(32, 36, 28, 36)
-    ax.text(30, 60.5, "→", fontsize=12, ha="center", va="center", zorder=6)
-    ax.text(58, 60.5, "→", fontsize=12, ha="center", va="center", zorder=6)
-    ax.text(84, 60.5, "→", fontsize=12, ha="center", va="center", zorder=6)
-    ax.text(104, 47, "reprovado ↓", fontsize=8, ha="left")
-    ax.text(78, 49, "aprovado", fontsize=8, ha="center")
-    ax.text(58, 37.5, "←", fontsize=12, ha="center", va="center", zorder=6)
-    ax.text(30, 37.5, "←", fontsize=12, ha="center", va="center", zorder=6)
-    ax.set_title("Fluxo experimental da CVE-2024-38428", fontsize=13, pad=8)
-    fig.text(
-        0.01,
-        0.01,
-        "Histórico: uma EC2 e prepare.sh entre as repetições 3 e 4. Reexecução do wget: uma EC2 nova da AMI privada para cada script.",
-        fontsize=8,
-    )
-    fig.tight_layout(rect=(0, 0.04, 1, 1))
-    fig.savefig(png, dpi=140)
-    plt.close(fig)
 
 
 def _load_ledger(path: Path) -> list[dict[str, Any]]:
@@ -1004,61 +910,3 @@ def _write_revalidation_json(root: Path, reviews: list[dict[str, Any]]) -> None:
     path = root / "results" / "revalidation.json"
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-
-_FLOW_MMD = """flowchart TD
-  subgraph historico [Historico ja executado]
-    mesmaEc2[Uma EC2 Ubuntu 24.04]
-    prepare[prepare.sh --apply entre as repeticoes 3 e 4]
-    mesmaEc2 --> prepare --> mesmaEc2
-  end
-  subgraph usado [Usado na reexecucao do wget em 12/11/2026]
-    ami[AMI privada de referencia]
-    nova[EC2 nova para um unico script]
-    antes[Verificacao before.json]
-    script[remediation.sh original]
-    depois[Verificacao after.json]
-    fim[Destruir somente essa EC2]
-    ami --> nova --> antes --> script --> depois --> fim
-  end
-"""
-
-_FLOW_SVG = """<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="720" viewBox="0 0 1120 720">
-  <rect width="1120" height="720" fill="#ffffff"/>
-  <text x="40" y="42" font-family="sans-serif" font-size="22" fill="#222222">Fluxo experimental da CVE-2024-38428</text>
-  <g font-family="sans-serif" font-size="15" fill="#222222" text-anchor="middle">
-    <rect x="40" y="70" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="150" y="110">Cenário e prompt</text>
-    <rect x="320" y="70" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="430" y="110">Chamada à API OpenAI</text>
-    <rect x="600" y="70" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="710" y="110">remediation.sh</text>
-    <rect x="880" y="70" width="200" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="980" y="102">Validação</text>
-    <text x="980" y="122">em três níveis</text>
-    <rect x="880" y="250" width="200" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="980" y="282">Reprovado:</text>
-    <text x="980" y="302">nenhum comando SSM</text>
-    <rect x="600" y="250" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="710" y="290">SSM Run Command</text>
-    <rect x="320" y="250" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="430" y="282">EC2 privada</text>
-    <text x="430" y="302">Ubuntu 24.04</text>
-    <rect x="40" y="250" width="220" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="150" y="290">verify por dpkg</text>
-    <rect x="320" y="470" width="500" height="70" rx="8" fill="#f4f4f4" stroke="#222222"/>
-    <text x="570" y="502">Reexecução: EC2 nova da AMI privada</text>
-    <text x="570" y="522">Histórico: prepare.sh na mesma EC2</text>
-  </g>
-  <g stroke="#222222" fill="none" stroke-width="1.4">
-    <path d="M260 105 H320"/>
-    <path d="M540 105 H600"/>
-    <path d="M820 105 H880"/>
-    <path d="M980 140 V250"/>
-    <path d="M880 285 H820"/>
-    <path d="M600 285 H540"/>
-    <path d="M320 285 H260"/>
-  </g>
-  <text x="40" y="690" font-family="sans-serif" font-size="13" fill="#333333">O histórico reutilizou uma EC2. A reexecução do wget criou e destruiu uma instância por script. A segunda CVE ainda não rodou.</text>
-</svg>
-"""
